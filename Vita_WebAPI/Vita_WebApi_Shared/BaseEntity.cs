@@ -1,6 +1,6 @@
 ﻿namespace Vita_WebApi_Shared;
 
-public abstract class BaseEntiy
+public abstract class BaseEntity
 { 
     public int Id { get; set; }
     public DateTime CreatedAt { get; set; }
