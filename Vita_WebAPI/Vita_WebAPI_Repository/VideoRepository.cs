@@ -1,6 +1,9 @@
-namespace Vita_WebAPI_Repository;
+using Vita_WebAPI_Data;
+using Vita_WebApi_Shared;
 
-public class VideoRepository(DataContext context) : IGenericRepository<Video>(context), IVideoRepo
+namespace ClassLibrary1Vita_WebAPI_Repository;
+
+public class VideoRepository(DataContext context) : GenericRepository<Video>(context), IVideoRepository
 {
     
 }

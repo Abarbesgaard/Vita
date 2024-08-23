@@ -1,43 +1,36 @@
-namespace Vita_WebAPI_Repository;
+using Microsoft.EntityFrameworkCore;
+using Vita_WebAPI_Data;
 
-public class GenericRepository<T>(Datacontext context) : IGenericRepository<T> where T : class
+namespace ClassLibrary1Vita_WebAPI_Repository;
+
+public class GenericRepository<T>(DataContext context) : IGenericRepository<T> where T : class
 {
-    private readonly Datacontext _context = context;
-
-    public GenericRepository(Datacontext context)
+    public async Task DeleteAsync(T entity)
     {
-        _context = context;
-    }
-
-    public async Task<T?> GetByIdAsync(int id)
-    {
-        return await _context.Set<T>().FindAsync(id);
+        context.Remove(entity);
+        await context.SaveChangesAsync();
     }
 
     public async Task<List<T>> GetAllAsync()
     {
-        return await _context.Set<T>().ToListAsync();
+        return await context.Set<T>()
+            .AsNoTracking()
+            .ToListAsync();
+    }
+    public async Task AddAsync(T entity)
+    {
+        await context.AddAsync(entity);
+        await context.SaveChangesAsync();
     }
 
-    public async Task<T> AddAsync(T entity)
+    public async Task<T?> GetByIdAsync(int id)
     {
-        await _context.Set<T>().AddAsync(entity);
-        await _context.SaveChangesAsync();
-        return entity;
+        return await context.FindAsync<T>(id);
     }
 
-    public async Task<T> UpdateAsync(T entity)
+    public async Task UpdateAsync(T entity)
     {
-        _context.Set<T>().Update(entity);
-        await _context.SaveChangesAsync();
-        return entity;
-    }
-
-    public async Task<T> DeleteAsync(int id)
-    {
-        var entity = await _context.Set<T>().FindAsync(id);
-        _context.Set<T>().Remove(entity);
-        await _context.SaveChangesAsync();
-        return entity;
+        context.Update(entity);
+        await context.SaveChangesAsync();
     }
 }
