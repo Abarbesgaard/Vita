@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Vita_WebAPI_Data\Vita_WebAPI_Data.csproj" />
+      <ProjectReference Include="..\Vita_WebAPI_Repository\Vita_WebAPI_Repository.csproj" />
     </ItemGroup>
 
 </Project>
