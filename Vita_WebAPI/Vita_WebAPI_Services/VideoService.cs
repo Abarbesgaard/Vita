@@ -4,6 +4,9 @@ using Vita_WebApi_Shared;
 namespace Vita_WebAPI_Services;
 public interface IVideoService
 {
+    Task CreateVideo(Video video);
+    Task<IEnumerable<Video>> GetAllVideos();
+    Task<Video?> GetVideoById(int id);
 }
 public class VideoService(IVideoRepository repository) : IVideoService 
 {
