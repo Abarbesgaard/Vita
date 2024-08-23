@@ -1,6 +1,7 @@
 using ClassLibrary1Vita_WebAPI_Repository;
 using Microsoft.EntityFrameworkCore;
 using Vita_WebAPI_Data;
+using Vita_WebAPI_Services;
 
 namespace Vita_WebApi_API;
 public class Program
@@ -11,6 +12,7 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Services.AddScoped<IVideoRepository, VideoRepository>();
+        builder.Services.AddScoped<IVideoService, VideoService>();
         builder.Services.AddDbContext<DataContext>(options =>
                 {
                     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));

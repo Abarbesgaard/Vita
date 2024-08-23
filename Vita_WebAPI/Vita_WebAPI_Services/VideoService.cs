@@ -8,10 +8,15 @@ public interface IVideoService
     Task<IEnumerable<Video>> GetAllVideos();
     Task<Video?> GetVideoById(int id);
 }
-public class VideoService(IVideoRepository repository) : IVideoService 
+public class VideoService: IVideoService 
 {
-    private readonly IVideoRepository _repository = repository;
+    private readonly IVideoRepository _repository;
 
+    // Constructor
+    public VideoService(IVideoRepository repository)
+    {
+        _repository = repository;
+    }
     public async Task CreateVideo(Video video)
     {
         await  _repository.AddAsync(video);
