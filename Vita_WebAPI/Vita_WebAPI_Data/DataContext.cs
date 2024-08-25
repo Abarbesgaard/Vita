@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Vita_WebApi_Shared;
 
 namespace Vita_WebAPI_Data;
-
+#pragma warning disable CS1591
 public class DataContext : DbContext
 {
     public DataContext(DbContextOptions<DataContext> options) 
@@ -20,28 +20,18 @@ public class DataContext : DbContext
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Video>().HasData(
-            new Video
+        modelBuilder.Entity<Video>(entity =>
             {
-                Id = 1,
-                Title = "First Video",
-                Description = "This is the first video",
-                Url = "https://www.youtube.com/watch?v=1"
-            },
-            new Video
-            {
-                Id = 2,
-                Title = "Second Video",
-                Description = "This is the second video",
-                Url = "https://www.youtube.com/watch?v=2"
-            },
-            new Video
-            {
-                Id = 3,
-                Title = "Third Video",
-                Description = "This is the third video",
-                Url = "https://www.youtube.com/watch?v=3"
+                entity.ToTable("Videos");
+                entity.HasKey(e => e.Id).HasName("PK_Videos");
+                entity.Property(e => e.Id)
+                    .HasColumnName("Id")
+                    .ValueGeneratedOnAdd();
+                entity.Property(e => e.Title)
+                    .HasColumnName("Title");
+                
             }
         );
     }
+#pragma warning restore CS1591 
 }
