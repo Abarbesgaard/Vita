@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Vita_WebApi_API.Dto;
 using Vita_WebAPI_Services;
 using Vita_WebApi_Shared;
-using Serilog;
 
 namespace Vita_WebApi_API.Controllers;
 [ApiController]
