@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Vita_WebAPI_Data;
 
-namespace ClassLibrary1Vita_WebAPI_Repository;
+namespace Vita_WebAPI_Repository;
 
 public class GenericRepository<T>(DataContext context) : IGenericRepository<T> where T : class
 {

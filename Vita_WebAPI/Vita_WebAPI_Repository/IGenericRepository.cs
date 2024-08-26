@@ -1,4 +1,4 @@
-﻿namespace ClassLibrary1Vita_WebAPI_Repository;
+﻿namespace Vita_WebAPI_Repository;
 
 public interface IGenericRepository<T> where T : class
 {

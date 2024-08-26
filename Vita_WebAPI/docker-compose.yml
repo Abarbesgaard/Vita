@@ -11,15 +11,17 @@ services:
       - db
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ConnectionStrings__DefaultConnection: "Server=db;Database=TestDb;User Id=sa;Password=Bbktbb11;TrustServerCertificate=True;"
+      ConnectionStrings__DefaultConnection: "Server=db;Database=TestDb;User Id=sa;Password=${DB_PASSWORD};TrustServerCertificate=True;"
 
   db:
     image: mcr.microsoft.com/mssql/server:2019-latest
     environment:
-      SA_PASSWORD: "Bbktbb11"
+      SA_PASSWORD: "${DB_PASSWORD}"
       ACCEPT_EULA: "Y"
     ports:
       - "1433:1433"
+    secrets:
+        - db_password
 
 volumes:
   sql_data:
