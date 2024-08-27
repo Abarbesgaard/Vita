@@ -5,6 +5,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Vita_WebAPI_Data;
+using Vita_WebAPI_Repository;
 using Vita_WebAPI_Services;
 
 namespace Vita_WebApi_API;
