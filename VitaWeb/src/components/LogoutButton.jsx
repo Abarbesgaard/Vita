@@ -5,7 +5,7 @@ export default function LogoutButton() {
 
 	return (
 		<button
-			className="w-40 h-10 bg-red-500 rounded"
+			className="w-40 h-10 text-white bg-red-600 rounded shadow-depth_red hover:bg-red-700 active:shadow"
 			onClick={() =>
 				logout({
 					logoutParams: {
