@@ -28,7 +28,7 @@ export default function Dashboard({ user }) {
 
 	return (
 		<div className="h-dvh flex flex-col lg:flex-row bg-gray-300">
-			<div className="flex flex-col items-center justify-center px-10 mb-10 lg:mb-0">
+			<div className="flex flex-col items-center justify-center px-10 mb-2 lg:mb-0">
 				<UserCard user={user} />
 				<LogoutButton />
 			</div>

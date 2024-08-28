@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 export default function VideoCard({ id, title, url }) {
 	return (
 		<div className="border-b border-black w-9/12 h-[1000px]">
