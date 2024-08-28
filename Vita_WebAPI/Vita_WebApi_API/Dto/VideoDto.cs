@@ -1,12 +1,16 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Vita_WebApi_API.Dto;
 
-public class VideoDto
-{
-    public int Id { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
-    public bool IsDeleted { get; set; }
-    public string Title { get; set; }
-    public string Description { get; set; }
-    public string Url { get; set; }
-}
+public record UpdateVideoDto(
+    string Title, 
+    string Description, 
+    string Url);
+public record VideoDto(
+    Guid Id, 
+    DateTimeOffset CreatedAt, 
+    DateTimeOffset UpdatedAt, 
+    string Title, 
+    string Description,
+    [Required] string Url);
+    
