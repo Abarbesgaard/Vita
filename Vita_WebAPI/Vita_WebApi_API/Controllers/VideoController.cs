@@ -8,7 +8,7 @@ using Vita_WebApi_Shared;
 
 namespace Vita_WebApi_API.Controllers;
 [ApiController]
-[Route("api/[controller]")]
+[Route("videos")]
 public class VideoController(IVideoService service, ILogger<VideoController> logger) : ControllerBase
 {
     /// <summary>
