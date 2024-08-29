@@ -78,7 +78,7 @@ public class VideoService: IVideoService
 
     public Task DeleteVideo(Guid id)
     {
-        throw new NotImplementedException();
+        return _repository.DeleteAsync(id);
     }
 }
 
