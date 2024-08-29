@@ -22,9 +22,15 @@ builder.Services.AddAuthentication(options =>
             NameClaimType = ClaimTypes.NameIdentifier
         };
     });
+
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("read:messages", policy => 
+        policy.RequireClaim("permissions", "read:messages"));
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
+
 builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
 var app = builder.Build();

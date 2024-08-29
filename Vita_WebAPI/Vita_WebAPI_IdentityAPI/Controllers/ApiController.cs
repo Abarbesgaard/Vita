@@ -9,15 +9,6 @@ namespace Vita_WebAPI_IdentityAPI.Controllers;
 public class ApiController : Controller
 {
     private readonly Auth0Service _auth0Service = new();
-    [HttpGet("private")]
-    [Authorize]
-    public IActionResult Private()
-    {
-        return Ok(new
-        {
-            Message = "Hello from a private endpoint!"
-        });
-    }
 
     [HttpPost("add-user")]
     [Authorize("read:messages")]
