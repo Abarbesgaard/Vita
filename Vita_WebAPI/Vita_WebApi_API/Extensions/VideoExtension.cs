@@ -6,7 +6,7 @@ namespace Vita_WebApi_API.Extensions;
 
 public static class VideoExtension
 {
-   public static VideoDto AsDto(this Video video)
+   public static VideoDto AsDto(this Video? video)
    {
       return new VideoDto(
          video.Id,
