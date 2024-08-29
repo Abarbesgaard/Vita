@@ -6,11 +6,19 @@ public record UpdateVideoDto(
     string? Title, 
     string? Description, 
     string? Url);
-public record VideoDto(
+public record CreateVideoDto(
     Guid Id, 
     DateTimeOffset CreatedAt, 
     DateTimeOffset UpdatedAt, 
     string? Title, 
     string? Description,
     [Required] string? Url);
+
+public record GetVideoDto(
+    Guid Id, 
+    DateTimeOffset CreatedAt, 
+    DateTimeOffset UpdatedAt, 
+    string? Title, 
+    string? Description,
+    string? Url);
     

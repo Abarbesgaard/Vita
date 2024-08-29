@@ -9,6 +9,8 @@
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS> 
     </PropertyGroup>
     <ItemGroup>
+        <PackageReference Include="JWT" Version="10.1.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.8" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.8" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.8"/>
@@ -41,6 +43,9 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Reference Include="Microsoft.AspNetCore.Authentication.JwtBearer">
+        <HintPath>..\..\..\..\.nuget\packages\microsoft.aspnetcore.authentication.jwtbearer\8.0.8\lib\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll</HintPath>
+      </Reference>
       <Reference Include="System.Configuration.ConfigurationManager">
         <HintPath>..\..\..\..\.nuget\packages\system.configuration.configurationmanager\8.0.0\lib\net8.0\System.Configuration.ConfigurationManager.dll</HintPath>
       </Reference>
