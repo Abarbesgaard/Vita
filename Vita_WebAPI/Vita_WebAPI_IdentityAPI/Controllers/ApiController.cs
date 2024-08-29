@@ -12,7 +12,7 @@ public class ApiController : ControllerBase
     private readonly Auth0Service _auth0Service = new();
 
     [HttpPost("add-user")]
-    [Authorize]
+    [Authorize("read:messages")]
     public async Task AddUser()
     {
       await _auth0Service.AddUser(); 

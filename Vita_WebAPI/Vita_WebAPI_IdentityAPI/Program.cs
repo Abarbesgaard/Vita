@@ -6,6 +6,7 @@ using Vita_WebAPI_Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IAuth0Service, Auth0Service>();
+
 var domain = $"https://{builder.Configuration["Auth0:Domain"]}/";
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -15,7 +16,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.Audience = builder.Configuration["Auth0:Audience"];
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            NameClaimType = ClaimTypes.NameIdentifier
+            NameClaimType = ClaimTypes.NameIdentifier,
+            
         };
     });
 
