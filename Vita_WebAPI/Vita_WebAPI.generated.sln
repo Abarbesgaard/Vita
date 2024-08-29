@@ -3,6 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.002.0
 MinimumVisualStudioVersion = 10.0.40219.1
+
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vita_WebApi_API", "Vita_WebApi_API\Vita_WebApi_API.csproj", "{9895ABF6-FEB8-485C-8EA3-E04F987B7529}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vita_Test", "Vita_Test\Vita_Test.csproj", "{1C6AC9DB-83AC-49EF-8327-4E0033BF2F5A}"
@@ -16,6 +17,7 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vita_WebAPI_Data", "Vita_WebAPI_Data\Vita_WebAPI_Data.csproj", "{2576914E-0E2E-4AF8-984C-851E5B5F782B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vita_WebAPI_IdentityAPI", "Vita_WebAPI_IdentityAPI\Vita_WebAPI_IdentityAPI.csproj", "{A005EFA5-20DF-49F8-B9E5-D766BCD413AF}"
+
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,6 +25,7 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+
 		{9895ABF6-FEB8-485C-8EA3-E04F987B7529}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9895ABF6-FEB8-485C-8EA3-E04F987B7529}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9895ABF6-FEB8-485C-8EA3-E04F987B7529}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -51,11 +54,14 @@ Global
 		{A005EFA5-20DF-49F8-B9E5-D766BCD413AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A005EFA5-20DF-49F8-B9E5-D766BCD413AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A005EFA5-20DF-49F8-B9E5-D766BCD413AF}.Release|Any CPU.Build.0 = Release|Any CPU
+
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
+
 		SolutionGuid = {999BC2FD-5EE4-4D5B-B64B-0A20D8FA1D1C}
+
 	EndGlobalSection
 EndGlobal
