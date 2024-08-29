@@ -23,7 +23,7 @@ public class Auth0Service : IAuth0Service
    {
      
       var client = new HttpClient();
-      var request = new HttpRequestMessage(HttpMethod.Get, "https://dev-dj6iiunlxv3pukjx.us.auth0.com/api/v2/users/id");
+      var request = new HttpRequestMessage(HttpMethod.Get, $"https://dev-dj6iiunlxv3pukjx.us.auth0.com/api/v2/users/{id}");
       request.Headers.Add("Accept", "application/json");
       var response = await client.SendAsync(request);
       response.EnsureSuccessStatusCode();
