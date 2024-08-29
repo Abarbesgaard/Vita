@@ -24,7 +24,7 @@ public class VideoService: IVideoService
         try
         {
          _logger.LogInformation("Creating a new video");   
-        await  _repository.AddAsync(video);
+        await  _repository.CreateAsync(video);
         _logger.LogInformation("Video created");
         }
         catch (Exception e)
