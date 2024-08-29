@@ -57,7 +57,7 @@ public class VideoService: IVideoService
         }
     }
     
-    public async Task<Video?> GetVideoById(int id)
+    public async Task<Video?> GetVideoById(Guid id)
     {
         try
         {
@@ -69,6 +69,16 @@ public class VideoService: IVideoService
             _logger.LogError($"An error occurred: {e.Message}");
             throw;
         }
+    }
+
+    public async Task UpdateVideo(Video? video)
+    {
+        await _repository.UpdateAsync(video);
+    }
+
+    public Task DeleteVideo(Guid id)
+    {
+        throw new NotImplementedException();
     }
 }
 
