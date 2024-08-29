@@ -25,4 +25,10 @@ public class ApiController : Controller
     {
       await _auth0Service.Scoped(); 
     }
+
+    [HttpGet("id")]
+    public async Task GetUser(Guid id)
+    {
+        await _auth0Service.GetUser(id);
+    }
 }

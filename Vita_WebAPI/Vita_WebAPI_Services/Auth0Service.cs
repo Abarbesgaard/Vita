@@ -2,6 +2,7 @@ namespace Vita_WebAPI_Services;
 public interface IAuth0Service
 {
    Task Scoped();
+   Task GetUser(Guid id);
 }
 public class Auth0Service : IAuth0Service
 {
@@ -16,5 +17,15 @@ public class Auth0Service : IAuth0Service
       var response = await client.SendAsync(request);
       response.EnsureSuccessStatusCode(); 
       await response.Content.ReadAsStringAsync();    
+   }
+   public async Task GetUser(Guid id)
+   {
+     
+      var client = new HttpClient();
+      var request = new HttpRequestMessage(HttpMethod.Get, "https://dev-dj6iiunlxv3pukjx.us.auth0.com/api/v2/users/id");
+      request.Headers.Add("Accept", "application/json");
+      var response = await client.SendAsync(request);
+      response.EnsureSuccessStatusCode();
+      await response.Content.ReadAsStringAsync();
    }
 }
