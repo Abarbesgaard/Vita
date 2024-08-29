@@ -19,11 +19,8 @@ public class ApiController : Controller
 
     [HttpGet("private-scoped")]
     [Authorize("read:messages")]
-    public IActionResult Scoped()
+    public async Task Scoped()
     {
-        return Ok(new
-        {
-            Message = "Hello from a private-scoped endpoint!"
-        });
+       
     }
 }
