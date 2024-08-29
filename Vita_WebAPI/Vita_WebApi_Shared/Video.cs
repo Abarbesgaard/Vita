@@ -6,9 +6,9 @@ namespace Vita_WebApi_Shared;
 public class Video : BaseEntity
 {
     [JsonPropertyName("createdAt")]
-    public DateTime CreatedAt { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
     [JsonPropertyName("updatedAt")]
-    public DateTime UpdatedAt { get; set; }
+    public DateTimeOffset UpdatedAt { get; set; }
     [JsonPropertyName("title")]
     [StringLength(200, MinimumLength = 1, ErrorMessage = "Title must be between 1 and 200 characters")]
     public string Title { get; set; }
