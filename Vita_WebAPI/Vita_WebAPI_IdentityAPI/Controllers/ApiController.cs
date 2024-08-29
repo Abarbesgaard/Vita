@@ -8,7 +8,7 @@ namespace Vita_WebAPI_IdentityAPI.Controllers;
 [Route("users")]
 public class ApiController : Controller
 {
-   private readonly Auth0Service _auth0Service;
+    private readonly Auth0Service _auth0Service = new();
     [HttpGet("private")]
     [Authorize]
     public IActionResult Private()
