@@ -1,9 +1,6 @@
 ﻿using ClassLibrary1Vita_WebAPI_Repository;
 using Microsoft.Extensions.Logging;
 using Vita_WebApi_Shared;
-using Serilog;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
-
 namespace Vita_WebAPI_Services;
 
 public class VideoService: IVideoService 
