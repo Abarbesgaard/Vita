@@ -5,12 +5,7 @@ using Serilog;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Vita_WebAPI_Services;
-public interface IVideoService
-{
-    Task CreateVideo(Video video);
-    Task<IEnumerable<Video>?> GetAllVideos();
-    Task<Video?> GetVideoById(int id);
-}
+
 public class VideoService: IVideoService 
 {
     private readonly IVideoRepository _repository;
