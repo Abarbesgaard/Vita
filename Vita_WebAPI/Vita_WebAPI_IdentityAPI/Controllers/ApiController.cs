@@ -19,11 +19,11 @@ public class ApiController : Controller
         });
     }
 
-    [HttpGet("private-scoped")]
+    [HttpPost("add-user")]
     [Authorize("read:messages")]
-    public async Task Scoped()
+    public async Task AddUser()
     {
-      await _auth0Service.Scoped(); 
+      await _auth0Service.AddUser(); 
     }
 
     [HttpGet("id")]
