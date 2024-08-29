@@ -1,14 +1,28 @@
+using System.Net;
+using System.Net.Http.Headers;
+using JWT.Algorithms;
+using JWT.Builder;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Diagnostics;
 using Vita_WebApi_API.Dto;
+using Vita_WebApi_API.Extensions;
 using Vita_WebAPI_Services;
 using Vita_WebApi_Shared;
 
 namespace Vita_WebApi_API.Controllers;
+/// <summary>
+/// The controller responsible for handling video-related operations.
+/// </summary>
+/// <param name="service">The service that provides video-related operations.</param>
+/// <param name="logger">The logger used to log information and errors.</param>
 [ApiController]
-[Route("api/[controller]")]
-public class VideoController(IVideoService service, ILogger<VideoController> logger) : Controller
+[Authorize]
+[Route("videos")]
+public class VideoController(IVideoService service, ILogger<VideoController> logger) : ControllerBase
 {
+    private static readonly string[] Secret = ["secret1"];
     /// <summary>
     /// Retrieves a list of all videos from the system.
     /// </summary>
@@ -39,27 +53,71 @@ public class VideoController(IVideoService service, ILogger<VideoController> log
     /// <response code="500">Internal server error if something goes wrong while retrieving videos.</response>
     /// <returns>A list of video objects or a message indicating no videos were found.</returns>
     [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<VideoDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<GetVideoDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAllVideos()
     {
-        try
+        if (!Request.Headers.TryGetValue("Authorization", out var token))
         {
-            logger.LogInformation("Getting all videos");
-            var videos = await service.GetAllVideos();
-            if (videos == null)
-            {
-                logger.LogWarning("No videos found");
-                return NotFound("No videos found");
-            }
-            return Ok(videos);
-        } 
-        catch (Exception e)
-        {
-            logger.LogError($"An error occurred: {e.Message}");
-            return StatusCode(500, "Internal server error");
+            return Unauthorized("No token provided");
         }
+
+        var tokenString = token.ToString();
+            if (!tokenString.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+            {
+                return Unauthorized("Invalid token format");
+            } 
+            
+            tokenString = tokenString["Bearer ".Length..].Trim(); 
+            
+            var decodedString = JwtBuilder
+                .Create()
+                .WithAlgorithm(new HMACSHA256Algorithm())
+                .WithSecret(Secret).MustVerifySignature().Decode<IDictionary<string, string>>(tokenString);
+            var isValid = decodedString.TryGetValue("sub", out var sub);
+            
+            if (!isValid) return Unauthorized("Invalid token");
+            
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
+            try
+            {
+                var response = await client.GetAsync($"https://localhost:5226/auth/getuser/{sub}");
+
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    return Unauthorized();
+                }
+                
+                if (response.IsSuccessStatusCode)
+                {
+                   return StatusCode((int)response.StatusCode, "User is authorized"); 
+                }
+
+                var responseContent = await response.Content.ReadAsStringAsync();
+                
+                Console.WriteLine(responseContent);
+            }
+            catch (HttpRequestException ex)
+            {
+                logger.LogError($"Request error: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+
+            try
+            {
+                logger.LogInformation("Getting all videos");
+                var videos = await service.GetAllVideos();
+                return Ok(videos);
+            }
+            catch (Exception e)
+            {
+                logger.LogError($"An error occurred: {e.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+
+        return null!;
     }   
     
     /// <summary>
@@ -80,7 +138,6 @@ public class VideoController(IVideoService service, ILogger<VideoController> log
     ///         "id": 14,
     ///         "createdAt": "2024-08-24T05:08:44.377Z",
     ///         "updatedAt": "2024-08-24T05:08:44.377Z",
-    ///         "isDeleted": false,
     ///         "title": "Hjælp til at indberette regnskab",
     ///         "description": "En udførlig video til at hjælpe dig med at indberette regnskab",
     ///         "url": "https://link.til.youtube.com"
@@ -91,25 +148,24 @@ public class VideoController(IVideoService service, ILogger<VideoController> log
     /// <response code="404">No video found with the provided ID.</response>
     /// <response code="500">Internal server error if something goes wrong.</response>
     /// <returns>A video object if found, otherwise a 404 Not Found response.</returns>
-    [HttpGet("{id:int}")]
-    [Authorize]
-    [ProducesResponseType(typeof(VideoDto), StatusCodes.Status200OK)]
+    [HttpGet("{id:guid}")]
+    [ProducesResponseType(typeof(GetVideoDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetVideoById(int id)
+    public async Task<ActionResult<GetVideoDto>> GetVideoByIdAsync(Guid id)
     {
-        if (id <= 0)
-        {
-            logger.LogWarning("Invalid video ID");
-            return BadRequest("Invalid video ID");
-        }
-        
         var video = await service.GetVideoById(id);
-        if (video != null) return Ok(video);
-        logger.LogWarning($"No video found with ID: {id}");
-        return NotFound();
+        if (video == null)
+        {
+            logger.LogWarning("No video found with ID: {id}", id);
+            return NotFound("No video found with the provided ID");
+        }
+
+        return video.AsGetVideoDto();
     }
+    
+
 
     /// <summary>
     /// Creates a new video record.
@@ -147,29 +203,115 @@ public class VideoController(IVideoService service, ILogger<VideoController> log
     /// <response code="500">If an internal server error occurs during the creation process.</response>
     /// <returns>A confirmation message with the created video details.</returns>
     [HttpPost]
-    public async Task<IActionResult> CreateVideo([FromBody] VideoDto videoDto)
+    public async Task<ActionResult<CreateVideoDto>> PostVideoAsync(CreateVideoDto? videoDto)
     {
-        if (!ModelState.IsValid)
+        if (videoDto == null)
         {
-            logger.LogWarning("Invalid model object");
-            return BadRequest("Invalid model object");
-        }
+            return BadRequest("VideoDto is null.");
+        } 
         var video = new Video
         {
+            Id = Guid.NewGuid(),
+            CreatedAt = DateTimeOffset.Now,
             Title = videoDto.Title,
             Description = videoDto.Description,
-            Url = videoDto.Url
+            Url = videoDto.Url,
+            UpdatedAt = videoDto.UpdatedAt,
         };
-        try
+        await service.CreateVideo(video);
+        return CreatedAtAction(nameof(GetVideoByIdAsync), new { id = video.Id }, video.AsCreateVideoDto());
+    
+    }
+    /// <summary>
+    /// Updates an existing video record in the system.
+    /// This operation replaces the current video record with the updated data provided in the request body.
+    /// </summary>
+    /// <param name="id">The unique identifier (GUID) of the video to be updated.</param>
+    /// <param name="videoDto">An object containing the updated video details. It must include the title, description, and URL of the video.</param>
+    /// <returns>
+    /// A <see cref="IActionResult"/> that represents the result of the update operation:
+    /// - <see cref="NoContent"/> (HTTP 204) if the video was successfully updated.
+    /// - <see cref="NotFound"/> (HTTP 404) if no video with the specified ID was found.
+    /// </returns>
+    /// <remarks>
+    /// If the video with the specified ID does not exist, the method returns a 404 Not Found status code.
+    /// The request body must be a JSON object with the following structure:
+    /// 
+    ///     {
+    ///         "title": "The new title of the video",
+    ///         "description": "The new description of the video",
+    ///         "url": "http://example.com/the-new-video-url"
+    ///     }
+    /// 
+    /// Example request:
+    /// 
+    ///     PUT /api/videos/123e4567-e89b-12d3-a456-426614174000
+    ///     Content-Type: application/json
+    ///     
+    ///     {
+    ///         "title": "Updated Video Title",
+    ///         "description": "Updated Video Description",
+    ///         "url": "http://example.com/updated-video-url"
+    ///     }
+    /// 
+    /// Example response (successful update):
+    /// 
+    ///     HTTP/1.1 204 No Content
+    /// 
+    /// Example response (video not found):
+    /// 
+    ///     HTTP/1.1 404 Not Found
+    /// </remarks>
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> PutAsync(Guid id, UpdateVideoDto videoDto)
+    {
+        var existingVideo = await service.GetVideoById(id);
+        if (existingVideo == null)
         {
-            await service.CreateVideo(video);
-            logger.LogInformation("Video created successfully");
-            return CreatedAtAction(nameof(GetVideoById), new { id = video.Id }, video);
+            return NotFound();
         }
-        catch (Exception)
+
+        existingVideo.Title = videoDto.Title;
+        existingVideo.Description = videoDto.Description;
+        existingVideo.Url = videoDto.Url;
+        await service.UpdateVideo(existingVideo);
+        return NoContent();
+            
+    }
+    /// <summary>
+    /// Deletes a video record from the system by its unique identifier.
+    /// This operation removes the video with the specified ID from the database. 
+    /// </summary>
+    /// <param name="id">The unique identifier (GUID) of the video to be deleted.</param>
+    /// <returns>
+    /// A <see cref="IActionResult"/> that represents the result of the delete operation:
+    /// - <see cref="NoContent"/> (HTTP 204) if the video was successfully deleted.
+    /// - <see cref="NotFound"/> (HTTP 404) if no video with the specified ID was found.
+    /// </returns>
+    /// <remarks>
+    /// If the video with the specified ID does not exist, the method returns a 404 Not Found status code.
+    /// 
+    /// Example request:
+    /// 
+    ///     DELETE /api/videos/123e4567-e89b-12d3-a456-426614174000
+    /// 
+    /// Example response (successful deletion):
+    /// 
+    ///     HTTP/1.1 204 No Content
+    /// 
+    /// Example response (video not found):
+    /// 
+    ///     HTTP/1.1 404 Not Found
+    /// </remarks> 
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> DeleteAsync(Guid id)
+    {
+        var video = await service.GetVideoById(id);
+        if (video == null)
         {
-            logger.LogError("An error occurred while creating the video");
-            return StatusCode(500, "Internal server error");
+            return NotFound();
         }
+        await service.DeleteVideo(id);
+        return NoContent();
     }
 }

@@ -1,10 +1,12 @@
-﻿namespace Vita_WebAPI_Repository;
+﻿using Vita_WebApi_Shared;
 
-public interface IGenericRepository<T> where T : class
+namespace Vita_WebAPI_Repository;
+
+public interface IGenericRepository<T> where T : BaseEntity
 {
-    public Task<T?> GetByIdAsync(int id);
-    public Task<List<T>> GetAllAsync();
-    public Task AddAsync(T entity);
-    public Task UpdateAsync(T entity);
-    public Task DeleteAsync(T entity);
+    Task<T> GetByIdAsync(Guid id);
+    Task<IReadOnlyCollection<T>> GetAllAsync();
+    Task CreateAsync(T entity);
+    Task UpdateAsync(T entity);
+    Task DeleteAsync(Guid id);
 }

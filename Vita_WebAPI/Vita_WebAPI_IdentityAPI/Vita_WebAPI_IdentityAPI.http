@@ -1,0 +1,6 @@
+@Vita_WebAPI_IdentityAPI_HostAddress = http://localhost:5226
+
+GET {{Vita_WebAPI_IdentityAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
