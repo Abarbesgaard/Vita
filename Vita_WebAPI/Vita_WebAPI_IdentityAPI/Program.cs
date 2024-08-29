@@ -1,5 +1,8 @@
+using Vita_WebAPI_Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddScoped<IAuth0Service, Auth0Service>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();

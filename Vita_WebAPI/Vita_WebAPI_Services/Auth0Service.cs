@@ -1,6 +1,9 @@
 namespace Vita_WebAPI_Services;
-
-public class Auth0Service
+public interface IAuth0Service
+{
+   Task Scoped();
+}
+public class Auth0Service : IAuth0Service
 {
    public async Task Scoped()
    {
