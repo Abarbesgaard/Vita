@@ -1,13 +1,11 @@
-name: .NET Build
+name: .NET Build :wall
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
-
+  
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -19,14 +17,13 @@ jobs:
     - name: Set up .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '7.x'  # Angiv din .NET-version her
+        dotnet-version: '8.0.x'  # Angiv din .NET-version her
 
     - name: Restore dependencies
-      run: |
-        cd Vita/Vita_WebAPI  # Skift til den mappe, hvor dine .csproj eller .sln filer er
-        dotnet restore
+      run: dotnet restore ./Vita/Vita_WebApi.sln
 
     - name: Build
-      run: |
-        cd Vita/Vita_WebAPI  # Skift til den mappe, hvor dine .csproj eller .sln filer er
-        dotnet build --configuration Release
+      run: dotnet build ./Vita/Vita_WebApi.sln --configuration Release --no-restore
+
+    - name: Publish
+    - run: dotnet publish ./Vita/Vita_WebApi.sln --configuration Release --no-restore
