@@ -19,6 +19,14 @@ export default function Dashboard({ user }) {
 			url: "https://www.youtube.com/embed/zr1h2Z11oTI",
 		},
 	]);
+	const deleteVideo = (id) => {
+		const isConfirmed = confirm("Er du sikker?");
+
+		if (isConfirmed) {
+			const removed = videos.filter((video) => video.id !== id);
+			setVideos(removed);
+		}
+	};
 
 	const handleVideoFormSubmit = (e) => {
 		e.preventDefault();
@@ -46,6 +54,7 @@ export default function Dashboard({ user }) {
 						id={video.id}
 						title={video.title}
 						url={video.url}
+						deleteVideo={deleteVideo}
 					/>
 				))}
 			</div>
