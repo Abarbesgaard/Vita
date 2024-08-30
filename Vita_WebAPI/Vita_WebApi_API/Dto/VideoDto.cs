@@ -7,7 +7,8 @@ public record UpdateVideoDto(
     string? Description, 
     string? Url);
 public record CreateVideoDto(
-    Guid Id, 
+    string CreatedBy,
+    string UpdatedBy,
     DateTimeOffset CreatedAt, 
     DateTimeOffset UpdatedAt, 
     string? Title, 

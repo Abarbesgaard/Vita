@@ -32,7 +32,7 @@ public class Program
         builder.Services.AddSingleton(serviceProvider =>
         {
             var videoDatabaseSetting = serviceProvider.GetRequiredService<IOptions<VideoDatabaseSetting>>().Value;
-            var mongoClient = new MongoClient(videoDatabaseSetting.ConnectionString);
+            var mongoClient = new MongoClient(videoDatabaseSetting.ConnectionString); 
             return mongoClient.GetDatabase(videoDatabaseSetting.DatabaseName);
         });
 
@@ -98,6 +98,7 @@ public class Program
                 options.SwaggerEndpoint("/swagger/v1/swagger.json", "VITA API V1");
             });
         }
+        
 
         app.UseHttpsRedirection();
         app.UseStaticFiles();

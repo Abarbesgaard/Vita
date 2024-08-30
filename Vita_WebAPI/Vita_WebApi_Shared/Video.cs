@@ -5,6 +5,11 @@ namespace Vita_WebApi_Shared;
 
 public class Video : BaseEntity
 {
+    [JsonPropertyName("updatedBy")]
+    public string? UpdatedBy { get; set; }
+    
+    [JsonPropertyName("createdBy")]
+    public string? CreatedBy { get; set; }
     [JsonPropertyName("createdAt")]
     public DateTimeOffset CreatedAt { get; init; }
     [JsonPropertyName("updatedAt")]

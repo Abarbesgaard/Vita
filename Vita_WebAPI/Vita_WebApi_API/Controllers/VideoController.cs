@@ -209,9 +209,34 @@ public class VideoController(IVideoService service, ILogger<VideoController> log
         {
             return BadRequest("VideoDto is null.");
         } 
+        var a = Request.Headers.TryGetValue("Authorization", out var token);
+        if (a == false)
+        {
+            throw new Exception("unauth - no token");
+        }
+
+        var tokenString = token.ToString();
+        if (!tokenString.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+        {
+            return Unauthorized("Invalid token format");
+        }
+
+        tokenString = tokenString["Bearer ".Length..].Trim();
+
+        var decodedString = JwtBuilder
+            .Create()
+            .WithAlgorithm(new HMACSHA256Algorithm())
+            .WithSecret(Secret).MustVerifySignature().Decode<IDictionary<string, string>>(tokenString);
+        var isValid = decodedString.TryGetValue("sub", out var sub);
+
+        if (!isValid) return Unauthorized("Invalid token");
+
+        var client = new HttpClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString); 
         var video = new Video
         {
-            Id = Guid.NewGuid(),
+            CreatedBy = sub,
+            UpdatedBy = sub,
             CreatedAt = DateTimeOffset.Now,
             Title = videoDto.Title,
             Description = videoDto.Description,
