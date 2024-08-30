@@ -32,16 +32,19 @@ public class Auth0Service : IAuth0Service
       await response.Content.ReadAsStringAsync();
    }
 
-   private static string JsonStringBuilder()
+   public static string JsonStringBuilder()
    {
       var jsonStringBuilder = new StringBuilder();
+      const string email = "nybruger@example.com";
+      const string givenName = "sdfgsdfg";
+      const string familyName = "sdfgsdfg";
       jsonStringBuilder.Append("{");
-      jsonStringBuilder.Append("\"email\":\"nybruger@example.com\",");
+      jsonStringBuilder.Append($"\"email\":\"{email}\",");
       jsonStringBuilder.Append("\"user_metadata\":{},");
       jsonStringBuilder.Append("\"blocked\":false,");
       jsonStringBuilder.Append("\"app_metadata\":{},");
-      jsonStringBuilder.Append("\"given_name\":\"sdfgsdfg\",");
-      jsonStringBuilder.Append("\"family_name\":\"sdfgsdfg\",");
+      jsonStringBuilder.Append($"\"given_name\":\"{givenName}\",");
+      jsonStringBuilder.Append($"\"family_name\":\"{familyName}\",");
       jsonStringBuilder.Append("\"name\":\"sdfgdfgs\",");
       jsonStringBuilder.Append("\"nickname\":\"sdfgdfg\",");
       jsonStringBuilder.Append("\"picture\":\"https://t4.ftcdn.net/jpg/04/73/25/49/360_F_473254957_bxG9yf4ly7OBO5I0O5KABlN930GwaMQz.jpg\",");
