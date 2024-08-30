@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace Vita_WebAPI_Services;
 public interface IAuth0Service
 {
@@ -13,7 +15,7 @@ public class Auth0Service : IAuth0Service
       var request = new HttpRequestMessage(HttpMethod.Post, "https://dev-dj6iiunlxv3pukjx.us.auth0.com/api/v2/users");
       request.Headers.Add("Accept", "application/json");
       request.Headers.Add("Authorization", $"Bearer {BearerString}");
-      var content = new StringContent("{\"email\":\"nybruger@example.com\",\"user_metadata\":{},\"blocked\":false,\"app_metadata\":{},\"given_name\":\"sdfgsdfg\",\"family_name\":\"sdfgsdfg\",\"name\":\"sdfgdfgs\",\"nickname\":\"sdfgdfg\",\"picture\":\"https://t4.ftcdn.net/jpg/04/73/25/49/360_F_473254957_bxG9yf4ly7OBO5I0O5KABlN930GwaMQz.jpg\",\"connection\":\"Username-Password-Authentication\",\"password\":\"Test1234\",\"verify_email\":false,\"username\":\"dsgfdsfg\"}", null, "application/json");
+      var content = new StringContent(JsonStringBuilder(), null, "application/json");
       request.Content = content;
       var response = await client.SendAsync(request);
       response.EnsureSuccessStatusCode(); 
@@ -28,5 +30,27 @@ public class Auth0Service : IAuth0Service
       var response = await client.SendAsync(request);
       response.EnsureSuccessStatusCode();
       await response.Content.ReadAsStringAsync();
+   }
+
+   private static string JsonStringBuilder()
+   {
+      var jsonStringBuilder = new StringBuilder();
+      jsonStringBuilder.Append("{");
+      jsonStringBuilder.Append("\"email\":\"nybruger@example.com\",");
+      jsonStringBuilder.Append("\"user_metadata\":{},");
+      jsonStringBuilder.Append("\"blocked\":false,");
+      jsonStringBuilder.Append("\"app_metadata\":{},");
+      jsonStringBuilder.Append("\"given_name\":\"sdfgsdfg\",");
+      jsonStringBuilder.Append("\"family_name\":\"sdfgsdfg\",");
+      jsonStringBuilder.Append("\"name\":\"sdfgdfgs\",");
+      jsonStringBuilder.Append("\"nickname\":\"sdfgdfg\",");
+      jsonStringBuilder.Append("\"picture\":\"https://t4.ftcdn.net/jpg/04/73/25/49/360_F_473254957_bxG9yf4ly7OBO5I0O5KABlN930GwaMQz.jpg\",");
+      jsonStringBuilder.Append("\"connection\":\"Username-Password-Authentication\",");
+      jsonStringBuilder.Append("\"password\":\"Test1234\",");
+      jsonStringBuilder.Append("\"verify_email\":false,");
+      jsonStringBuilder.Append("\"username\":\"dsgfdsfg\"");
+      jsonStringBuilder.Append("}");
+      return jsonStringBuilder.ToString();
+
    }
 }
