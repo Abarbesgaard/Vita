@@ -8,10 +8,7 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
+    runs-on: ubuntu-latest
 
     services:
       mongo:
@@ -41,7 +38,6 @@ jobs:
 
       # Optional: Save and upload test results (for better visibility)
       - name: Upload Test Results
-        if: ${{ runner.os == 'windows-latest' }}
         uses: actions/upload-artifact@v3
         with:
           name: test-results
