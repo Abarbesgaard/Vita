@@ -1,63 +1,29 @@
-name: CI Pipeline
+name: dotnet package
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+on: [push]
 
 jobs:
-  test:
+  build:
+
     runs-on: ubuntu-latest
-    services:
-      mongodb:
-        image: mongo:7.0
-        ports:
-          - 27017:27017
-        options: --health-cmd "curl --silent --fail http://localhost:27017/" --health-interval 10s --health-timeout 5s --health-retries 3
+    strategy:
+      matrix:
+        dotnet-version: [ '3.1.x', '6.0.x', '8.0.x']
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
-
-      - name: Install Python dependencies
-        run: |
-          pip install -r requirements.txt
-
-      - name: Run database migrations
-        run: |
-          # Replace with the command to run your migrations
-          python manage.py migrate
-
-      - name: Setup .NET SDK
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 8.0.x
-
-      - name: Restore .NET dependencies
-        run: dotnet restore
-
-      - name: Build .NET project
-        run: dotnet build --no-restore --configuration Release
-
-      - name: Run .NET tests
-        env:
-          MONGODB_CONNECTION_STRING: mongodb://localhost:27017
-        run: dotnet test --no-build --verbosity normal --results-directory TestResults
-
-      - name: Check MongoDB logs
-        run: |
-          docker logs mongodb
-
-      - name: Upload Test Results
-        uses: actions/upload-artifact@v3
-        with:
-          name: test-results
-          path: TestResults/**/*.xml
+        - uses: actions/checkout@v4
+        - name: Setup dotnet
+          uses: actions/setup-dotnet@v3
+          with:
+            dotnet-version: ${{ matrix.dotnet-version }}
+        - name: Install dependencies
+          run: dotnet restore
+        - name: Test with dotnet
+          run: dotnet test --logger trx --results-directory "TestResults-${{ matrix.dotnet-version }}"
+        - name: Upload dotnet test results
+          uses: actions/upload-artifact@v4
+          with:
+            name: dotnet-results-${{ matrix.dotnet-version }}
+            path: TestResults-${{ matrix.dotnet-version }}
+          # Use always() to always run this step to publish test results when there are test failures
+          if: ${{ always() }}
