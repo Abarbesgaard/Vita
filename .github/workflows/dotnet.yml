@@ -20,7 +20,7 @@ jobs:
         dotnet-version: '8.0.x'  # Angiv din .NET-version her
 
     - name: Restore dependencies
-      run: dotnet restore ./Vita/Vita_WebApi.sln
+      run: dotnet restore ./Vita_WebAPI/Vita_WebAPI.generated.sln
 
     - name: Build
       run: dotnet build ./Vita_WebAPI/Vita_WebAPI.generated.sln --configuration Release --no-restore
