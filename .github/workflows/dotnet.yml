@@ -1,11 +1,11 @@
-name: .NET Build :wall
+name: .NET Build
 
 on:
   workflow_dispatch:
   push:
     branches:
       - main
-  
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -23,7 +23,7 @@ jobs:
       run: dotnet restore ./Vita/Vita_WebApi.sln
 
     - name: Build
-      run: dotnet build ./Vita/Vita_WebApi.sln --configuration Release --no-restore
+      run: dotnet build ./Vita_WebAPI/Vita_WebAPI.generated.sln --configuration Release --no-restore
 
     - name: Publish
-    - run: dotnet publish ./Vita/Vita_WebApi.sln --configuration Release --no-restore
+      run: dotnet publish ./Vita_WebAPI/Vita_WebAPI.generated.sln --configuration Release --no-restore
