@@ -18,7 +18,6 @@ namespace Vita_WebApi_API.Controllers;
 /// <param name="service">The service that provides video-related operations.</param>
 /// <param name="logger">The logger used to log information and errors.</param>
 [ApiController]
-[Authorize]
 [Route("videos")]
 public class VideoController(IVideoService service, ILogger<VideoController> logger) : ControllerBase
 {
@@ -58,64 +57,65 @@ public class VideoController(IVideoService service, ILogger<VideoController> log
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAllVideos()
     {
-        if (!Request.Headers.TryGetValue("Authorization", out var token))
+        var a = Request.Headers.TryGetValue("Authorization", out var token);
+        if (a == false)
         {
-            return Unauthorized("No token provided");
+            throw new Exception("unauth - no token");
         }
 
         var tokenString = token.ToString();
-            if (!tokenString.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
-            {
-                return Unauthorized("Invalid token format");
-            } 
-            
-            tokenString = tokenString["Bearer ".Length..].Trim(); 
-            
-            var decodedString = JwtBuilder
-                .Create()
-                .WithAlgorithm(new HMACSHA256Algorithm())
-                .WithSecret(Secret).MustVerifySignature().Decode<IDictionary<string, string>>(tokenString);
-            var isValid = decodedString.TryGetValue("sub", out var sub);
-            
-            if (!isValid) return Unauthorized("Invalid token");
-            
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
-            try
-            {
-                var response = await client.GetAsync($"https://localhost:5226/auth/getuser/{sub}");
+        if (!tokenString.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+        {
+            return Unauthorized("Invalid token format");
+        }
 
-                if (response.StatusCode == HttpStatusCode.Unauthorized)
-                {
-                    return Unauthorized();
-                }
-                
-                if (response.IsSuccessStatusCode)
-                {
-                   return StatusCode((int)response.StatusCode, "User is authorized"); 
-                }
+        tokenString = tokenString["Bearer ".Length..].Trim();
 
-                var responseContent = await response.Content.ReadAsStringAsync();
-                
-                Console.WriteLine(responseContent);
-            }
-            catch (HttpRequestException ex)
+        var decodedString = JwtBuilder
+            .Create()
+            .WithAlgorithm(new HMACSHA256Algorithm())
+            .WithSecret(Secret).MustVerifySignature().Decode<IDictionary<string, string>>(tokenString);
+        var isValid = decodedString.TryGetValue("sub", out var sub);
+
+        if (!isValid) return Unauthorized("Invalid token");
+
+        var client = new HttpClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
+        try
+        {
+            var response = await client.GetAsync($"https://localhost:5226/auth/getuser/{sub}");
+
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
-                logger.LogError($"Request error: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return Unauthorized();
             }
 
-            try
+            if (response.IsSuccessStatusCode)
             {
-                logger.LogInformation("Getting all videos");
-                var videos = await service.GetAllVideos();
-                return Ok(videos);
+                return StatusCode((int)response.StatusCode, "User is authorized");
             }
-            catch (Exception e)
-            {
-                logger.LogError($"An error occurred: {e.Message}");
-                return StatusCode(500, "Internal server error");
-            }
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            Console.WriteLine(responseContent);
+        }
+        catch (HttpRequestException ex)
+        {
+            //logger.LogError($"Request error: {ex.Message}");
+            //return StatusCode(500, $"{ex.Message}");
+        }
+
+        try
+        {
+            logger.LogInformation("Getting all videos");
+            var videos = await service.GetAllVideos();
+            return Ok(videos);
+        }
+        catch (Exception e)
+        {
+            //logger.LogError($"An error occurred: {e.Message}");
+            // return StatusCode(500, "Internal server error");
+        }
 
         return null!;
     }   
@@ -209,9 +209,34 @@ public class VideoController(IVideoService service, ILogger<VideoController> log
         {
             return BadRequest("VideoDto is null.");
         } 
+        var a = Request.Headers.TryGetValue("Authorization", out var token);
+        if (a == false)
+        {
+            throw new Exception("unauth - no token");
+        }
+
+        var tokenString = token.ToString();
+        if (!tokenString.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+        {
+            return Unauthorized("Invalid token format");
+        }
+
+        tokenString = tokenString["Bearer ".Length..].Trim();
+
+        var decodedString = JwtBuilder
+            .Create()
+            .WithAlgorithm(new HMACSHA256Algorithm())
+            .WithSecret(Secret).MustVerifySignature().Decode<IDictionary<string, string>>(tokenString);
+        var isValid = decodedString.TryGetValue("sub", out var sub);
+
+        if (!isValid) return Unauthorized("Invalid token");
+
+        var client = new HttpClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString); 
         var video = new Video
         {
-            Id = Guid.NewGuid(),
+            CreatedBy = sub,
+            UpdatedBy = sub,
             CreatedAt = DateTimeOffset.Now,
             Title = videoDto.Title,
             Description = videoDto.Description,

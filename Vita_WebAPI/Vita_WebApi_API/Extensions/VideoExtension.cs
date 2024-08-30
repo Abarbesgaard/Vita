@@ -9,12 +9,13 @@ public static class VideoExtension
    public static CreateVideoDto AsCreateVideoDto(this Video? video)
    {
       return new CreateVideoDto(
-         video!.Id,
+         video.CreatedBy,
+         video.UpdatedBy,
          video.CreatedAt, 
          video.UpdatedAt, 
          video.Title, 
-         video.Title, 
-         video.Description
+         video.Description, 
+         video.Url
          );
    }
    public static GetVideoDto AsGetVideoDto(this Video? video)
