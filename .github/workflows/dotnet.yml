@@ -16,7 +16,7 @@ jobs:
         image: mongo:7.0
         ports:
           - 27017:27017
-        options: --mount type=bind,source=/path/to/data,target=/data/db
+        options: --health-cmd "curl --silent --fail http://localhost:27017/" --health-interval 10s --health-timeout 5s --health-retries 3
 
     steps:
       - name: Checkout code
