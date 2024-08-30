@@ -9,7 +9,7 @@ namespace Vita_WebAPI_Repository;
 public class VideoRepository : IVideoRepository
 {
     private const string CollectionName = "Videos";
-    private readonly IMongoCollection<Video> _dbCollection;
+    public IMongoCollection<Video> _dbCollection;
     private readonly FilterDefinitionBuilder<Video> _filterBuilder = Builders<Video>.Filter;
     private readonly ILogger<VideoRepository> _logger;
     
