@@ -1,8 +1,5 @@
-using System.Reflection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
@@ -112,6 +109,12 @@ public class Program
 
 public class MongoDbSettings
 {
-    public string ConnectionString { get; set; }
-    public string DatabaseName { get; set; }
+    public string ConnectionString { get; set; } = null!;
+    public string DatabaseName { get; set; } = null!;
+}
+
+public class MongoDbRelease
+{
+    public string ConnectionString { get; set; } = null!;
+    public string DatabaseName { get; set; } = null!;
 }
