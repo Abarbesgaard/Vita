@@ -1,16 +1,8 @@
-﻿using ClassLibrary1Vita_WebAPI_Repository;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using Vita_WebAPI_Repository;
 using Vita_WebApi_Shared;
-using Serilog;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
-
 namespace Vita_WebAPI_Services;
-public interface IVideoService
-{
-    Task CreateVideo(Video video);
-    Task<IEnumerable<Video>?> GetAllVideos();
-    Task<Video?> GetVideoById(int id);
-}
+
 public class VideoService: IVideoService 
 {
     private readonly IVideoRepository _repository;
@@ -32,7 +24,7 @@ public class VideoService: IVideoService
         try
         {
          _logger.LogInformation("Creating a new video");   
-        await  _repository.AddAsync(video);
+        await  _repository.CreateAsync(video);
         _logger.LogInformation("Video created");
         }
         catch (Exception e)
@@ -65,7 +57,7 @@ public class VideoService: IVideoService
         }
     }
     
-    public async Task<Video?> GetVideoById(int id)
+    public async Task<Video?> GetVideoById(Guid id)
     {
         try
         {
@@ -77,6 +69,16 @@ public class VideoService: IVideoService
             _logger.LogError($"An error occurred: {e.Message}");
             throw;
         }
+    }
+
+    public async Task UpdateVideo(Video? video)
+    {
+        await _repository.UpdateAsync(video);
+    }
+
+    public Task DeleteVideo(Guid id)
+    {
+        return _repository.DeleteAsync(id);
     }
 }
 

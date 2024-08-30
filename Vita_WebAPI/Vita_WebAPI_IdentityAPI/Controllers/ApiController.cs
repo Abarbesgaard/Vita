@@ -1,29 +1,26 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Vita_WebAPI_Services;
 
 
 namespace Vita_WebAPI_IdentityAPI.Controllers;
 
 [Route("api")]
-public class ApiController : Controller
+[ApiController]
+public class ApiController : ControllerBase
 {
-    [HttpGet("private")]
-    [Authorize]
-    public IActionResult Private()
+    private readonly Auth0Service _auth0Service = new();
+
+    [HttpPost("add-user")]
+    [Authorize("read:messages")]
+    public async Task AddUser()
     {
-        return Ok(new
-        {
-            Message = "Hello from a private endpoint!"
-        });
+      await _auth0Service.AddUser(); 
     }
 
-    [HttpGet("private-scoped")]
-    [Authorize("read:messages")]
-    public IActionResult Scoped()
+    [HttpGet("id")]
+    public async Task GetUser(Guid id)
     {
-        return Ok(new
-        {
-            Message = "Hello from a private-scoped endpoint!"
-        });
+        await _auth0Service.GetUser(id);
     }
 }

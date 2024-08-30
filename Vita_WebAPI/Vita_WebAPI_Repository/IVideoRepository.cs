@@ -9,6 +9,6 @@ public interface IVideoRepository
     Task<IReadOnlyCollection<Video>> GetAllAsync();
     Task CreateAsync(Video entity);
     Task UpdateAsync(Video entity);
-    
+
 
 }

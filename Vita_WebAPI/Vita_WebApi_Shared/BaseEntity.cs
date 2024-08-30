@@ -1,9 +1,10 @@
-﻿namespace Vita_WebApi_Shared;
+﻿using System.Text.Json.Serialization;
+
+namespace Vita_WebApi_Shared;
 
 public abstract class BaseEntity
 { 
-    public int Id { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
-    public bool IsDeleted { get; set; }
+    [JsonPropertyName("id")]
+    public Guid Id { get; set; }
+
 }
