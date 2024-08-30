@@ -12,15 +12,18 @@ jobs:
 
     services:
       mongo:
-        image: mongo:6.0
+        image: mongo:latest
         ports:
           - 27017:27017
         options: --health-cmd "nc -z localhost 27017" --health-interval 10s --health-timeout 5s --health-retries 5
 
-    steps:
-      - uses: actions/checkout@v4
 
-      - name: Setup .NET
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
@@ -29,17 +32,16 @@ jobs:
         run: dotnet restore
 
       - name: Build
-        run: dotnet build --no-restore
+        run: dotnet build --no-restore --configuration Release
 
-      - name: Test
+      - name: Run tests
         env:
           MONGODB_CONNECTION_STRING: mongodb://localhost:27017
-        run: dotnet test --no-build --verbosity normal
+        run: dotnet test --no-build --verbosity normal --results-directory TestResults
 
-      # Optional: Save and upload test results (for better visibility)
       - name: Upload Test Results
         uses: actions/upload-artifact@v3
         with:
           name: test-results
-          path: |
-            **/TestResults/*.xml
+          path: TestResults/**/*.xml
+    
