@@ -1,34 +1,31 @@
-name: build
+name: .NET Build
 
 on:
   push:
+    branches:
+      - main
   pull_request:
-    branches: [ main ]
-    paths:
-    - '**.cs'
-    - '**.csproj'
-
-env:
-  DOTNET_VERSION: '8.0.0' # The .NET SDK version to use
+    branches:
+      - main
 
 jobs:
   build:
-
-    name: build-${{matrix.os}}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macOS-latest]
-
+    runs-on: ubuntu-latest
+    
     steps:
-    - uses: actions/checkout@v3
-    - name: Setup .NET Core
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Set up .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
-
-    - name: Install dependencies
-      run: dotnet restore
+        dotnet-version: '7.x'  # Angiv din .NET-version her
       
+    - name: Restore dependencies
+      run: dotnet restore
+
     - name: Build
-      run: dotnet build --configuration Release --no-restore
+      run: dotnet build --configuration Release
+
+    - name: Run tests
+      run: dotnet test --configuration Release
