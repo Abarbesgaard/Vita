@@ -9,6 +9,7 @@ namespace Vita_Test;
 [TestClass]
 public class AuthServiceTest
 {
+    
     [TestMethod]
     public void JsonStringBuilder_ShouldReturnString()
     {
