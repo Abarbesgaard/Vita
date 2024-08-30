@@ -1,10 +1,13 @@
+using System.Net;
 using FluentAssertions;
+using Moq;
+using Moq.Protected;
 using Vita_WebAPI_Services;
 
 namespace Vita_Test;
 
 [TestClass]
-public class VideoServiceTest
+public class AuthServiceTest
 {
     [TestMethod]
     public void JsonStringBuilder_ShouldReturnString()
