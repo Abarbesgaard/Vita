@@ -1,10 +1,9 @@
 import { useState } from "react";
-import LogoutButton from "../components/LogoutButton";
-import UserCard from "../components/UserCard";
 import VideoCard from "../components/VideoCard";
 import VideoForm from "../components/VideoForm";
+import Layout from "../components/Layout";
 
-export default function Dashboard({ user }) {
+export default function Dashboard() {
 	const [title, setTitle] = useState("");
 	const [linkUrl, setLinkUrl] = useState("");
 	const [videos, setVideos] = useState([
@@ -35,11 +34,7 @@ export default function Dashboard({ user }) {
 	};
 
 	return (
-		<div className="h-dvh flex flex-col lg:flex-row bg-gray-300">
-			<div className="flex flex-col items-center justify-center px-10 mb-2 lg:mb-0">
-				<UserCard user={user} />
-				<LogoutButton />
-			</div>
+		<Layout>
 			<div className="bg-slate-400 w-full h-full flex flex-col items-center overflow-auto">
 				<VideoForm
 					handleVideoFormSubmit={handleVideoFormSubmit}
@@ -58,6 +53,6 @@ export default function Dashboard({ user }) {
 					/>
 				))}
 			</div>
-		</div>
+		</Layout>
 	);
 }

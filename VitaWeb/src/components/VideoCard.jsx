@@ -17,7 +17,7 @@ export default function VideoCard({ id, title, url, deleteVideo }) {
 					</button>
 				</div>
 				<div className="md:w-[640px] md:h-[360px] relative">
-					<ReactPlayer url={url} controls="true" width="100%" height="100%" />
+					<ReactPlayer url={url} controls={true} width="100%" height="100%" />
 				</div>
 			</div>
 		</div>
