@@ -3,12 +3,24 @@ using Vita_WebAPI_Repository;
 using Vita_WebApi_Shared;
 namespace Vita_WebAPI_Services;
 
+/// <summary>
+/// Service for managing video operations
+/// </summary>
 public class VideoService: IVideoService 
 {
+    /// <summary>
+    /// The video repository
+    /// </summary>
     private readonly IVideoRepository _repository;
-
+    /// <summary>
+    /// The logger
+    /// </summary>
     private readonly ILogger<VideoService> _logger;
-    // Constructor
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="repository"> The video repository</param>
+    /// <param name="logger"> The logger</param>
     public VideoService(IVideoRepository repository, ILogger<VideoService> logger)
     {
         _repository = repository;
