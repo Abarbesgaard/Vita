@@ -20,7 +20,7 @@ jobs:
         dotnet-version: '8.0.x'  # Angiv din .NET-version her
     
     - name: Install ctrf
-      run: npm ci github-actions-ctrf@0.0.29
+      run: npm install github-actions-ctrf@0.0.29
         
     - name: mongo-action
       uses: DigiPie/mongo-action@v2.0.1
