@@ -35,10 +35,11 @@ jobs:
       run: dotnet build ./Vita_WebAPI/Vita_WebAPI.generated.sln --configuration Release --no-restore
 
     - name: Test
-      run: dotnet test ./Vita_WebAPI/Vita_Test/Vita_Test.csproj
+      run: dotnet test ./Vita_WebAPI/Vita_Test/Vita_Test.csproj --logger trx --collect "Code coverage" --collect "XPlat Code coverage"
     
-    - name: Publish Test Summary Results
-      run: npx github-actions-ctrf ./Vita_WebAPI/Vita_Test/TestResults/ctrf/ctrf-report.json
+    #- name: Publish Test Summary Results
+    #  run: npx github-actions-ctrf ./Vita_WebAPI/Vita_Test/TestResults/ctrf/ctrf-report.json
+    
     
     - name: Publish
       run: dotnet publish ./Vita_WebAPI/Vita_WebAPI.generated.sln --configuration Release --no-restore
