@@ -6,6 +6,11 @@ on:
     paths:
       - 'Vita_WebAPI/**'
       - '.github/workflows/**'
+
+permissions:
+  checks: write
+  contents: read
+  pull-requests: write
       
 jobs:
   build:
