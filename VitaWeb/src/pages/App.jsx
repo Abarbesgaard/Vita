@@ -1,28 +1,28 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import LoginButton from "../components/LoginButton";
+import { Route, Routes } from "react-router-dom";
 import Dashboard from "./Dashboard";
+import Home from "./Home";
+import AuthenticationGuard from "../components/AuthenticationGuard";
 
 function App() {
-	const { user, isAuthenticated, isLoading, error } = useAuth0();
-
-	if (error) {
-		return <p>{error}</p>;
-	}
+	const { isLoading } = useAuth0();
 
 	if (isLoading) {
 		return (
-			<div className="mx-auto h-dvh text-center">
+			<div className="w-full h-dvh text-center flex items-center justify-center">
 				<p>Loading...</p>
 			</div>
 		);
 	}
 
-	return isAuthenticated ? (
-		<Dashboard user={user} />
-	) : (
-		<div className="h-dvh flex justify-center items-center">
-			<LoginButton />
-		</div>
+	return (
+		<Routes>
+			<Route path="/" element={<Home />} />
+			<Route
+				path="/video"
+				element={<AuthenticationGuard component={Dashboard} />}
+			/>
+		</Routes>
 	);
 }
 

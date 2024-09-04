@@ -1,10 +1,9 @@
 import { useState } from "react";
-import LogoutButton from "../components/LogoutButton";
-import UserCard from "../components/UserCard";
 import VideoCard from "../components/VideoCard";
 import VideoForm from "../components/VideoForm";
+import Layout from "../components/Layout";
 
-export default function Dashboard({ user }) {
+export default function Dashboard() {
 	const [title, setTitle] = useState("");
 	const [linkUrl, setLinkUrl] = useState("");
 	const [videos, setVideos] = useState([
@@ -19,6 +18,14 @@ export default function Dashboard({ user }) {
 			url: "https://www.youtube.com/embed/zr1h2Z11oTI",
 		},
 	]);
+	const deleteVideo = (id) => {
+		const isConfirmed = confirm("Er du sikker?");
+
+		if (isConfirmed) {
+			const removed = videos.filter((video) => video.id !== id);
+			setVideos(removed);
+		}
+	};
 
 	const handleVideoFormSubmit = (e) => {
 		e.preventDefault();
@@ -27,11 +34,7 @@ export default function Dashboard({ user }) {
 	};
 
 	return (
-		<div className="h-dvh flex flex-col lg:flex-row bg-gray-300">
-			<div className="flex flex-col items-center justify-center px-10 mb-10 lg:mb-0">
-				<UserCard user={user} />
-				<LogoutButton />
-			</div>
+		<Layout>
 			<div className="bg-slate-400 w-full h-full flex flex-col items-center overflow-auto">
 				<VideoForm
 					handleVideoFormSubmit={handleVideoFormSubmit}
@@ -46,9 +49,10 @@ export default function Dashboard({ user }) {
 						id={video.id}
 						title={video.title}
 						url={video.url}
+						deleteVideo={deleteVideo}
 					/>
 				))}
 			</div>
-		</div>
+		</Layout>
 	);
 }
