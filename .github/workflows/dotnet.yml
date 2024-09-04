@@ -50,7 +50,7 @@ jobs:
       run: dotnet tool run DotnetCtrfJsonReporter -p "/home/runner/work/Vita/Vita/Vita_WebAPI/Vita_Test/TestResults/testResults.trx"
     
     - name: Publish Test Summary Results
-      run: npx github-actions-ctrf /home/runner/work/Vita/Vita/Vita_WebAPI/Vita_Test/TestResults/ctrf/ctrf-report.json
+      run: npx github-actions-ctrf "/home/runner/work/Vita/Vita/Vita_WebAPI/Vita_Test/TestResults/ctrf/ctrf-report.json"
     
     
     - name: Publish
