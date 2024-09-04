@@ -3,10 +3,10 @@ name: .Net
 on:
   workflow_dispatch:
   pull_request:
-  push:
-    branches:
-      - main
-
+    paths:
+      - 'Vita_WebAPI/**'
+      - '.github/workflows/**'
+      
 jobs:
   build:
     runs-on: ubuntu-latest
