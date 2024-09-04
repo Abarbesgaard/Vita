@@ -18,12 +18,25 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '8.0.x'  # Angiv din .NET-version her
+        
+    #- name: mongo-action
+    #  uses: DigiPie/mongo-action@v2.0.1
+    #  with:
+    #    image_version: mongo:latest
+    #    port: 27017
+          
 
     - name: Restore dependencies
       run: dotnet restore ./Vita_WebAPI/Vita_WebAPI.generated.sln
+# NY
+    - name: Restore test dependencies
+      run: dotnet restore ./Vita_WebAPI/Vita_Test/Vita_Test.csproj 
 
     - name: Build
       run: dotnet build ./Vita_WebAPI/Vita_WebAPI.generated.sln --configuration Release --no-restore
+# NY
+    - name: Test
+      run: dotnet test ./Vita_WebAPI/Vita_Test/Vita_Test.csproj
 
     - name: Publish
       run: dotnet publish ./Vita_WebAPI/Vita_WebAPI.generated.sln --configuration Release --no-restore
