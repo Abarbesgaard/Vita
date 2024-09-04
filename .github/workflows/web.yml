@@ -4,6 +4,7 @@
 name: web actions
 
 on:
+  workflow_dispatch:
   pull_request:
     paths:
       - 'VitaWeb/**'
@@ -25,3 +26,4 @@ jobs:
     - uses: actions/checkout@v4
     - run: npm ci 
     - run: npm run build
+    - run: firebase deploy
