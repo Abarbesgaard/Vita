@@ -27,15 +27,18 @@ jobs:
 
     - name: Restore dependencies
       run: dotnet restore ./Vita_WebAPI/Vita_WebAPI.generated.sln
-# NY
+
     - name: Restore test dependencies
       run: dotnet restore ./Vita_WebAPI/Vita_Test/Vita_Test.csproj 
 
     - name: Build
       run: dotnet build ./Vita_WebAPI/Vita_WebAPI.generated.sln --configuration Release --no-restore
-# NY
+
     - name: Test
       run: dotnet test ./Vita_WebAPI/Vita_Test/Vita_Test.csproj
-
+    
+    - name: Publish Test Summary Results
+      run: npx github-actions-ctrf ./Vita_WebAPI/Vita_Test/TestResults/ctrf/ctrf-report.json
+    
     - name: Publish
       run: dotnet publish ./Vita_WebAPI/Vita_WebAPI.generated.sln --configuration Release --no-restore
