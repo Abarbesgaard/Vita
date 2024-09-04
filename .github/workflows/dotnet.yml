@@ -1,4 +1,4 @@
-name: .NET Build
+name: .Net
 
 on:
   workflow_dispatch:
@@ -8,7 +8,26 @@ on:
       - main
 
 jobs:
-  publish:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps: 
+    - name: Checkout code   
+      uses: actions/checkout@v3
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'  # Angiv din .NET-version her
+    
+    - name: Restore dependencies
+      run: dotnet restore ./Vita_WebAPI/Vita_WebAPI.generated.sln
+
+    - name: Build
+      run: dotnet build ./Vita_WebAPI/Vita_WebAPI.generated.sln --configuration Release --no-restore
+    
+      
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,31 +42,23 @@ jobs:
     - name: Install ctrf
       run: npm install github-actions-ctrf@0.0.29
         
-    - name: mongo-action
+    - name: Create MongoDB
       uses: DigiPie/mongo-action@v2.0.1
       with:
         port: 27017
-
-    - name: Restore dependencies
-      run: dotnet restore ./Vita_WebAPI/Vita_WebAPI.generated.sln
-
-    - name: Build
-      run: dotnet build ./Vita_WebAPI/Vita_WebAPI.generated.sln --configuration Release --no-restore
-    
-    - name: Manifesto
+   
+    - name: Dotnet Manifesto
       run: dotnet new tool-manifest
       
-    - name: DotnetCTRFreporter
+    - name: Install DotnetCTRFreporter
       run: dotnet tool install DotnetCtrfJsonReporter --local
       
     - name: Test
       run: dotnet test ./Vita_WebAPI/Vita_Test/Vita_Test.csproj --logger "trx;logfilename=testResults.trx"
     
-    - name: convert
+    - name: convert Report
       run: dotnet tool run DotnetCtrfJsonReporter -p "/home/runner/work/Vita/Vita/Vita_WebAPI/Vita_Test/TestResults/testResults.trx"
     
     - name: Publish Test Summary Results
       run: npx github-actions-ctrf ./ctrf/ctrf-report.json
     
-    - name: Publish
-      run: dotnet publish ./Vita_WebAPI/Vita_WebAPI.generated.sln --configuration Release --no-restore
