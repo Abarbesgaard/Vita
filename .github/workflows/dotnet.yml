@@ -48,6 +48,12 @@ jobs:
     
     - name: convert
       run: dotnet tool run DotnetCtrfJsonReporter -p "/home/runner/work/Vita/Vita/Vita_WebAPI/Vita_Test/TestResults/testResults.trx"
+
+    - name: Hvad er hvor, TestResults?
+      run: ls /home/runner/work/Vita/Vita/Vita_WebAPI/Vita_Test/TestResults/
+
+    - name: Er der en CTRL
+      run: find -name ctrf
     
     - name: Publish Test Summary Results
       run: npx github-actions-ctrf "/home/runner/work/Vita/Vita/Vita_WebAPI/Vita_Test/TestResults/ctrf/ctrf-report.json"
