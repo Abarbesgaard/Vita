@@ -57,11 +57,6 @@ public class VideoService: IVideoService
         {
             _logger.LogInformation("Getting all videos");
             var videos = await _repository.GetAllAsync();
-            if (videos == null)
-            {
-                _logger.LogWarning("No videos found");
-                return null;
-            }
             return videos;
         }
         catch (Exception e)
