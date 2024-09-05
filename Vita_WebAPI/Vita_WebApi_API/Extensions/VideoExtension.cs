@@ -1,4 +1,3 @@
-using MongoDB.Bson;
 using Vita_WebApi_API.Dto;
 using Vita_WebApi_Shared;
 
@@ -9,9 +8,9 @@ public static class VideoExtension
    public static CreateVideoDto AsCreateVideoDto(this Video? video)
    {
       return new CreateVideoDto(
-         video.CreatedBy,
-         video.UpdatedBy,
-         video.CreatedAt, 
+         video?.CreatedBy,
+         video?.UpdatedBy,
+         video!.CreatedAt, 
          video.UpdatedAt, 
          video.Title, 
          video.Description, 
