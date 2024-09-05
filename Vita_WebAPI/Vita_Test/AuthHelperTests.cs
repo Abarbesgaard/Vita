@@ -12,6 +12,7 @@ using Vita_WebAPI_IdentityAPI.Helpers;
 using Vita_WebAPI_Services;
 
 namespace Vita_Test;
+
 [TestClass]
 public class HasScopeHandlerTests
 {

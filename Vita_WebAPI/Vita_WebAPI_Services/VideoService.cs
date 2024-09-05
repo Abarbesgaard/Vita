@@ -11,7 +11,7 @@ public class VideoService: IVideoService
     /// <summary>
     /// The video repository
     /// </summary>
-    private readonly IVideoRepository _repository;
+    private readonly IVideoRepository? _repository;
     /// <summary>
     /// The logger
     /// </summary>
@@ -21,7 +21,7 @@ public class VideoService: IVideoService
     /// </summary>
     /// <param name="repository"> The video repository</param>
     /// <param name="logger"> The logger</param>
-    public VideoService(IVideoRepository repository, ILogger<VideoService> logger)
+    public VideoService(IVideoRepository? repository, ILogger<VideoService> logger)
     {
         _repository = repository;
         _logger = logger;

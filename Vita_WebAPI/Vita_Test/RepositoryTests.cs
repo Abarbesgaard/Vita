@@ -2,9 +2,6 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
-using Serilog;
-using Serilog.Events;
-using Serilog.Sinks.InMemory;
 using Vita_WebAPI_Data;
 using Vita_WebAPI_Repository;
 using Vita_WebApi_Shared;
@@ -44,15 +41,15 @@ public class VideoRepositoryIntegrationTests
     public void Cleanup()
     {
         // Clean up test data
-        var videoCollection = _testDatabase.GetCollection<Video>("Videos");
-        videoCollection.DeleteMany(FilterDefinition<Video>.Empty);
+        var videoCollection = _testDatabase?.GetCollection<Video>("Videos");
+        videoCollection?.DeleteMany(FilterDefinition<Video>.Empty);
     }
     private void InitializeTestData()
     {
-        var videoCollection = _testDatabase.GetCollection<Video>("Videos");
+        var videoCollection = _testDatabase?.GetCollection<Video>("Videos");
 
         // Clear existing data
-        videoCollection.DeleteMany(FilterDefinition<Video>.Empty);
+        videoCollection?.DeleteMany(FilterDefinition<Video>.Empty);
 
         // Insert sample data
         var testVideo = new Video
@@ -62,14 +59,14 @@ public class VideoRepositoryIntegrationTests
             Url = "https://example.com"
         };
 
-        videoCollection.InsertOne(testVideo);
+        videoCollection?.InsertOne(testVideo);
     }
 
     [TestMethod]
     public async Task GetByIdAsync_ShouldReturnVideo_WhenVideoExists()
     {
         // Arrange
-        var videoCollection = _testDatabase.GetCollection<Video>("Videos");
+        var videoCollection = _testDatabase?.GetCollection<Video>("Videos");
         var testVideo = videoCollection.Find(FilterDefinition<Video>.Empty).FirstOrDefault();
         
         if (testVideo == null)
@@ -78,7 +75,7 @@ public class VideoRepositoryIntegrationTests
         }
         
         // Act
-        var result = await _videoRepository.GetByIdAsync(testVideo.Id);
+        var result = await _videoRepository?.GetByIdAsync(testVideo.Id)!;
 
         // Assert
         result.Should().NotBeNull();
@@ -91,7 +88,7 @@ public class VideoRepositoryIntegrationTests
         var emptyId = Guid.Empty;
 
         // Act & Assert
-        var exception = await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => _videoRepository.GetByIdAsync(emptyId));
+        var exception = await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => _videoRepository!.GetByIdAsync(emptyId));
 
         // Check that the exception message is as expected
         Assert.AreEqual("Id is empty - cannot get entity (Parameter 'id')", exception.Message);
@@ -103,7 +100,7 @@ public class VideoRepositoryIntegrationTests
         var nonExistentVideoId = Guid.NewGuid();
 
         // Act
-        var result = await _videoRepository.GetByIdAsync(nonExistentVideoId);
+        var result = await _videoRepository?.GetByIdAsync(nonExistentVideoId)!;
 
         // Assert
         Assert.IsNull(result); // Ensure the result is null
@@ -114,7 +111,7 @@ public class VideoRepositoryIntegrationTests
     public async Task GetAllAsync_ShouldReturnVideos_WhenVideosExist()
     {
         // Act
-        var result = await _videoRepository.GetAllAsync();
+        var result = await _videoRepository?.GetAllAsync()!;
 
         // Assert
         Assert.IsNotNull(result);
@@ -128,7 +125,7 @@ public class VideoRepositoryIntegrationTests
         Cleanup();
 
         // Act
-        var result = await _videoRepository.GetAllAsync();
+        var result = await _videoRepository?.GetAllAsync()!;
 
         // Assert
         Assert.IsNotNull(result);
