@@ -5,15 +5,33 @@ using Vita_WebAPI_Data;
 using Vita_WebApi_Shared;
 
 namespace Vita_WebAPI_Repository;
-
+/// <summary>
+/// Repository for managing video operations
+/// </summary>
 public class VideoRepository : IVideoRepository
 {
+    /// <summary>
+    /// The name of the collection
+    /// </summary>
     private const string CollectionName = "Videos";
+    /// <summary>
+    /// The database collection
+    /// </summary>
     private readonly IMongoCollection<Video> _dbCollection;
+    /// <summary>
+    /// The filter builder
+    /// </summary>
     private readonly FilterDefinitionBuilder<Video> _filterBuilder = Builders<Video>.Filter;
+    /// <summary>
+    /// The logger
+    /// </summary>
     private readonly ILogger<VideoRepository> _logger;
     
-
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="logger"> The logger</param>
+    /// <param name="videoDatabaseSetting"> The video database settings</param>
     public VideoRepository(ILogger<VideoRepository> logger, IOptions<VideoDatabaseSetting> videoDatabaseSetting)
     {
         _logger = logger;
@@ -21,6 +39,12 @@ public class VideoRepository : IVideoRepository
         var mongoDatabase = mongoClient.GetDatabase(videoDatabaseSetting.Value.DatabaseName);
         _dbCollection = mongoDatabase.GetCollection<Video>(CollectionName);
     } 
+    /// <summary>
+    /// Retrieves a video by its unique identifier
+    /// </summary>
+    /// <param name="id"> The unique identifier of the video to retrieve</param>
+    /// <returns> A task representing the asynchronous operation</returns>
+    /// <exception cref="ArgumentNullException">Thrown when the id is empty</exception>
     public async Task<Video?> GetByIdAsync(Guid id)
     {
         if (id == Guid.Empty)
@@ -43,6 +67,10 @@ public class VideoRepository : IVideoRepository
             throw;
         }
     }
+    /// <summary>
+    /// Retrieves all videos
+    /// </summary>
+    /// <returns> A task representing the asynchronous operation</returns>
     public async Task<IReadOnlyCollection<Video>> GetAllAsync()
     {
         try
@@ -58,6 +86,11 @@ public class VideoRepository : IVideoRepository
         }
     }
 
+    /// <summary>
+    /// Creates a new video
+    /// </summary>
+    /// <param name="entity"> The video object to create</param>
+    /// <exception cref="ArgumentNullException"> Thrown when the entity is null</exception>
     public async Task CreateAsync(Video entity)
     {
         if (entity == null)
@@ -79,7 +112,16 @@ public class VideoRepository : IVideoRepository
             throw;
         }
     }
-    
+    /// <summary>
+    /// Updates an existing video
+    /// </summary>
+    /// <param name="entity"> The video object to update</param>
+    /// <exception cref="ArgumentNullException"> Thrown when the entity is null</exception>
+    /// <exception cref="KeyNotFoundException"> Thrown when the entity is not found</exception>
+    /// <exception cref="ApplicationException"> Thrown when an error occurs</exception>
+    /// <exception cref="MongoWriteException"> Thrown when a duplicate key error occurs</exception>
+    /// <exception cref="Exception"> Thrown when an error occurs</exception>
+    /// <returns> A task representing the asynchronous operation</returns>
     public async Task UpdateAsync(Video entity)
     {
         if (entity == null)
@@ -108,6 +150,13 @@ public class VideoRepository : IVideoRepository
         }
     }
     
+    /// <summary>
+    /// Deletes a video
+    /// </summary>
+    /// <param name="id"> The unique identifier of the video to delete</param>
+    /// <exception cref="ArgumentNullException"> Thrown when the id is empty</exception>
+    /// <exception cref="KeyNotFoundException"> Thrown when the entity is not found</exception>
+    /// <exception cref="ApplicationException"> Thrown when an error occurs</exception>
     public async Task DeleteAsync(Guid id)
     {
         if (id == Guid.Empty)

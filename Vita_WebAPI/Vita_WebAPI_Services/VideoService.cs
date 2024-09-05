@@ -3,12 +3,24 @@ using Vita_WebAPI_Repository;
 using Vita_WebApi_Shared;
 namespace Vita_WebAPI_Services;
 
+/// <summary>
+/// Service for managing video operations
+/// </summary>
 public class VideoService: IVideoService 
 {
+    /// <summary>
+    /// The video repository
+    /// </summary>
     private readonly IVideoRepository _repository;
-
+    /// <summary>
+    /// The logger
+    /// </summary>
     private readonly ILogger<VideoService> _logger;
-    // Constructor
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="repository"> The video repository</param>
+    /// <param name="logger"> The logger</param>
     public VideoService(IVideoRepository repository, ILogger<VideoService> logger)
     {
         _repository = repository;
@@ -18,7 +30,8 @@ public class VideoService: IVideoService
     /// <summary>
     /// Creates a new video
     /// </summary>
-    /// <param name="video"></param>
+    /// <param name="video">The video object containing details to be created.</param>
+    /// <returns> A task representing the asynchronous operation.</returns>
     public async Task CreateVideo(Video video)
     {
         try
@@ -29,14 +42,15 @@ public class VideoService: IVideoService
         }
         catch (Exception e)
         {
-            _logger.LogError($"An error occurred: {e.Message}");
+            _logger.LogError("An error occurred: {0}", e.Message);
             throw;
         }
     }
    /// <summary>
    /// Retrieves a list of all videos
    /// </summary>
-   /// <returns>List of Videos</returns> 
+   /// <exception cref="Exception">Thrown when an error occurs</exception>
+   /// <returns> A List of all videos</returns>
     public async Task<IEnumerable<Video>?> GetAllVideos()
     {
         try
@@ -56,7 +70,12 @@ public class VideoService: IVideoService
             throw;
         }
     }
-    
+    /// <summary>
+    /// Retrieves a video by its unique identifier
+    /// </summary>
+    /// <exception cref="Exception"> Thrown when an error occurs</exception>
+    /// <param name="id"> The unique identifier of the video record to retrieve.</param>
+    /// <returns> A task representing the asynchronous operation.</returns>
     public async Task<Video?> GetVideoById(Guid id)
     {
         try
@@ -70,12 +89,20 @@ public class VideoService: IVideoService
             throw;
         }
     }
-
+    /// <summary>
+    /// Updates a video
+    /// </summary>
+    /// <param name="video">The video object containing details to be updated.</param>
     public async Task UpdateVideo(Video? video)
     {
-        await _repository.UpdateAsync(video);
+        if (video != null) await _repository.UpdateAsync(video);
     }
 
+    /// <summary>
+    ///  Deletes a video
+    /// </summary>
+    /// <param name="id"> The unique identifier of the video record to delete.</param>
+    /// <returns> A task representing the asynchronous operation.</returns>
     public Task DeleteVideo(Guid id)
     {
         return _repository.DeleteAsync(id);
