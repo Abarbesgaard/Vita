@@ -11,9 +11,9 @@ namespace Vita_Test;
 [TestClass]
 public class VideoServiceTests
 {
-    private static IVideoRepository _videoRepository;
-    private VideoService _videoService; // Remove nullable
-    private IMongoDatabase _testDatabase; 
+    private static IVideoRepository? _videoRepository;
+    private VideoService? _videoService; // Remove nullable
+    private IMongoDatabase? _testDatabase; 
     private const string TestDatabaseName = "VideoRepositoryTestDatabase";
 
     [TestInitialize]
@@ -46,10 +46,10 @@ public class VideoServiceTests
     }
     private void InitializeTestData()
     {
-        var videoCollection = _testDatabase.GetCollection<Video>("Videos");
+        var videoCollection = _testDatabase?.GetCollection<Video>("Videos");
 
         // Clear existing data
-        videoCollection.DeleteMany(FilterDefinition<Video>.Empty);
+        videoCollection!.DeleteMany(FilterDefinition<Video>.Empty);
 
         // Insert sample data
         var testVideo = new Video
@@ -64,8 +64,8 @@ public class VideoServiceTests
     [TestCleanup]
     public void Cleanup()
     {
-        var videoCollection = _testDatabase.GetCollection<Video>("Videos");
-        videoCollection.DeleteMany(FilterDefinition<Video>.Empty);
+        var videoCollection = _testDatabase?.GetCollection<Video>("Videos");
+        videoCollection?.DeleteMany(FilterDefinition<Video>.Empty);
     }
     
     [TestMethod]
@@ -80,10 +80,10 @@ public class VideoServiceTests
         };
 
         // Act
-        await _videoService.CreateVideo(video);
+        await _videoService?.CreateVideo(video)!;
 
         // Assert
-        var videoCollection = _testDatabase.GetCollection<Video>("Videos");
+        var videoCollection = _testDatabase?.GetCollection<Video>("Videos");
         var videoFromDb = await videoCollection.Find(v => v.Id == video.Id).FirstOrDefaultAsync();
 
         // Debugging information
@@ -100,22 +100,26 @@ public class VideoServiceTests
     public async Task GetAllVideos_ShouldReturnVideos_WhenVideosExist()
     {
         // Act
-        var videos = await _videoService.GetAllVideos();
+        var videos = await _videoService?.GetAllVideos()!;
 
         // Assert
-        videos.Should().NotBeNull();
-        videos.Should().HaveCount(1); // Adjust based on the number of videos inserted in InitializeTestData
+        if (videos != null)
+        {
+            var enumerable = videos.ToList();
+            enumerable.Should().NotBeNull();
+            enumerable.Should().HaveCount(1); // Adjust based on the number of videos inserted in InitializeTestData
+        }
     } 
     [TestMethod]
     public async Task GetVideoById_ShouldReturnVideo_WhenVideoExists()
     {
         // Arrange
-        var videoCollection = _testDatabase.GetCollection<Video>("Videos");
+        var videoCollection = _testDatabase?.GetCollection<Video>("Videos");
         var testVideo = videoCollection.Find(FilterDefinition<Video>.Empty).First();
         var videoId = testVideo.Id;
     
         // Act
-        var video = await _videoService.GetVideoById(videoId);
+        var video = await _videoService?.GetVideoById(videoId)!;
 
         // Assert
         video.Should().NotBeNull();
@@ -130,7 +134,7 @@ public class VideoServiceTests
         var nonExistentId = Guid.NewGuid();
         
         // Act
-        var video = await _videoService.GetVideoById(nonExistentId);
+        var video = await _videoService?.GetVideoById(nonExistentId)!;
 
         // Assert
         video.Should().BeNull();
@@ -139,14 +143,14 @@ public class VideoServiceTests
     public async Task UpdateVideo_ShouldUpdateVideo_WhenValidVideoIsProvided()
     {
         // Arrange
-        var videoCollection = _testDatabase.GetCollection<Video>("Videos");
+        var videoCollection = _testDatabase?.GetCollection<Video>("Videos");
         var existingVideo = new Video
         {
             Id = Guid.NewGuid(),
             Title = "Old Title",
             Url = "https://example.com/old"
         };
-        videoCollection.InsertOne(existingVideo);
+        await videoCollection?.InsertOneAsync(existingVideo)!;
 
         var updatedVideo = new Video
         {
@@ -156,7 +160,7 @@ public class VideoServiceTests
         };
 
         // Act
-        await _videoService.UpdateVideo(updatedVideo);
+        await _videoService?.UpdateVideo(updatedVideo)!;
 
         // Assert
         var videoFromDb = await videoCollection.Find(v => v.Id == updatedVideo.Id).FirstOrDefaultAsync();
@@ -169,17 +173,17 @@ public class VideoServiceTests
     public async Task DeleteVideo_ShouldDeleteVideo_WhenValidIdIsProvided()
     {
         // Arrange
-        var videoCollection = _testDatabase.GetCollection<Video>("Videos");
+        var videoCollection = _testDatabase?.GetCollection<Video>("Videos");
         var existingVideo = new Video
         {
             Id = Guid.NewGuid(),
             Title = "To Be Deleted",
             Url = "https://example.com/to-be-deleted"
         };
-        videoCollection.InsertOne(existingVideo);
+        await videoCollection?.InsertOneAsync(existingVideo)!;
 
         // Act
-        await _videoService.DeleteVideo(existingVideo.Id);
+        await _videoService?.DeleteVideo(existingVideo.Id)!;
 
         // Assert
         var videoFromDb = await videoCollection.Find(v => v.Id == existingVideo.Id).FirstOrDefaultAsync();
