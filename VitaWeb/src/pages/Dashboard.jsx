@@ -11,21 +11,22 @@ export default function Dashboard() {
 	const [description, setDescription] = useState("");
 	const [linkUrl, setLinkUrl] = useState("");
 	const [videos, setVideos] = useState([]);
-	const deleteVideo = (id) => {
+
+	const deleteVideo = async (id) => {
 		const isConfirmed = window.confirm(
 			"Er du sikker på at du vil slette videoen?"
 		);
 
 		if (isConfirmed) {
-			const removed = deleteVideoFromDb(id);
-			console.log(removed);
-			fetchVideos();
+			await deleteVideoFromDb(id);
+			console.log("delete");
+			await fetchVideos();
 		}
 	};
 
-	const handleVideoFormSubmit = (e) => {
+	const handleVideoFormSubmit = async (e) => {
 		e.preventDefault();
-		const video = saveVideo(
+		const video = await saveVideo(
 			{
 				title,
 				url: linkUrl.replace("youtube", "youtube-nocookie"),
@@ -34,7 +35,7 @@ export default function Dashboard() {
 			user.user_id
 		);
 		console.log(video);
-		fetchVideos();
+		await fetchVideos();
 	};
 
 	const fetchVideos = async () => {

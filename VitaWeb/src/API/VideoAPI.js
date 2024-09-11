@@ -13,7 +13,7 @@ const createJWT = async (payload) => {
 
 export const getAllVideos = async (userId) => {
 	try {
-		const response = await fetch("http://localhost:5039/videos", {
+		const response = await fetch("http://localhost:5039/videos/getall", {
 			headers: {
 				Authorization:
 					"Bearer " +
@@ -30,7 +30,7 @@ export const getAllVideos = async (userId) => {
 export const saveVideo = async (video, userId) => {
 	console.log(JSON.stringify(video));
 	try {
-		const response = await fetch("http://localhost:5039/videos", {
+		const response = await fetch("http://localhost:5039/videos/create", {
 			method: "POST",
 			headers: {
 				Authorization:
@@ -50,7 +50,7 @@ export const saveVideo = async (video, userId) => {
 
 export const deleteVideoFromDb = async (id) => {
 	try {
-		const response = await fetch(`http://localhost:5039/videos/${id}`, {
+		const response = await fetch(`http://localhost:5039/videos/delete/${id}`, {
 			method: "DELETE",
 			headers: {
 				Authorization:
