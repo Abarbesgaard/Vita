@@ -22,4 +22,9 @@ public record GetVideoDto(
     string? Title, 
     string? Description,
     string? Url);
-    
+public class VideoAuditLogDto
+{
+    public string? Title { get; set; }
+    public string? Url { get; set; }
+}
+ 

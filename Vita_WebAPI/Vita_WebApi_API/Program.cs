@@ -6,6 +6,7 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 using Serilog;
+using Vita_WebApi_API.MongoMapping;
 using Vita_WebAPI_Data;
 using Vita_WebAPI_Repository;
 using Vita_WebAPI_Services;
@@ -25,6 +26,10 @@ public class Program
         builder.Services.AddControllers(options => { options.SuppressAsyncSuffixInActionNames = false; });
 
         builder.Services.Configure<VideoDatabaseSetting>(builder.Configuration.GetSection(nameof(MongoDbSettings)));
+        builder.Services.AddCors(options =>
+        {
+            options.AddDefaultPolicy(b => b.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+        });
 
         builder.Services.AddSingleton(serviceProvider =>
         {
@@ -35,12 +40,11 @@ public class Program
 
         builder.Services.AddScoped<IVideoRepository, VideoRepository>();
         builder.Services.AddScoped<IVideoService, VideoService>();
+        builder.Services.AddScoped<IAuditLogService, AuditLogService>();
 
         BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
         BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String));
-
-
-        builder.Services.AddAuthentication();
+        MongoDbClassMapping.RegisterClassMaps();
       
         // Configure Swagger
         builder.Services.AddEndpointsApiExplorer();
@@ -58,26 +62,28 @@ public class Program
                     Email = "Abarbesgaard@gmail.com"
                 }
             });
-             var securityScheme = new OpenApiSecurityScheme{
-                Name = "Authorization",
-                Type = SecuritySchemeType.Http,
-                Reference = new OpenApiReference
-                {
-                    Id = JwtBearerDefaults.AuthenticationScheme,
-                    Type = ReferenceType.SecurityScheme
-                }, 
-                Scheme = "bearer",
-                BearerFormat = "JWT",
-                In = ParameterLocation.Header,
-                Description = "indsæt token",
-            };
-            options.AddSecurityDefinition(securityScheme.Reference.Id, securityScheme);
-            options.AddSecurityRequirement(new OpenApiSecurityRequirement
+            if (builder.Environment.IsProduction())
             {
+                var securityScheme = new OpenApiSecurityScheme
                 {
-                    securityScheme, []
-                }
-            });
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Reference = new OpenApiReference
+                    {
+                        Id = JwtBearerDefaults.AuthenticationScheme,
+                        Type = ReferenceType.SecurityScheme
+                    },
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Insert token",
+                };
+                options.AddSecurityDefinition(securityScheme.Reference.Id, securityScheme);
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    { securityScheme, Array.Empty<string>() }
+                });
+            }
             
         });
        
@@ -94,14 +100,20 @@ public class Program
                 options.InjectStylesheet("/css/swagger-ui/custom.css");
                 options.SwaggerEndpoint("/swagger/v1/swagger.json", "VITA API V1");
             });
+            app.UseRouting();
+            app.UseCors();
+            app.MapControllers().AllowAnonymous(); // Allow anonymous access in development
         }
-        
+        else
+        {
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
+            app.UseRouting();
+            app.UseCors();
+            app.UseAuthentication(); // Enable authentication
+            app.MapControllers();   // Map controllers with authentication/authorization
+        }
 
-        app.UseHttpsRedirection();
-        app.UseStaticFiles();
-        app.UseRouting();
-        app.UseAuthorization();
-        app.MapControllers();
         app.Run();
         return Task.CompletedTask;
     }
