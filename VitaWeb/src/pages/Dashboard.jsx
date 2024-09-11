@@ -1,37 +1,51 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import VideoCard from "../components/VideoCard";
 import VideoForm from "../components/VideoForm";
 import Layout from "../components/Layout";
+import { saveVideo, getAllVideos, deleteVideoFromDb } from "../API/VideoAPI";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export default function Dashboard() {
+	const { user } = useAuth0();
 	const [title, setTitle] = useState("");
+	const [description, setDescription] = useState("");
 	const [linkUrl, setLinkUrl] = useState("");
-	const [videos, setVideos] = useState([
-		{
-			id: 1,
-			title: "Dirt Man",
-			url: "https://www.youtube.com/embed/VWXzklIphhU",
-		},
-		{
-			id: 2,
-			title: "Internet Drama",
-			url: "https://www.youtube.com/embed/zr1h2Z11oTI",
-		},
-	]);
+	const [videos, setVideos] = useState([]);
 	const deleteVideo = (id) => {
-		const isConfirmed = confirm("Er du sikker?");
+		const isConfirmed = window.confirm(
+			"Er du sikker på at du vil slette videoen?"
+		);
 
 		if (isConfirmed) {
-			const removed = videos.filter((video) => video.id !== id);
-			setVideos(removed);
+			const removed = deleteVideoFromDb(id);
+			console.log(removed);
+			fetchVideos();
 		}
 	};
 
 	const handleVideoFormSubmit = (e) => {
 		e.preventDefault();
-
-		setVideos([...videos, { id: videos.length + 1, title, url: linkUrl }]);
+		const video = saveVideo(
+			{
+				title,
+				url: linkUrl.replace("youtube", "youtube-nocookie"),
+				description,
+			},
+			user.user_id
+		);
+		console.log(video);
+		fetchVideos();
 	};
+
+	const fetchVideos = async () => {
+		const videos = await getAllVideos(user.user_id);
+		console.log(videos);
+		setVideos([...videos]);
+	};
+
+	useEffect(() => {
+		fetchVideos();
+	}, []);
 
 	return (
 		<Layout>
@@ -42,6 +56,8 @@ export default function Dashboard() {
 					setTitle={setTitle}
 					url={linkUrl}
 					setUrl={setLinkUrl}
+					description={description}
+					setDescription={setDescription}
 				/>
 				{videos.map((video) => (
 					<VideoCard
