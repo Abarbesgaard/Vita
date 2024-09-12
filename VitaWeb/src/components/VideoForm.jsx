@@ -4,6 +4,8 @@ export default function VideoForm({
 	setTitle,
 	url,
 	setUrl,
+	description,
+	setDescription,
 }) {
 	return (
 		<>
@@ -28,6 +30,15 @@ export default function VideoForm({
 						}}
 						type="text"
 						placeholder="Indsæt link"
+						className="bg-gray-300 pl-2 sm:py-1 shadow-depth_gray rounded sm:w-96"
+					/>
+					<input
+						value={description}
+						onChange={(e) => {
+							setDescription(e.target.value);
+						}}
+						type="text"
+						placeholder="Indsæt beskrivelse"
 						className="bg-gray-300 pl-2 sm:py-1 shadow-depth_gray rounded sm:w-96"
 					/>
 					<button

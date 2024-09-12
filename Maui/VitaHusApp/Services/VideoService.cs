@@ -1,3 +1,4 @@
+
 ﻿using JWT.Algorithms;
 using JWT.Builder;
 using Newtonsoft.Json;
@@ -5,10 +6,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
+
+
 using System.Text;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using VitaHusApp.Model;
+
 
 
 namespace VitaHusApp.Services
@@ -35,13 +39,16 @@ namespace VitaHusApp.Services
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer "+ Token);
             
              var response = await httpClient.GetStringAsync("http://localhost:5039/videos/getVideoById"); //her skal url ind
+
             return JsonConvert.DeserializeObject<Root>(response);
         }
         public static async Task<Root> GetAllVideo(string Id)
         {
             var httpClient = new HttpClient();
+
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer " + Token);
             var response = await httpClient.GetStringAsync("http://localhost:5039/videos/getall"); //her skal url ind
+
             return JsonConvert.DeserializeObject<Root>(response);
         }
     }

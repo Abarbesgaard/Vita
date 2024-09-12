@@ -5,6 +5,7 @@ export default function NonUserCard() {
 			<div className="flex md:flex-col -mt-12 md:-mt-28 p-2 md:items-center">
 				<div className="w-20 md:w-[150px]">
 					<img
+						data-testid="defaultAvatar"
 						src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg"
 						className="rounded-full border-white border-4 md:border-8 ml-2 md:ml-0 md:mt-2 -mt-2"
 					/>

@@ -57,6 +57,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+
 	  <AndroidResource Remove="ViewModel\**" />
 	  <AndroidResource Remove="View\**" />
 	  <Compile Remove="ViewModel\**" />
@@ -74,6 +75,7 @@
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Maui.MediaElement" Version="4.1.0" />
 		<PackageReference Include="JWT" Version="10.1.1" />
+
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
@@ -81,9 +83,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
+
 	  <MauiXaml Update="Pages\VideoMenu.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+
 	</ItemGroup>
 
 </Project>

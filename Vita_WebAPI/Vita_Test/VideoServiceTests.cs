@@ -39,7 +39,7 @@ public class VideoServiceTests
         _videoRepository = new VideoRepository(logger, Options.Create(videoDatabaseSetting));
 
         // Initialize VideoService after VideoRepository is set up
-        _videoService = new VideoService(_videoRepository, loggerFactory.CreateLogger<VideoService>());
+        _videoService = new VideoService(_videoRepository, loggerFactory.CreateLogger<VideoService>(), new AuditLogService(_testDatabase));
 
         // Prepare test data
         InitializeTestData();
