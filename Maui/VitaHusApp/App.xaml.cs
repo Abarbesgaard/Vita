@@ -1,4 +1,8 @@
-﻿namespace VitaHusApp
+
+﻿using VitaHusApp.Pages;
+
+namespace VitaHusApp
+
 {
     public partial class App : Application
     {
@@ -6,7 +10,11 @@
         {
             InitializeComponent();
 
-            MainPage = new AppShell();
+
+            MainPage = new VideoMenu();
+
+            
+
         }
     }
 }
