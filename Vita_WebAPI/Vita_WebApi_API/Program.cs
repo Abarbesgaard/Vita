@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using MongoDB.Bson;
@@ -10,6 +11,7 @@ using Vita_WebApi_API.MongoMapping;
 using Vita_WebAPI_Data;
 using Vita_WebAPI_Repository;
 using Vita_WebAPI_Services;
+using Vita_WebAPI_Services.HealthCheck;
 
 namespace Vita_WebApi_API;
 
@@ -20,6 +22,7 @@ public class Program
         Log.Logger = new LoggerConfiguration()
             .WriteTo.Console()
             .CreateLogger();
+
         //Creates the builder 
         var builder = WebApplication.CreateBuilder(args);
         // Configure DbContext
@@ -41,7 +44,14 @@ public class Program
         builder.Services.AddScoped<IVideoRepository, VideoRepository>();
         builder.Services.AddScoped<IVideoService, VideoService>();
         builder.Services.AddScoped<IAuditLogService, AuditLogService>();
-
+        
+        //healthCheck
+        builder.Services.AddHealthChecks()
+            .AddCheck<HealthCheck>("HealthCheck")
+            .AddCheck("MongoDbHealthCheck", new MongoDbHealthCheck(
+                    $"mongodb://{builder.Configuration["MongoDbSettings:Host"]}:{builder.Configuration["MongoDbSettings:Port"]}",
+                    builder.Configuration["MongoDbSettings:DatabaseName"]),
+                tags: new[] { "db", "mongodb" });
         BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
         BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String));
         MongoDbClassMapping.RegisterClassMaps();
@@ -103,6 +113,11 @@ public class Program
             app.UseRouting();
             app.UseCors();
             app.MapControllers().AllowAnonymous(); // Allow anonymous access in development
+            app.MapHealthChecks("/healthz", new HealthCheckOptions
+                        {
+                            ResponseWriter = HealthCheck.WriteResponse
+                        });
+           
         }
         else
         {
@@ -111,6 +126,10 @@ public class Program
             app.UseRouting();
             app.UseCors();
             app.UseAuthentication(); // Enable authentication
+            app.MapHealthChecks("/healthz", new HealthCheckOptions
+            {
+                ResponseWriter = HealthCheck.WriteResponse
+            });
             app.MapControllers();   // Map controllers with authentication/authorization
         }
 
@@ -123,6 +142,7 @@ public class MongoDbSettings
 {
     public string ConnectionString { get; set; } = null!;
     public string DatabaseName { get; set; } = null!;
+    
 }
 
 public class MongoDbRelease
