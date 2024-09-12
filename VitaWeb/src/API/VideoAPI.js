@@ -1,15 +1,16 @@
-import * as jose from "jose";
+import { SignJWT } from "jose";
 
-const createJWT = async (payload) => {
-	const secret = new TextEncoder().encode("secret1");
-	const alg = "HS256";
+// const createJWT = async (payload) => {
+// 	const secret = createSecretKey("secret1", "utf-8");
+// 	const alg = "HS256";
 
-	const token = await new jose.SignJWT({ sub: payload })
-		.setProtectedHeader({ alg, typ: "JWT" })
-		.sign(secret);
+// 	const token = await new SignJWT({ sub: payload })
+// 		.setProtectedHeader({ alg, typ: "JWT" })
+// 		.sign(secret);
 
-	return token;
-};
+// 	console.log(token);
+// 	return token;
+// };
 
 export const getAllVideos = async (userId) => {
 	try {
