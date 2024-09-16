@@ -1,40 +1,28 @@
-
-﻿using CommunityToolkit.Maui;
+using CommunityToolkit.Maui;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using VitaHusApp;
+using VitaHusApp.Services;
 
-
-
-namespace VitaHusApp
+public static class MauiProgram
 {
-    public static class MauiProgram
+    public static MauiApp CreateMauiApp()
     {
-        public static MauiApp CreateMauiApp()
-        {
-            var builder = MauiApp.CreateBuilder();
-            builder
-                .UseMauiApp<App>()
+        var builder = MauiApp.CreateBuilder();
+        builder
+            .UseMauiApp<App>()
+            .UseMauiCommunityToolkitMediaElement()
+            .ConfigureFonts(fonts =>
+            {
+                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+                fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+            });
 
-                // Initialize the .NET MAUI Community Toolkit MediaElement by adding the below line of code
-                .UseMauiCommunityToolkitMediaElement()
-                // After initializing the .NET MAUI Community Toolkit, optionally add additional fonts
-
-                .ConfigureFonts(fonts =>
-                {
-                    fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-                    fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-                });
-
-
-            // Continue initializing your .NET MAUI App here
-
-            return builder.Build();
-
+  
 #if DEBUG
-            builder.Logging.AddDebug();
-
-
+        builder.Logging.AddDebug();
 #endif
-            return builder.Build();
-        }
+
+        return builder.Build();
     }
 }

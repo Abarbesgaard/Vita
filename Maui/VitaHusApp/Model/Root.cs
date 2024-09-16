@@ -8,23 +8,19 @@ using System.Threading.Tasks;
 
 namespace VitaHusApp.Model
 {
-    public  class Root
+    public class Video
     {
-        public string Id { get; set; }
-        public string? UpdatedBy { get; set; }
+        public string Id { get; set; }  // Dette felt er string ifølge API-svaret
+        public DateTimeOffset CreatedAt { get; set; }
+        public DateTimeOffset UpdatedAt { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public string Url { get; set; } // Dette felt matcher "url" fra API'et
+    }
 
-        public string? CreatedBy { get; set; }
-
-     
-        public DateTimeOffset CreatedAt { get; init; }
-
-        public DateTimeOffset UpdatedAt { get; init; }
-
-        
-        public string? Title { get; set; }
-
-        public string? Description { get; set; }
-
-      
+    public class Root
+    {
+        public List<Video> Videos { get; set; } = new List<Video>(); // Hvis du vil returnere flere videoer
     }
 }
+
