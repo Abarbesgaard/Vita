@@ -17,39 +17,23 @@ using VitaHusApp.Model;
 
 namespace VitaHusApp.Services
 {
-    public static class VideoService
-    {        
-        
-        private static readonly string[] secrets = ["secret1"];
-
-         private static readonly string Token = JwtBuilder.Create()
-
-            .WithAlgorithm(new HMACSHA256Algorithm())
-
+    public class VideoService
+    {
+        private static readonly string[] secrets = { "secret1" };
+        private static readonly string Token = JwtBuilder.Create()
+            .WithAlgorithm(new JWT.Algorithms.HMACSHA256Algorithm())
             .WithSecret(secrets)
-
             .AddClaim("sub", "auth0|66c859b3a06686c3440f12aa")
-
             .Encode();
 
-
-        public static async Task<Root> GetVideo(string Id, string title)
+        public async Task<List<Video>> GetAllVideo()
         {
             var httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer "+ Token);
-            
-             var response = await httpClient.GetStringAsync("http://localhost:5039/videos/getVideoById"); //her skal url ind
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token);
 
-            return JsonConvert.DeserializeObject<Root>(response);
-        }
-        public static async Task<Root> GetAllVideo(string Id)
-        {
-            var httpClient = new HttpClient();
+            var response = await httpClient.GetStringAsync("http://localhost:5039/videos/getall"); // Opdater URL efter behov
 
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer " + Token);
-            var response = await httpClient.GetStringAsync("http://localhost:5039/videos/getall"); //her skal url ind
-
-            return JsonConvert.DeserializeObject<Root>(response);
+            return JsonConvert.DeserializeObject<List<Video>>(response); // Deserialiserer en liste af videoer
         }
     }
 }
