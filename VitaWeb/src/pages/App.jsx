@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import Dashboard from "./Dashboard";
 import Home from "./Home";
 import AuthenticationGuard from "../components/AuthenticationGuard";
+import CalendarPage from "./CalendarPage";
 
 function App() {
 	const { isLoading } = useAuth0();
@@ -22,6 +23,7 @@ function App() {
 				path="/video"
 				element={<AuthenticationGuard component={Dashboard} />}
 			/>
+			<Route path="/calendar" element={<CalendarPage />} />
 		</Routes>
 	);
 }
