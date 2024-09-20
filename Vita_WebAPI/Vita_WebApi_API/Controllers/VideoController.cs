@@ -15,8 +15,9 @@ namespace Vita_WebApi_API.Controllers;
 /// </summary>
 /// <param name="service">The service that provides video-related operations.</param>
 /// <param name="logger">The logger used to log information and errors.</param>
+/// <param name="env">The hosting environment information.</param>
 [ApiController]
-[Route("Videos")]
+[Route("api/[controller]")]
 public class VideoController(IVideoService service, ILogger<VideoController> logger, IWebHostEnvironment env) : ControllerBase
 {
     private static readonly string[] Secret = ["secret1"];
@@ -204,7 +205,7 @@ public class VideoController(IVideoService service, ILogger<VideoController> log
     /// <response code="500">If an internal server error occurs during the creation process.</response>
     /// <returns>A confirmation message with the created video details.</returns>
     [HttpPost("Create")]
-    public async Task<ActionResult<CreateVideoDto>> PostVideoAsync(CreateVideoDto? videoDto)
+    public async Task<ActionResult<CreateVideoDto>> PostVideoAsync([FromBody]CreateVideoDto? videoDto)
     {
         if (videoDto == null)
         {

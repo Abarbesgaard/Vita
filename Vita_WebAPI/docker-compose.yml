@@ -1,8 +1,23 @@
-﻿version: "3.8"
 
 services:
-  mongodb:
-    image: mongo:latest
+  Vita_WebAPI:
+    image: ${DOCKER_REGISTRY-}vitawebapi
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - MONGO_URI=mongodb://Vita_WebAPI_Database:27017
+      - ASPNETCORE_ENVIRONMENT=Development  
 
+  Vita_WebAPI_Database:
+    image: mongo:latest
+    container_name: Vita_WebAPI.database
+    volumes:
+      - Vita_db_data:/data/db
     ports:
       - "27017:27017"
+
+volumes:
+  Vita_db_data:

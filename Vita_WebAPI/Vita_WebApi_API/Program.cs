@@ -44,6 +44,8 @@ public class Program
         builder.Services.AddScoped<IVideoRepository, VideoRepository>();
         builder.Services.AddScoped<IVideoService, VideoService>();
         builder.Services.AddScoped<IAuditLogService, AuditLogService>();
+
+        builder.Services.AddRazorPages();
         
         //healthCheck
         builder.Services.AddHealthChecks()
@@ -100,7 +102,7 @@ public class Program
 
         // Build the app
         var app = builder.Build();
-
+        app.Urls.Add("https://*:8080");
         // Configure the HTTP request pipeline
         if (app.Environment.IsDevelopment())
         {
