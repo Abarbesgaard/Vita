@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import VideoCard from "../components/VideoCard";
-import VideoForm from "../components/VideoForm";
+import VideoCard from "../components/Video/VideoCard";
+import VideoForm from "../components/Video/VideoForm";
 import Layout from "../components/Layout";
 import { saveVideo, getAllVideos, deleteVideoFromDb } from "../API/VideoAPI";
 import { useAuth0 } from "@auth0/auth0-react";

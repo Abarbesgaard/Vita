@@ -2,7 +2,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { Route, Routes } from "react-router-dom";
 import Dashboard from "./Dashboard";
 import Home from "./Home";
-import AuthenticationGuard from "../components/AuthenticationGuard";
+import AuthenticationGuard from "../components/Auth/AuthenticationGuard";
 import CalendarPage from "./CalendarPage";
 
 function App() {
