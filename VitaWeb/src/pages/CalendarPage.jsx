@@ -1,7 +1,7 @@
 import { Calendar } from "react-big-calendar";
 import { Calendar as SmallCalendar } from "react-calendar";
 import localizer from "../services/Localizer";
-import "react-big-calendar/lib/css/react-big-calendar.css";
+import "../components/Calendar/CalendarStyle.css";
 import "react-calendar/dist/Calendar.css";
 import { useState } from "react";
 import EventModal from "../components/Calendar/EventModal";

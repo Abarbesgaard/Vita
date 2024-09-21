@@ -4,15 +4,19 @@ import Dashboard from "./Dashboard";
 import Home from "./Home";
 import AuthenticationGuard from "../components/Auth/AuthenticationGuard";
 import CalendarPage from "./CalendarPage";
+import { ImSpinner2 } from "react-icons/im";
+import { IconContext } from "react-icons";
 
 function App() {
 	const { isLoading } = useAuth0();
 
 	if (isLoading) {
 		return (
-			<div className="w-full h-dvh text-center flex items-center justify-center">
-				<p>Loading...</p>
-			</div>
+			<IconContext.Provider value={{ size: "2em" }}>
+				<div className="w-full h-dvh text-center flex items-center justify-center">
+					<ImSpinner2 className="animate-spin" />
+				</div>
+			</IconContext.Provider>
 		);
 	}
 
