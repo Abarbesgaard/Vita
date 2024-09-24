@@ -1,0 +1,26 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #3e6cc6; /* Dark background */
+}
+
+.nav-button {
+  color: white; /* Text color */
+  background-color: #05364a; /* Button color */
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.nav-button:hover {
+  background-color: #03263b; /* Darker blue on hover */
+}
+.nav-image {
+  max-width: 20%;
+  height:auto;
+}
