@@ -1,5 +1,6 @@
 using MongoDB.Bson;
 using MongoDB.Driver;
+using Serilog;
 
 namespace Vita_WebAPI_Repository;
 
@@ -7,15 +8,17 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
 {
     private readonly IMongoCollection<T> _collection;
 
-    public GenericRepository(IMongoDatabase database, string collectionName)
+    public GenericRepository(IMongoDatabase database)
     {
-        // Assign the collection from the provided database
+        // Automatically determine the collection name based on the type
+        var collectionName = typeof(T).Name + "s"; // Assuming pluralization
         _collection = database.GetCollection<T>(collectionName);
     }
 
 
     public async Task<IReadOnlyCollection<T>> GetAllAsync()
     {
+        Log.Information("Getting all entities from the collection");
         return await _collection.Find(new BsonDocument()).ToListAsync();
     }
     

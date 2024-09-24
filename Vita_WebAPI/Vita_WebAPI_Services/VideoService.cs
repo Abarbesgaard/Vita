@@ -74,7 +74,7 @@ public class VideoService: IVideoService
        try
        {
            _logger.LogInformation("Getting all videos");
-           var videos = await _repository?.GetAllAsync()!;
+           var videos = await _repository.GetAllAsync()!;
 
            // Convert videos to BsonDocument
            _logger.LogInformation("Converting videos to BsonDocument");
@@ -129,7 +129,8 @@ public class VideoService: IVideoService
     /// <param name="video">The video object containing details to be updated.</param>
     public async Task UpdateVideo(Video? video)
     {
-        //if (video != null) await _repository?.UpdateAsync(video)!;
+        _logger.LogInformation("Updating video");
+        if (video != null) await _repository.UpdateAsync(video.Id, video)!;
     }
 
     /// <summary>
@@ -139,6 +140,7 @@ public class VideoService: IVideoService
     /// <returns> A task representing the asynchronous operation.</returns>
     public async Task DeleteVideo(Guid id)
     {
+        _logger.LogInformation($"Deleting video with id: {id}");
         try
         {
             var auditLog = new AuditLog

@@ -20,7 +20,7 @@ public class RepositoryTests
         _mongoClient = new MongoClient(connectionString); 
         _testDatabase = _mongoClient.GetDatabase(TestDatabaseName);
        
-        _videoRepository = new GenericRepository<Video>(_testDatabase, "Videos");
+        _videoRepository = new GenericRepository<Video>(_testDatabase);
          
         InitializeTestData();
     }

@@ -2,13 +2,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization;
-using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 using Serilog;
-using Vita_WebApi_API.Dto;
-using Vita_WebApi_API.MongoMapping;
 using Vita_WebAPI_Repository;
 using Vita_WebAPI_Services;
 using Vita_WebAPI_Services.HealthCheck;
@@ -23,23 +18,22 @@ public class Program
             .WriteTo.Console()
             .CreateLogger();
 
-        //Creates the builder 
         var builder = WebApplication.CreateBuilder(args);
-        // Configure DbContext
+
+        // Configure services
         builder.Services.AddControllers(options => { options.SuppressAsyncSuffixInActionNames = false; });
 
-        builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDbSettings"));
-
-        builder.Services.AddCors(options =>
+        if (builder.Environment.IsDevelopment())
         {
-            options.AddDefaultPolicy(b => b.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-        });
+            var mongoDbSettingsSection = builder.Configuration.GetSection("DevMongoDbSettings");
+            builder.Services.Configure<MongoDbSettings>(mongoDbSettingsSection);
+        }
+        else
+        {
+            var mongoDbSettingsSection = builder.Configuration.GetSection("MongoDbSettings");
+            builder.Services.Configure<MongoDbSettings>(mongoDbSettingsSection);
+        }       
 
-
-        // Configure MongoDB settings
-        builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDbSettings"));
-
-        // Add MongoClient and MongoDatabase as singleton
         builder.Services.AddSingleton<IMongoClient>(serviceProvider =>
         {
             var mongoDbSettings = serviceProvider.GetRequiredService<IOptions<MongoDbSettings>>().Value;
@@ -52,26 +46,24 @@ public class Program
             var client = serviceProvider.GetRequiredService<IMongoClient>();
             return client.GetDatabase(mongoDbSettings.DatabaseName);
         });
+        
+        // CORS setup
+        builder.Services.AddCors(options =>
+        {
+            options.AddDefaultPolicy(b => b.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+        });
 
-        // Register repositories and services
+        // Health checks
+        builder.Services.AddHealthChecks()
+            .AddCheck<MongoDbHealthCheck>("MongoDbHealthCheck", tags: ["db", "mongodb"]);
+
+        // Register services
         builder.Services.AddScoped<IVideoService, VideoService>();
         builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
         builder.Services.AddScoped<IAuditLogService, AuditLogService>();
-
         builder.Services.AddRazorPages();
-        
-        //healthCheck
-        builder.Services.AddHealthChecks()
-            .AddCheck<HealthCheck>("HealthCheck")
-            .AddCheck("MongoDbHealthCheck", new MongoDbHealthCheck(
-                    $"mongodb://{builder.Configuration["MongoDbSettings:Host"]}:{builder.Configuration["MongoDbSettings:Port"]}",
-                    builder.Configuration["MongoDbSettings:DatabaseName"]),
-                tags: new[] { "db", "mongodb" });
-        BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
-        BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String));
-        MongoDbClassMapping.RegisterClassMaps();
- 
-        // Configure Swagger
+
+        // Swagger setup
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(options =>
         {
@@ -101,7 +93,7 @@ public class Program
                     Scheme = "bearer",
                     BearerFormat = "JWT",
                     In = ParameterLocation.Header,
-                    Description = "Insert token",
+                    Description = "Insert token"
                 };
                 options.AddSecurityDefinition(securityScheme.Reference.Id, securityScheme);
                 options.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -119,35 +111,31 @@ public class Program
         // Configure the HTTP request pipeline
         if (app.Environment.IsDevelopment())
         {
+            app.UseDeveloperExceptionPage();
             app.UseSwagger();
             app.UseSwaggerUI(options =>
             {
                 options.InjectStylesheet("/css/swagger-ui/custom.css");
                 options.SwaggerEndpoint("/swagger/v1/swagger.json", "VITA API V1");
             });
-            app.UseRouting();
-            app.UseCors();
-            app.MapControllers().AllowAnonymous(); // Allow anonymous access in development
-            app.MapHealthChecks("/healthz", new HealthCheckOptions
-                        {
-                            ResponseWriter = HealthCheck.WriteResponse
-                        });
-           
         }
         else
         {
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseRouting();
-            app.UseCors();
-            app.UseAuthentication(); // Enable authentication
-            app.MapHealthChecks("/healthz", new HealthCheckOptions
+            app.UseAuthentication();
+            app.UseSwagger();
+            app.UseSwaggerUI(options =>
             {
-                ResponseWriter = HealthCheck.WriteResponse
+                options.InjectStylesheet("/css/swagger-ui/custom.css");
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "VITA API V1");
             });
-            app.MapControllers();   // Map controllers with authentication/authorization
         }
 
+        app.UseRouting();
+        app.UseCors();
+        app.MapHealthChecks("/healthz", new HealthCheckOptions { ResponseWriter = HealthCheck.WriteResponse });
+        app.MapControllers();
         app.Run();
         return Task.CompletedTask;
     }
@@ -155,11 +143,11 @@ public class Program
 
 public class MongoDbSettings
 {
-    public static string? Host { get; set; }
+    public string? Host { get; set; }
     /// <summary>
     /// The port of the database.
     /// </summary>
-    public static int Port { get; set; }
+    public int Port { get; set; }
     /// <summary>
     /// The name of the database.
     /// </summary>
@@ -168,10 +156,4 @@ public class MongoDbSettings
     /// The connection string for the database.
     /// </summary>
     public string ConnectionString => $"mongodb://{Host}:{Port}";
-}
-
-public class MongoDbRelease
-{
-    public string ConnectionString { get; set; } = null!;
-    public string DatabaseName { get; set; } = null!;
 }

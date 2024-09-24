@@ -197,8 +197,8 @@ public class VideoServiceTests
         var videoFromDb = await videoCollection.Find(v => v.Id == updatedVideo.Id).FirstOrDefaultAsync();
     
         videoFromDb.Should().NotBeNull();
-        videoFromDb.Title.Should().Be(updatedVideo.Title);
-        videoFromDb.Url.Should().Be(updatedVideo.Url);
+        videoFromDb.Title.Should().Be(updatedVideo.Title, "the title should have been updated to the new value");
+        videoFromDb.Url.Should().Be(updatedVideo.Url, "the URL should have been updated to the new value");
     }
     [TestMethod] 
     public async Task DeleteVideo_ShouldDeleteVideo_WhenValidIdIsProvided()

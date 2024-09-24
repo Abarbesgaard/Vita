@@ -112,6 +112,11 @@ public class VideoController(IVideoService service, ILogger<VideoController> log
         {
             logger.LogInformation("Getting all videos");
             var videos = await service.GetAllVideos();
+            if (videos == null)
+            {
+                logger.LogWarning("No videos found");
+                return NotFound("No videos found");
+            }
             return Ok(videos);
         }
         catch (Exception e)
