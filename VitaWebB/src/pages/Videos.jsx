@@ -18,7 +18,7 @@ export default function Videos() {
         };
 
         fetchVideos();
-    }, [videos]);
+    }, []);
 
     // Handle input changes for the new video form
     const handleChange = (e) => {
