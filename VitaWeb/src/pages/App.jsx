@@ -23,10 +23,7 @@ function App() {
 	return (
 		<Routes>
 			<Route path="/" element={<Home />} />
-			<Route
-				path="/video"
-				element={<AuthenticationGuard component={Dashboard} />}
-			/>
+			<Route path="/video" element={<Dashboard />} />
 			<Route path="/calendar" element={<CalendarPage />} />
 		</Routes>
 	);

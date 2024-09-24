@@ -20,16 +20,47 @@ const EventModal = ({ onClose, event, resources }) => {
 						transition={{ type: "spring", stiffness: 260, damping: 20 }}
 						exit={{ scale: 0 }}
 					>
-						<div className="flex justify-between items-center p-5">
-							<h2 className="text-xl font-bold">{event.title}</h2>
+						<div className="flex justify-between p-5 bg-[#265985] rounded-t-lg">
+							<h2 className="text-xl text-white font-bold ml-2">
+								{event.title}
+							</h2>
 							<button onClick={onClose}>X</button>
 						</div>
 						<div className="p-5">
-							<p className="my-10">{event.description}</p>
-							<p className="font-bold text-lg">Deltagere:</p>
-							{event.resourceId.map((id) => (
-								<p key={id}>{resources.find((r) => r.id === id).title}</p>
-							))}
+							<textarea
+								rows={4}
+								disabled
+								className="py-1 px-2 w-full bg-gray-100 shadow-inner resize-none"
+							>
+								{event.description}
+							</textarea>
+							<div className="flex justify-evenly w-1/2">
+								<div>
+									<p className="font-bold text-lg">Inviterede:</p>
+									{event.invites
+										.filter((id) => {
+											return (
+												!event.accepted.includes(id) &&
+												!event.declined.includes(id)
+											);
+										})
+										.map((id) => (
+											<p key={id}>{resources.find((r) => r.id === id).title}</p>
+										))}
+								</div>
+								<div>
+									<p className="font-bold text-lg">Deltager:</p>
+									{event.accepted.map((id) => (
+										<p key={id}>{resources.find((r) => r.id === id).title}</p>
+									))}
+								</div>
+								<div>
+									<p className="font-bold text-lg">Deltager ikke:</p>
+									{event.declined.map((id) => (
+										<p key={id}>{resources.find((r) => r.id === id).title}</p>
+									))}
+								</div>
+							</div>
 						</div>
 					</motion.div>
 				</motion.div>,
