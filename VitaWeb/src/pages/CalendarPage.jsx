@@ -66,12 +66,17 @@ const resources = [
 
 const events = [
 	{
+		type: "activity",
 		title: "Fedt event",
 		start: new Date(),
 		end: new Date(),
 		allDay: true,
 		resourceId: [1, 2, 3, 5, 7, 8],
 		description: "Dette er en beskrivelse",
+		invites: [1, 2, 3, 5, 7, 9],
+		accepted: [1, 5, 7],
+		declined: [2],
+		reccuring: "none", // none, daily, weekly, monthly, yearly
 	},
 	{
 		title: "Team 1 møde",
@@ -84,6 +89,17 @@ const events = [
 		start: new Date(2024, 8, 20),
 		end: new Date(2024, 8, 20),
 		resourceId: [2, 3],
+	},
+	{
+		type: "meeting",
+		title: "Møde 1",
+		description: "Dette er et møde",
+		subject: "Møde om noget",
+		resourceId: [1],
+		invites: [2],
+		start: new Date(2024, 8, 21, 10, 0),
+		end: new Date(2024, 8, 21, 12, 0),
+		status: "pending", // pending, accepted, declined
 	},
 ];
 
@@ -175,6 +191,15 @@ const CalendarPage = () => {
 					}}
 					min={new Date(1972, 8, 1, 6, 0)}
 					className="h-full bg-white bg-opacity-80 backdrop-blur"
+					eventPropGetter={(event) => {
+						if (event.type === "meeting") {
+							return {
+								style: {
+									backgroundColor: "red",
+								},
+							};
+						}
+					}}
 				/>
 			</div>
 		</div>
