@@ -7,8 +7,8 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 using Serilog;
+using Vita_WebApi_API.Dto;
 using Vita_WebApi_API.MongoMapping;
-using Vita_WebAPI_Data;
 using Vita_WebAPI_Repository;
 using Vita_WebAPI_Services;
 using Vita_WebAPI_Services.HealthCheck;
@@ -28,21 +28,34 @@ public class Program
         // Configure DbContext
         builder.Services.AddControllers(options => { options.SuppressAsyncSuffixInActionNames = false; });
 
-        builder.Services.Configure<VideoDatabaseSetting>(builder.Configuration.GetSection(nameof(MongoDbSettings)));
+        builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDbSettings"));
+
         builder.Services.AddCors(options =>
         {
             options.AddDefaultPolicy(b => b.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
         });
 
-        builder.Services.AddSingleton(serviceProvider =>
+
+        // Configure MongoDB settings
+        builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDbSettings"));
+
+        // Add MongoClient and MongoDatabase as singleton
+        builder.Services.AddSingleton<IMongoClient>(serviceProvider =>
         {
-            var videoDatabaseSetting = serviceProvider.GetRequiredService<IOptions<VideoDatabaseSetting>>().Value;
-            var mongoClient = new MongoClient(videoDatabaseSetting.ConnectionString); 
-            return mongoClient.GetDatabase(videoDatabaseSetting.DatabaseName);
+            var mongoDbSettings = serviceProvider.GetRequiredService<IOptions<MongoDbSettings>>().Value;
+            return new MongoClient(mongoDbSettings.ConnectionString);
         });
 
-        builder.Services.AddScoped<IVideoRepository, VideoRepository>();
+        builder.Services.AddSingleton<IMongoDatabase>(serviceProvider =>
+        {
+            var mongoDbSettings = serviceProvider.GetRequiredService<IOptions<MongoDbSettings>>().Value;
+            var client = serviceProvider.GetRequiredService<IMongoClient>();
+            return client.GetDatabase(mongoDbSettings.DatabaseName);
+        });
+
+        // Register repositories and services
         builder.Services.AddScoped<IVideoService, VideoService>();
+        builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
         builder.Services.AddScoped<IAuditLogService, AuditLogService>();
 
         builder.Services.AddRazorPages();
@@ -57,7 +70,7 @@ public class Program
         BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
         BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String));
         MongoDbClassMapping.RegisterClassMaps();
-      
+ 
         // Configure Swagger
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(options =>
@@ -142,9 +155,19 @@ public class Program
 
 public class MongoDbSettings
 {
-    public string ConnectionString { get; set; } = null!;
-    public string DatabaseName { get; set; } = null!;
-    
+    public static string? Host { get; set; }
+    /// <summary>
+    /// The port of the database.
+    /// </summary>
+    public static int Port { get; set; }
+    /// <summary>
+    /// The name of the database.
+    /// </summary>
+    public string? DatabaseName { get; set; }
+    /// <summary>
+    /// The connection string for the database.
+    /// </summary>
+    public string ConnectionString => $"mongodb://{Host}:{Port}";
 }
 
 public class MongoDbRelease

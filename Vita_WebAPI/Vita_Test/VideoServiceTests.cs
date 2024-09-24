@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
@@ -11,38 +12,74 @@ namespace Vita_Test;
 [TestClass]
 public class VideoServiceTests
 {
-    private static IVideoRepository? _videoRepository;
-    private VideoService? _videoService; // Remove nullable
+   
+    private IGenericRepository<Video>? _videoRepository;
+    private VideoService _videoService; // No nullable now
     private IMongoDatabase? _testDatabase; 
+    private ServiceProvider? _serviceProvider;
+
     private const string TestDatabaseName = "VideoRepositoryTestDatabase";
 
     [TestInitialize]
     public void Setup()
     {
-        // Set up MongoDB connection
-        const string connectionString = "mongodb://localhost:27017"; // Your MongoDB connection string
-        var client = new MongoClient(connectionString);
-        _testDatabase = client.GetDatabase(TestDatabaseName);
+        // Configure services to match the application DI container
+        var serviceCollection = new ServiceCollection();
 
-        // Initialize logger
-        var loggerFactory = new LoggerFactory();
-        var logger = loggerFactory.CreateLogger<VideoRepository>();
-
-        // Initialize VideoRepository with real database connection
-        var videoDatabaseSetting = new VideoDatabaseSetting
+        // Register MongoDB settings
+        var settings = new VideoDatabaseSetting
         {
             Host = "localhost",
             Port = 27017,
             DatabaseName = TestDatabaseName
         };
-        
-        _videoRepository = new VideoRepository(logger, Options.Create(videoDatabaseSetting));
+        var options = Options.Create(settings);
+        serviceCollection.AddSingleton<IOptions<VideoDatabaseSetting>>(options);
 
-        // Initialize VideoService after VideoRepository is set up
-        _videoService = new VideoService(_videoRepository, loggerFactory.CreateLogger<VideoService>(), new AuditLogService(_testDatabase));
+        // Register MongoClient and IMongoDatabase
+        serviceCollection.AddSingleton<IMongoClient>(provider =>
+        {
+            var mongoDbSettings = provider.GetRequiredService<IOptions<VideoDatabaseSetting>>().Value;
+            return new MongoClient($"mongodb://{mongoDbSettings.Host}:{mongoDbSettings.Port}");
+        });
+
+        serviceCollection.AddSingleton<IMongoDatabase>(provider =>
+        {
+            var mongoDbSettings = provider.GetRequiredService<IOptions<VideoDatabaseSetting>>().Value;
+            var client = provider.GetRequiredService<IMongoClient>();
+            return client.GetDatabase(mongoDbSettings.DatabaseName);
+        });
+
+        // Register GenericRepository for Video
+        serviceCollection.AddScoped<IGenericRepository<Video>, GenericRepository<Video>>();
+
+        // Register logger and other services
+        serviceCollection.AddLogging();
+        serviceCollection.AddScoped<IAuditLogService, AuditLogService>();
+
+        // Build the service provider
+        _serviceProvider = serviceCollection.BuildServiceProvider();
+
+        // Resolve dependencies from the service provider
+        _videoRepository = _serviceProvider.GetRequiredService<IGenericRepository<Video>>();
+        var logger = _serviceProvider.GetRequiredService<ILogger<VideoService>>();
+        var auditLogService = _serviceProvider.GetRequiredService<IAuditLogService>();
+
+        // Initialize VideoService with resolved dependencies
+        _videoService = new VideoService(_videoRepository, logger, auditLogService);
+
+        // Get the test database for direct operations
+        _testDatabase = _serviceProvider.GetRequiredService<IMongoDatabase>();
 
         // Prepare test data
         InitializeTestData();
+    }
+
+    [TestCleanup]
+    public void Cleanup()
+    {
+        // Drop the test database after each test to ensure a clean slate
+        _testDatabase?.Client.DropDatabase(TestDatabaseName);
     }
     private void InitializeTestData()
     {
@@ -61,12 +98,6 @@ public class VideoServiceTests
 
         videoCollection.InsertOne(testVideo);
     } 
-    [TestCleanup]
-    public void Cleanup()
-    {
-        var videoCollection = _testDatabase?.GetCollection<Video>("Videos");
-        videoCollection?.DeleteMany(FilterDefinition<Video>.Empty);
-    }
     
     [TestMethod]
     public async Task CreateVideo_ShouldCreateVideo_WhenValidVideoIsProvided()

@@ -7,12 +7,12 @@ namespace Vita_WebAPI_Services;
 /// <summary>
 /// Service for managing video operations
 /// </summary>
-public class VideoService: IVideoService 
+public class VideoService: IVideoService
 {
     /// <summary>
     /// The video repository
     /// </summary>
-    private readonly IVideoRepository? _repository;
+    private readonly IGenericRepository<Video> _repository;
     /// <summary>
     /// The logger
     /// </summary>
@@ -26,7 +26,7 @@ public class VideoService: IVideoService
     /// <param name="repository"> The video repository</param>
     /// <param name="logger"> The logger</param>
     /// <param name="auditLogService"> The audit log service</param>
-    public VideoService(IVideoRepository? repository, ILogger<VideoService> logger, IAuditLogService auditLogService)
+    public VideoService(IGenericRepository<Video>? repository, ILogger<VideoService> logger, IAuditLogService auditLogService)
     {
         _repository = repository;
         _logger = logger;
@@ -77,12 +77,12 @@ public class VideoService: IVideoService
            var videos = await _repository?.GetAllAsync()!;
 
            // Convert videos to BsonDocument
+           _logger.LogInformation("Converting videos to BsonDocument");
            var after = videos.Select(v => new BsonDocument
            {
                { "Title", v.Title },
                { "Url", v.Url }
            }).ToList();
-
            var auditLog = new AuditLog
            {
                UserId = "System", 
@@ -92,8 +92,10 @@ public class VideoService: IVideoService
                After = after, // Use the BsonDocument list
                Timestamp = DateTimeOffset.UtcNow
            };
-
+           _logger.LogInformation("Logging audit log");
            await _auditLogService.LogAsync(auditLog);
+           _logger.LogInformation("Audit log created");
+           _logger.LogInformation("Returning videos");
            return videos;
        }
        catch (Exception e)
@@ -127,7 +129,7 @@ public class VideoService: IVideoService
     /// <param name="video">The video object containing details to be updated.</param>
     public async Task UpdateVideo(Video? video)
     {
-        if (video != null) await _repository?.UpdateAsync(video)!;
+        //if (video != null) await _repository?.UpdateAsync(video)!;
     }
 
     /// <summary>

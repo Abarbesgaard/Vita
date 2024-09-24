@@ -49,4 +49,12 @@
       <_ContentIncludedByDefault Remove="wwwroot\css\swagger-ui\custom.css" />
     </ItemGroup>
 
+
+
+    <ItemGroup>
+      <Reference Include="Vita_WebAPI_Repository">
+        <HintPath>..\Vita_Test\bin\Debug\net8.0\Vita_WebAPI_Repository.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
 </Project>
