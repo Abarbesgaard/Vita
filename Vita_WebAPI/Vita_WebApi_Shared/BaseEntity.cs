@@ -4,7 +4,12 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Vita_WebApi_Shared;
 
-public abstract class BaseEntity
+public interface IBaseEntity
+{
+    Guid Id { get; }
+    string CreatedBy { get; } 
+}
+public abstract class BaseEntity : IBaseEntity
 { 
     [BsonId]
     [JsonPropertyName("id")]

@@ -22,6 +22,13 @@ public record GetVideoDto(
     string? Title, 
     string? Description,
     string? Url);
+public record VideoDto(
+    Guid Id, 
+    DateTimeOffset CreatedAt, 
+    DateTimeOffset UpdatedAt, 
+    string? Title, 
+    string? Description,
+    string? Url);
 public class VideoAuditLogDto
 {
     public string? Title { get; set; }

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Vita_WebApi_API.Dto;
 using Vita_WebApi_API.Extensions;
+using AutoMapper;
 using Vita_WebAPI_Services;
 using Vita_WebApi_Shared;
 
@@ -18,7 +19,7 @@ namespace Vita_WebApi_API.Controllers;
 /// <param name="env">The hosting environment information.</param>
 [ApiController]
 [Route("api/[controller]")]
-public class VideoController(IVideoService service, ILogger<VideoController> logger, IWebHostEnvironment env) : ControllerBase
+public class VideoController(IGenericService<Video> service, ILogger<VideoController> logger, IWebHostEnvironment env, IMapper? mapper) : ControllerBase
 {
     private static readonly string[] Secret = ["secret1"];
     /// <summary>
@@ -54,70 +55,25 @@ public class VideoController(IVideoService service, ILogger<VideoController> log
     [ProducesResponseType(typeof(IEnumerable<GetVideoDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetAllVideos()
+    public async Task<IActionResult?> GetAllVideos()
     {
         if (!env.IsDevelopment())
         {
-            var a = Request.Headers.TryGetValue("Authorization", out var token);
-            if (a == false)
-            {
-                throw new Exception("Unauthorized - no token");
-            }
-
-            var tokenString = token.ToString();
-            if (!tokenString.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
-            {
-                return Unauthorized("Invalid token format");
-            }
-
-            tokenString = tokenString["Bearer ".Length..].Trim();
-
-            var decodedString = JwtBuilder
-                .Create()
-                .WithAlgorithm(new HMACSHA256Algorithm())
-                .WithSecret(Secret).MustVerifySignature().Decode<IDictionary<string, string>>(tokenString);
-            var isValid = decodedString.TryGetValue("sub", out var sub);
-
-            if (!isValid) return Unauthorized("Invalid token");
-
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
-
-            try
-            {
-                var response = await client.GetAsync($"https://localhost:5226/auth/getuser/{sub}");
-
-                if (response.StatusCode == HttpStatusCode.Unauthorized)
-                {
-                    return Unauthorized();
-                }
-
-                if (response.IsSuccessStatusCode)
-                {
-                    return StatusCode((int)response.StatusCode, "User is authorized");
-                }
-
-                var responseContent = await response.Content.ReadAsStringAsync();
-
-                Console.WriteLine(responseContent);
-            }
-            catch (HttpRequestException ex)
-            {
-                logger.LogError($"Request error: {ex.Message}");
-                return StatusCode(500, $"{ex.Message}");
-            }
+            var tokenValidationResult = ValidateToken();
+            return await tokenValidationResult; // Return unauthorized response if any issue occurs
         }
 
         try
         {
             logger.LogInformation("Getting all videos");
-            var videos = await service.GetAllVideos();
-            if (videos == null)
+            var videos = await service.GetAllAsync();
+            var videoDtos = mapper?.Map<IEnumerable<VideoDto>>(videos);
+            if (videoDtos == null)
             {
                 logger.LogWarning("No videos found");
                 return NotFound("No videos found");
             }
-            return Ok(videos);
+            return Ok(videoDtos);
         }
         catch (Exception e)
         {
@@ -162,12 +118,7 @@ public class VideoController(IVideoService service, ILogger<VideoController> log
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<GetVideoDto>> GetVideoByIdAsync(Guid id)
     {
-        var video = await service.GetVideoById(id);
-        if (video == null)
-        {
-            logger.LogWarning("No video found with ID: {id}", id);
-            return NotFound("No video found with the provided ID");
-        }
+        var video = await service.GetByIdAsync(id);
 
         return video.AsGetVideoDto();
     }
@@ -252,10 +203,10 @@ public class VideoController(IVideoService service, ILogger<VideoController> log
                 Title = videoDto.Title,
                 Description = videoDto.Description,
                 Url = videoDto.Url,
-                UpdatedAt = videoDto.UpdatedAt,
+                UpdatedAt = videoDto.UpdatedAt
             };
         
-            await service.CreateVideo(video);
+            await service.CreateAsync(video)!;
             return CreatedAtAction(nameof(GetVideoByIdAsync), new { id = video.Id }, video.AsCreateVideoDto());
         }
         
@@ -270,9 +221,9 @@ public class VideoController(IVideoService service, ILogger<VideoController> log
                 Title = videoDto.Title,
                 Description = videoDto.Description,
                 Url = videoDto.Url,
-                UpdatedAt = videoDto.UpdatedAt,
+                UpdatedAt = videoDto.UpdatedAt
             };
-            await service.CreateVideo(videoTest);
+            await service.CreateAsync(videoTest)!;
             return CreatedAtAction(nameof(GetVideoByIdAsync), new { id = videoTest.Id }, videoTest.AsCreateVideoDto());
         }
 
@@ -321,16 +272,12 @@ public class VideoController(IVideoService service, ILogger<VideoController> log
     [HttpPut("Put/{id:guid}")]
     public async Task<IActionResult> PutAsync(Guid id, UpdateVideoDto videoDto)
     {
-        var existingVideo = await service.GetVideoById(id);
-        if (existingVideo == null)
-        {
-            return NotFound();
-        }
+        var existingVideo = await service.GetByIdAsync(id);
 
         existingVideo.Title = videoDto.Title;
         existingVideo.Description = videoDto.Description;
         existingVideo.Url = videoDto.Url;
-        await service.UpdateVideo(existingVideo);
+        await service.UpdateAsync(existingVideo.Id, existingVideo);
         return NoContent();
             
     }
@@ -362,12 +309,62 @@ public class VideoController(IVideoService service, ILogger<VideoController> log
     [HttpDelete("delete/{id:guid}")]
     public async Task<IActionResult> DeleteAsync(Guid id)
     {
-        var video = await service.GetVideoById(id);
-        if (video == null)
-        {
-            return NotFound();
-        }
-        await service.DeleteVideo(id);
+        await service.DeleteAsync(id);
         return NoContent();
     }
+    private async Task<IActionResult?> ValidateToken()
+    {
+        if (!Request.Headers.TryGetValue("Authorization", out var token))
+        {
+            return Unauthorized("Unauthorized - no token");
+        }
+
+        var tokenString = token.ToString();
+        if (!tokenString.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+        {
+            return Unauthorized("Invalid token format");
+        }
+
+        tokenString = tokenString["Bearer ".Length..].Trim();
+
+        var decodedString = JwtBuilder
+            .Create()
+            .WithAlgorithm(new HMACSHA256Algorithm())
+            .WithSecret(Secret)
+            .MustVerifySignature()
+            .Decode<IDictionary<string, string>>(tokenString);
+
+        if (!decodedString.TryGetValue("sub", out var sub))
+        {
+            return Unauthorized("Invalid token");
+        }
+
+        // Call your external user validation service
+        var client = new HttpClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
+
+        try
+        {
+            var response = await client.GetAsync($"https://localhost:5226/auth/getuser/{sub}");
+
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return Unauthorized();
+            }
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
+                logger.LogWarning($"User validation failed: {responseContent}");
+                return Unauthorized("User validation failed");
+            }
+
+            return null; // Valid token and user
+        }
+        catch (HttpRequestException ex)
+        {
+            logger.LogError($"Request error: {ex.Message}");
+            return StatusCode(500, $"{ex.Message}");
+        }
+    } 
 }

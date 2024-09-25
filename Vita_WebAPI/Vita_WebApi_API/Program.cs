@@ -1,9 +1,15 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 using Serilog;
+using Vita_WebApi_API.Mapping;
+using Vita_WebApi_API.MongoMapping;
 using Vita_WebAPI_Repository;
 using Vita_WebAPI_Services;
 using Vita_WebAPI_Services.HealthCheck;
@@ -17,9 +23,11 @@ public class Program
         Log.Logger = new LoggerConfiguration()
             .WriteTo.Console()
             .CreateLogger();
-
+        var mapperConfig = new MapperConfiguration(mc => mc.AddProfile(new MappingProfile()));
+        var mapper = mapperConfig.CreateMapper();
+        
         var builder = WebApplication.CreateBuilder(args);
-
+        builder.Services.AddSingleton(mapper);
         // Configure services
         builder.Services.AddControllers(options => { options.SuppressAsyncSuffixInActionNames = false; });
 
@@ -56,9 +64,13 @@ public class Program
         // Health checks
         builder.Services.AddHealthChecks()
             .AddCheck<MongoDbHealthCheck>("MongoDbHealthCheck", tags: ["db", "mongodb"]);
-
+        BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
+        BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String));
+        BsonSerializer.RegisterSerializer(typeof(ObjectId), new ObjectIdSerializer());
+        MongoDbClassMapping.RegisterClassMaps();
         // Register services
-        builder.Services.AddScoped<IVideoService, VideoService>();
+        //builder.Services.AddScoped<IVideoService, VideoService>();
+        builder.Services.AddScoped(typeof(IGenericService<>), typeof(GenericService<>));
         builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
         builder.Services.AddScoped<IAuditLogService, AuditLogService>();
         builder.Services.AddRazorPages();
