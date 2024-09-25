@@ -5,12 +5,13 @@ using JWT.Builder;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Vita_WebAPI_Services;
+using Vita_WebApi_Shared;
 
 namespace Vita_WebApi_API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ActivityController(IActivityService service, IWebHostEnvironment env) : ControllerBase
+public class ActivityController(IGenericService<Activity> service, IWebHostEnvironment env) : ControllerBase
 {
     private static readonly string[] Secret = ["secret1"];
     
@@ -70,7 +71,7 @@ public class ActivityController(IActivityService service, IWebHostEnvironment en
 
         try
         {
-            var result = await service.GetAll();
+            var result = await service.GetAllAsync();
             return Ok(result);
         }
         catch (Exception ex)
