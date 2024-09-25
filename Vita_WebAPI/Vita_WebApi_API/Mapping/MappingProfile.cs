@@ -9,5 +9,7 @@ public class MappingProfile : Profile
     public MappingProfile()
     {
         CreateMap<Video, VideoDto>().ReverseMap();
+        CreateMap<Activity, ActivityDto>()
+            .ReverseMap();
     }
 }

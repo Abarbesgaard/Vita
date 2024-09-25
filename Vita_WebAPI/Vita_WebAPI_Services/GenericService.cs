@@ -58,17 +58,34 @@ public class GenericService<T>(
     {
         try
         {
-            logger.LogInformation("Creating a new entity");
-            if (repository != null) await repository.CreateAsync(entity)!;
-            logger.LogInformation("Entity created");
-            await LogAuditLogAsync( entity, "Create");
-           
+            // Log the creation attempt
+            logger.LogInformation("Creating a new entity of type {EntityType}", typeof(T).Name);
+
+            // Check if the entity has an ID (assuming it's a Guid), generate one if necessary
+            var baseEntity = entity as BaseEntity;
+            if (baseEntity != null && baseEntity.Id == Guid.Empty)
+            {
+                baseEntity.Id = Guid.NewGuid();
+                logger.LogInformation("Generated new Guid for entity: {Id}", baseEntity.Id);
+            }
+
+            // Call the repository to create the entity
+            if (repository != null)
+            {
+                await repository.CreateAsync(entity);
+                logger.LogInformation("Entity created with ID: {Id}", baseEntity?.Id);
+            }
+
+            // Log the action in an audit log
+            await LogAuditLogAsync(entity, "Create");
+            logger.LogInformation("Audit log created for entity ID: {Id}", baseEntity?.Id);
         }
         catch (Exception e)
         {
-            logger.LogError("An error occurred: {0}", e.Message);
+            // Log the error and rethrow it
+            logger.LogError("An error occurred while creating the entity: {ErrorMessage}", e.Message);
             throw;
-        } 
+        }
     }
     
     public async Task UpdateAsync(Guid id, T entity)

@@ -19,7 +19,11 @@ namespace Vita_WebApi_API.Controllers;
 /// <param name="env">The hosting environment information.</param>
 [ApiController]
 [Route("api/[controller]")]
-public class VideoController(IGenericService<Video> service, ILogger<VideoController> logger, IWebHostEnvironment env, IMapper? mapper) : ControllerBase
+public class VideoController(
+    IGenericService<Video> service, 
+    ILogger<VideoController> logger, 
+    IWebHostEnvironment env, 
+    IMapper? mapper) : ControllerBase
 {
     private static readonly string[] Secret = ["secret1"];
     /// <summary>

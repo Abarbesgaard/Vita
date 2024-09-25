@@ -25,7 +25,7 @@ public class Program
             .CreateLogger();
         var mapperConfig = new MapperConfiguration(mc => mc.AddProfile(new MappingProfile()));
         var mapper = mapperConfig.CreateMapper();
-        
+        mapper.ConfigurationProvider.AssertConfigurationIsValid();
         var builder = WebApplication.CreateBuilder(args);
         builder.Services.AddSingleton(mapper);
         // Configure services

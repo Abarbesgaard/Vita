@@ -13,7 +13,7 @@ public abstract class BaseEntity : IBaseEntity
 { 
     [BsonId]
     [JsonPropertyName("id")]
-    public Guid Id { get; init; }
+    public Guid Id { get; set; }
     [JsonPropertyName("title")]
     [StringLength(200, MinimumLength = 1, ErrorMessage = "Title must be between 1 and 200 characters")]
     public string? Title { get; set; }

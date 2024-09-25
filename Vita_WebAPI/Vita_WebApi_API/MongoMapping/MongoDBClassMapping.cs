@@ -16,6 +16,14 @@ public static class MongoDbClassMapping
                 cm.SetIgnoreExtraElements(true);  // Ignores any extra fields not mapped in the class.
             });
         }
+        if (!BsonClassMap.IsClassMapRegistered(typeof(Activity)))
+        {
+            BsonClassMap.RegisterClassMap<Activity>(cm =>
+            {
+                cm.AutoMap();  // Auto-maps all public properties.
+                cm.SetIgnoreExtraElements(true);  // Ignores any extra fields not mapped in the class.
+            });
+        } 
         if (!BsonClassMap.IsClassMapRegistered(typeof(AuditLog)))
         {
             BsonClassMap.RegisterClassMap<AuditLog>(cm =>
