@@ -1,3 +1,4 @@
+using Microsoft.Identity.Client;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Serilog;
@@ -18,8 +19,14 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
 
     public async Task<IReadOnlyCollection<T>> GetAllAsync()
     {
+        const int maxResults = 100;
+        
         Log.Information("Getting all entities from the collection");
-        return await _collection.Find(new BsonDocument()).ToListAsync();
+        
+        return await _collection
+            .Find(new BsonDocument())
+            .Limit(maxResults)
+            .ToListAsync();
     }
     
     public async Task CreateAsync(T entity)
