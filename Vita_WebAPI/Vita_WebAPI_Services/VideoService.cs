@@ -12,7 +12,7 @@ public class VideoService: IVideoService
     /// <summary>
     /// The video repository
     /// </summary>
-    private readonly IGenericRepository<Video> _repository;
+    private readonly IGenericRepository<Video>? _repository;
     /// <summary>
     /// The logger
     /// </summary>
@@ -74,10 +74,9 @@ public class VideoService: IVideoService
        try
        {
            _logger.LogInformation("Getting all videos");
-           var videos = await _repository.GetAllAsync()!;
+           var videos = await _repository?.GetAllAsync()!;
 
            // Convert videos to BsonDocument
-           _logger.LogInformation("Converting videos to BsonDocument");
            var after = videos.Select(v => new BsonDocument
            {
                { "Title", v.Title },
@@ -130,7 +129,7 @@ public class VideoService: IVideoService
     public async Task UpdateVideo(Video? video)
     {
         _logger.LogInformation("Updating video");
-        if (video != null) await _repository.UpdateAsync(video.Id, video)!;
+        if (video != null) await _repository?.UpdateAsync(video.Id, video)!;
     }
 
     /// <summary>
@@ -152,7 +151,7 @@ public class VideoService: IVideoService
                 Timestamp = DateTimeOffset.UtcNow
             };
             await _auditLogService.LogAsync(auditLog);
-            await _repository?.DeleteAsync(id)!;
+            if (_repository != null) await _repository?.DeleteAsync(id)!;
         }
         catch (Exception e)
         {

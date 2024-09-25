@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using Vita_WebAPI_Repository;
 using Vita_WebApi_Shared;
@@ -11,6 +12,7 @@ public class RepositoryTests
     private IGenericRepository<Video>? _videoRepository;
     private IMongoDatabase? _testDatabase;
     private IMongoClient? _mongoClient;
+    private ILogger<GenericRepository<Video>>? _logger;
     private const string TestDatabaseName = "VideoRepositoryTestDatabase";
 
     [TestInitialize]
@@ -20,7 +22,7 @@ public class RepositoryTests
         _mongoClient = new MongoClient(connectionString); 
         _testDatabase = _mongoClient.GetDatabase(TestDatabaseName);
        
-        _videoRepository = new GenericRepository<Video>(_testDatabase);
+        _videoRepository = new GenericRepository<Video>(_testDatabase, _logger);
          
         InitializeTestData();
     }

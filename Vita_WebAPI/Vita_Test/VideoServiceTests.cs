@@ -14,7 +14,7 @@ public class VideoServiceTests
 {
    
     private IGenericRepository<Video>? _videoRepository;
-    private VideoService _videoService; // No nullable now
+    private VideoService? _videoService; // No nullable now
     private IMongoDatabase? _testDatabase; 
     private ServiceProvider? _serviceProvider;
 
