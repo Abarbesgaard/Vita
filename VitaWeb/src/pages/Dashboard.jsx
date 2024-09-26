@@ -50,7 +50,7 @@ export default function Dashboard() {
 
 	return (
 		<Layout>
-			<div className="bg-slate-400 w-full h-full flex flex-col items-center overflow-auto">
+			<div className="bg-slate-400 w-full h-full flex flex-col lg:flex-row overflow-auto">
 				<VideoForm
 					handleVideoFormSubmit={handleVideoFormSubmit}
 					title={title}
@@ -60,15 +60,17 @@ export default function Dashboard() {
 					description={description}
 					setDescription={setDescription}
 				/>
-				{videos.map((video) => (
-					<VideoCard
-						key={video.id}
-						id={video.id}
-						title={video.title}
-						url={video.url}
-						deleteVideo={deleteVideo}
-					/>
-				))}
+				<div className="flex flex-col w-full">
+					{videos.map((video) => (
+						<VideoCard
+							key={video.id}
+							id={video.id}
+							title={video.title}
+							url={video.url}
+							deleteVideo={deleteVideo}
+						/>
+					))}
+				</div>
 			</div>
 		</Layout>
 	);
