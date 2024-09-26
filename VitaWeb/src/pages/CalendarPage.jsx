@@ -183,7 +183,7 @@ const CalendarPage = () => {
 						</div>
 					</div>
 				</div>
-				<div className="h-full w-full bg-[url('https://www.vitahus.dk/wp-content/uploads/Vitahus-Logo-Web.png')] bg-no-repeat bg-center overflow-hidden">
+				<div className="h-full w-full pr-5 bg-[url('https://www.vitahus.dk/wp-content/uploads/Vitahus-Logo-Web.png')] bg-no-repeat bg-center overflow-hidden">
 					<Calendar
 						localizer={localizer}
 						startAccessor="start"

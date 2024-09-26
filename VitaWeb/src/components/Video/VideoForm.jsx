@@ -31,14 +31,14 @@ export default function VideoForm({
 					placeholder="Indsæt link"
 					className="bg-gray-300 pl-2 sm:py-1 shadow-depth_gray rounded sm:w-96"
 				/>
-				<input
+				<textarea
 					value={description}
 					onChange={(e) => {
 						setDescription(e.target.value);
 					}}
-					type="text"
+					rows={5}
 					placeholder="Indsæt beskrivelse"
-					className="bg-gray-300 pl-2 sm:py-1 shadow-depth_gray rounded sm:w-96"
+					className="bg-gray-300 pl-2 sm:py-1 shadow-depth_gray rounded sm:w-96 resize-none"
 				/>
 				<button
 					type="submit"

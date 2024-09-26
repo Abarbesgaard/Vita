@@ -34,7 +34,9 @@ export default function Dashboard() {
 			},
 			user.user_id
 		);
-		console.log(video);
+		setDescription("");
+		setTitle("");
+		setLinkUrl("");
 		await fetchVideos();
 	};
 
@@ -42,6 +44,7 @@ export default function Dashboard() {
 		const videos = await getAllVideos(user.user_id);
 		console.log(videos);
 		setVideos([...videos]);
+		console.log(user);
 	};
 
 	useEffect(() => {
@@ -62,13 +65,7 @@ export default function Dashboard() {
 				/>
 				<div className="flex flex-col w-full">
 					{videos.map((video) => (
-						<VideoCard
-							key={video.id}
-							id={video.id}
-							title={video.title}
-							url={video.url}
-							deleteVideo={deleteVideo}
-						/>
+						<VideoCard key={video.id} video={video} deleteVideo={deleteVideo} />
 					))}
 				</div>
 			</div>
