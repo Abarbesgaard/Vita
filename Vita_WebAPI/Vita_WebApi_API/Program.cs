@@ -119,7 +119,7 @@ public class Program
 
         // Build the app
         var app = builder.Build();
-        app.Urls.Add("https://*:8080");
+        app.Urls.Add("http://0.0.0.0:5001");
         // Configure the HTTP request pipeline
         if (app.Environment.IsDevelopment())
         {

@@ -1,0 +1,6 @@
+@Vita_GateWay_Api_HostAddress = https://localhost:8081
+
+GET {{Vita_GateWay_Api_HostAddress}}/api/Video/getall/
+Accept: application/json
+
+###

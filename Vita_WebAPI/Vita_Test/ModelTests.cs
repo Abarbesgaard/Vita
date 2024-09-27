@@ -162,7 +162,7 @@ public class ModelTests
             Attendee = new List<Users>(), // Initialize with an empty list
             VerifiedAttendee = new List<Users>(),
             DeclinedAttendee = new List<Users>(),
-            TentativeAttendee = new List<Users>(),
+            TentativeAttendee = new List<Users>()
         };
 
         // Assert

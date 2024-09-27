@@ -61,18 +61,41 @@ public class VideoController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult?> GetAllVideos()
     {
-        if (!env.IsDevelopment())
+        if (env.IsDevelopment())
         {
-            var tokenValidationResult = ValidateToken();
-            return await tokenValidationResult; // Return unauthorized response if any issue occurs
+            try
+            {
+                logger.LogInformation("Getting all videos (Development mode)");
+                var videos = await service.GetAllAsync();
+                var videoDtos = mapper?.Map<IEnumerable<VideoDto>>(videos);
+                if (videoDtos == null || !videoDtos.Any())
+                {
+                    logger.LogWarning("No videos found");
+                    return NotFound("No videos found");
+                }
+                return Ok(videoDtos);
+            }
+            catch (Exception e)
+            {
+                logger.LogError($"An error occurred: {e.Message}");
+                return StatusCode(500, "Internal server error");
+            }
         }
 
+        // Token validation logic for non-development environments
+        var tokenValidationResult = await ValidateToken();
+        if (tokenValidationResult != null)
+        {
+            return tokenValidationResult; // Return unauthorized response if any issue occurs
+        }
+
+        // If token validation passes, proceed to get videos
         try
         {
             logger.LogInformation("Getting all videos");
             var videos = await service.GetAllAsync();
             var videoDtos = mapper?.Map<IEnumerable<VideoDto>>(videos);
-            if (videoDtos == null)
+            if (videoDtos == null || !videoDtos.Any())
             {
                 logger.LogWarning("No videos found");
                 return NotFound("No videos found");
@@ -83,9 +106,7 @@ public class VideoController(
         {
             logger.LogError($"An error occurred: {e.Message}");
             return StatusCode(500, "Internal server error");
-        }
-
-    }   
+        }    }   
     
     /// <summary>
     /// Retrieves a video by its ID.
@@ -322,47 +343,47 @@ public class VideoController(
         {
             return Unauthorized("Unauthorized - no token");
         }
-
+    
         var tokenString = token.ToString();
         if (!tokenString.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
         {
             return Unauthorized("Invalid token format");
         }
-
+    
         tokenString = tokenString["Bearer ".Length..].Trim();
-
+    
         var decodedString = JwtBuilder
             .Create()
             .WithAlgorithm(new HMACSHA256Algorithm())
             .WithSecret(Secret)
             .MustVerifySignature()
             .Decode<IDictionary<string, string>>(tokenString);
-
+    
         if (!decodedString.TryGetValue("sub", out var sub))
         {
             return Unauthorized("Invalid token");
         }
-
+    
         // Call your external user validation service
         var client = new HttpClient();
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
-
+    
         try
         {
             var response = await client.GetAsync($"https://localhost:5226/auth/getuser/{sub}");
-
+    
             if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
                 return Unauthorized();
             }
-
+    
             if (!response.IsSuccessStatusCode)
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
                 logger.LogWarning($"User validation failed: {responseContent}");
                 return Unauthorized("User validation failed");
             }
-
+    
             return null; // Valid token and user
         }
         catch (HttpRequestException ex)
@@ -370,5 +391,5 @@ public class VideoController(
             logger.LogError($"Request error: {ex.Message}");
             return StatusCode(500, $"{ex.Message}");
         }
-    } 
+    }  
 }

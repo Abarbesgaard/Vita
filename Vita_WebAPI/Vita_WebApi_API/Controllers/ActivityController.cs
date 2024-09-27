@@ -26,6 +26,11 @@ public class ActivityController(
     [SuppressMessage("ReSharper.DPA", "DPA0011: High execution time of MVC action", MessageId = "time: 526ms")]
     public async Task<IActionResult?> GetAllAsync()
     {
+        if (!env.IsDevelopment())
+        {
+            var tokenValidationResult = ValidateToken();
+            return await tokenValidationResult; // Return unauthorized response if any issue occurs
+        } 
         try
         {
             var activities = await service
