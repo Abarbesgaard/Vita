@@ -7,6 +7,7 @@ namespace Vita_Test;
 [TestClass]
 public class ModelTests
 {
+    [TestCategory("Video")]
     [TestMethod]
     public void Video_ShouldInitializePropertiesCorrectly()
     {
@@ -32,6 +33,7 @@ public class ModelTests
         video.Url.Should().Be("https://example.com/video");
     }
 
+    [TestCategory("Video")]
     [TestMethod]
     public void Video_ShouldFailValidation_WhenTitleIsTooLong()
     {
@@ -54,6 +56,7 @@ public class ModelTests
             .Which.ErrorMessage.Should().Be("Title must be between 1 and 200 characters");
     }
 
+    [TestCategory("Video")]
     [TestMethod]
     public void Video_ShouldFailValidation_WhenDescriptionIsTooLong()
     {
@@ -76,6 +79,7 @@ public class ModelTests
             .Which.ErrorMessage.Should().Be("Description must be between 1 and 500 characters");
     }
 
+    [TestCategory("Video")]
     [TestMethod]
     public void Video_ShouldFailValidation_WhenUrlIsTooLong()
     {
@@ -98,6 +102,7 @@ public class ModelTests
             .Which.ErrorMessage.Should().Be("Url must be between 1 and 2083 characters");
     }
 
+    [TestCategory("Video")]
     [TestMethod]
     public void Video_ShouldSucceedValidation_WhenPropertiesAreValid()
     {
@@ -118,6 +123,7 @@ public class ModelTests
         isValid.Should().BeTrue();
         validationResults.Should().BeEmpty();
     }
+    [TestCategory("BaseEntity")]
     [TestMethod]
     public void BaseEntity_Id_ShouldBeInitializedCorrectly()
     {
@@ -130,5 +136,46 @@ public class ModelTests
 
         // Assert
         actualId.Should().Be(expectedId);
+    }
+
+    [TestCategory("Activity")]
+    [TestMethod]
+    public void Activity_ShouldInitializePropertiesCorrectly()
+    {
+        // Arrange
+        var createdAt = DateTimeOffset.Now;
+        var updatedAt = DateTimeOffset.Now.AddHours(1);
+        var hostId = Guid.NewGuid(); // Generate a new HostId
+        var startTime = DateTimeOffset.Now.AddHours(2); // Start time in the future
+        var endTime = startTime.AddHours(1); // End time 1 hour after start
+
+        // Act
+        var activity = new Activity
+        {
+            CreatedAt = createdAt,
+            UpdatedAt = updatedAt,
+            Title = "Sample Title",
+            Description = "Sample Description",
+            HostId = hostId,
+            Start = startTime,
+            End = endTime,
+            Attendee = new List<Users>(), // Initialize with an empty list
+            VerifiedAttendee = new List<Users>(),
+            DeclinedAttendee = new List<Users>(),
+            TentativeAttendee = new List<Users>(),
+        };
+
+        // Assert
+        activity.CreatedAt.Should().Be(createdAt);
+        activity.UpdatedAt.Should().Be(updatedAt);
+        activity.Title.Should().Be("Sample Title");
+        activity.Description.Should().Be("Sample Description");
+        activity.HostId.Should().Be(hostId); // Assert HostId
+        activity.Start.Should().Be(startTime); // Assert Start
+        activity.End.Should().Be(endTime); // Assert End
+        activity.Attendee.Should().NotBeNull().And.BeEmpty(); // Assert Attendees are initialized
+        activity.VerifiedAttendee.Should().NotBeNull().And.BeEmpty(); // Assert Verified Attendees
+        activity.DeclinedAttendee.Should().NotBeNull().And.BeEmpty(); // Assert Declined Attendees
+        activity.TentativeAttendee.Should().NotBeNull().And.BeEmpty(); // Assert Tentative Attendees
     }
 }

@@ -7,7 +7,7 @@ namespace Vita_WebAPI_Services;
 public class GenericService<T>(
     IGenericRepository<T>? repository,
     ILogger<GenericService<T>> logger,
-    IAuditLogService auditLogService)
+    IAuditLogService? auditLogService)
     : IGenericService<T>
     where T : class, IBaseEntity
 {

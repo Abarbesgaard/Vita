@@ -7,16 +7,24 @@ namespace Vita_WebApi_Shared;
 public interface IBaseEntity
 {
     Guid Id { get; }
-    string CreatedBy { get; } 
+    string? CreatedBy { get; } 
+    string? UpdatedBy { get; }
+    DateTimeOffset CreatedAt { get; }
+    DateTimeOffset UpdatedAt { get; }
+    string? Title { get; }
+    string? Description { get; }
+    
 }
 public abstract class BaseEntity : IBaseEntity
 { 
     [BsonId]
     [JsonPropertyName("id")]
     public Guid Id { get; set; }
+    
     [JsonPropertyName("title")]
     [StringLength(200, MinimumLength = 1, ErrorMessage = "Title must be between 1 and 200 characters")]
     public string? Title { get; set; }
+   
     [JsonPropertyName("description")]
     [StringLength(500, MinimumLength = 1, ErrorMessage = "Description must be between 1 and 500 characters")]
     public string? Description { get; set; }
@@ -29,7 +37,7 @@ public abstract class BaseEntity : IBaseEntity
     
     [JsonPropertyName("createdBy")]
     [StringLength(200, MinimumLength = 1, ErrorMessage = " UpdatedBy must be between 1 and 200 characters")]
-    public string? CreatedBy { get; set; }
+    public string? CreatedBy { get; init; }
     
     [JsonPropertyName("updatedBy")]
     [StringLength(200, MinimumLength = 1, ErrorMessage = " UpdatedBy must be between 1 and 200 characters")]

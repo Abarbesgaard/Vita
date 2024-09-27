@@ -161,13 +161,13 @@ public class GenericRepository<T>(IMongoDatabase database, ILogger<GenericReposi
 
         try
         {
-            var filter = Builders<T>.Filter.Eq("_id", id.ToString()); // Use the property name as a string
+            var filter = Builders<T>.Filter.Eq("_id", id); // Use the property name as a string
 
             var entity = await _collection.Find(filter).FirstOrDefaultAsync();
             if (entity == null)
             {
                 logger.LogError("No entity found to get");
-                throw new KeyNotFoundException($"{nameof(entity)} with ID {id} not found.");
+                return null;
             }
 
             return entity; // This will return null if no matching entity is found

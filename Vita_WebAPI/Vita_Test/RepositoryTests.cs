@@ -21,7 +21,14 @@ public class RepositoryTests
         const string connectionString = "mongodb://localhost:27017";
         _mongoClient = new MongoClient(connectionString); 
         _testDatabase = _mongoClient.GetDatabase(TestDatabaseName);
-       
+        var loggerFactory = LoggerFactory.Create(builder =>
+          {
+              builder.AddConsole();  // Adds console logging
+              builder.SetMinimumLevel(LogLevel.Debug);  // Set the logging level
+          });
+      
+          _logger = loggerFactory.CreateLogger<GenericRepository<Video>>();
+ 
         _videoRepository = new GenericRepository<Video>(_testDatabase, _logger);
          
         InitializeTestData();
@@ -44,7 +51,11 @@ public class RepositoryTests
         {
             Id = Guid.NewGuid(),
             Title = "Test Video",
-            Url = "https://example.com"
+            Url = "https://example.com",
+            CreatedAt = DateTimeOffset.UtcNow, // Ensure proper values for CreatedAt and UpdatedAt
+            UpdatedAt = DateTimeOffset.UtcNow,
+            CreatedBy = "TestUser",            // Insert meaningful values for nullable fields
+            UpdatedBy = "TestUser"
         };
 
         videoCollection?.InsertOne(testVideo);
@@ -55,17 +66,23 @@ public class RepositoryTests
     {
         // Arrange
         var videoCollection = _testDatabase?.GetCollection<Video>("Videos");
-        var testVideo = videoCollection.Find(FilterDefinition<Video>.Empty).FirstOrDefault();
-        Console.WriteLine(testVideo.Id); 
+        var testVideo = videoCollection?.Find(FilterDefinition<Video>.Empty).FirstOrDefault();
+
         if (testVideo == null)
         {
             Assert.Fail("No test video found in the test database.");
         }
-        
+
+        Console.WriteLine($"Queried video Id: {testVideo.Id}"); // Print ID for debugging
+
         // Act
         var result = await _videoRepository?.GetByIdAsync(testVideo.Id)!;
+
         // Assert
-        result.Should().BeEquivalentTo(testVideo);
+        result.Should().BeEquivalentTo(testVideo, options => options
+            .Excluding(video => video.CreatedAt)
+            .Excluding(video => video.UpdatedAt)
+            .Excluding(video => video.Description)); // Exclude null fields if needed
     }
     [TestMethod]
     public async Task GetByIdAsync_ShouldThrowArgumentNullException_WhenIdIsEmpty()

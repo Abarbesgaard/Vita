@@ -12,65 +12,33 @@ namespace Vita_Test;
 [TestClass]
 public class VideoServiceTests
 {
-   
-    private IGenericRepository<Video>? _videoRepository;
-    private VideoService? _videoService; // No nullable now
-    private IMongoDatabase? _testDatabase; 
-    private ServiceProvider? _serviceProvider;
-
+    private IGenericRepository<Video> _videoRepository;
+    private IGenericService<Video> _videoService; // No nullable now
+    private IMongoDatabase? _testDatabase;
+    private IMongoClient? _mongoClient;
+    private ILogger<GenericService<Video>>? _logger;
+    private ILogger<GenericRepository<Video>>? _log;
+    private IAuditLogService? _auditLogService;
     private const string TestDatabaseName = "VideoRepositoryTestDatabase";
 
     [TestInitialize]
     public void Setup()
     {
-        // Configure services to match the application DI container
-        var serviceCollection = new ServiceCollection();
-
-        // Register MongoDB settings
-        var settings = new VideoDatabaseSetting
+       const string connectionString = "mongodb://localhost:27017";
+        _mongoClient = new MongoClient(connectionString);
+        _testDatabase = _mongoClient.GetDatabase(TestDatabaseName);
+        var loggerFactory = LoggerFactory.Create(builder =>
         {
-            Host = "localhost",
-            Port = 27017,
-            DatabaseName = TestDatabaseName
-        };
-        var options = Options.Create(settings);
-        serviceCollection.AddSingleton<IOptions<VideoDatabaseSetting>>(options);
-
-        // Register MongoClient and IMongoDatabase
-        serviceCollection.AddSingleton<IMongoClient>(provider =>
-        {
-            var mongoDbSettings = provider.GetRequiredService<IOptions<VideoDatabaseSetting>>().Value;
-            return new MongoClient($"mongodb://{mongoDbSettings.Host}:{mongoDbSettings.Port}");
+            builder.AddConsole();  // Adds console logging
+            builder.SetMinimumLevel(LogLevel.Debug);  // Set the logging level
         });
 
-        serviceCollection.AddSingleton<IMongoDatabase>(provider =>
-        {
-            var mongoDbSettings = provider.GetRequiredService<IOptions<VideoDatabaseSetting>>().Value;
-            var client = provider.GetRequiredService<IMongoClient>();
-            return client.GetDatabase(mongoDbSettings.DatabaseName);
-        });
-
-        // Register GenericRepository for Video
-        serviceCollection.AddScoped<IGenericRepository<Video>, GenericRepository<Video>>();
-
-        // Register logger and other services
-        serviceCollection.AddLogging();
-        serviceCollection.AddScoped<IAuditLogService, AuditLogService>();
-
-        // Build the service provider
-        _serviceProvider = serviceCollection.BuildServiceProvider();
-
-        // Resolve dependencies from the service provider
-        _videoRepository = _serviceProvider.GetRequiredService<IGenericRepository<Video>>();
-        var logger = _serviceProvider.GetRequiredService<ILogger<VideoService>>();
-        var auditLogService = _serviceProvider.GetRequiredService<IAuditLogService>();
-
-        // Initialize VideoService with resolved dependencies
-        _videoService = new VideoService(_videoRepository, logger, auditLogService);
-
-        // Get the test database for direct operations
-        _testDatabase = _serviceProvider.GetRequiredService<IMongoDatabase>();
-
+        _logger = loggerFactory.CreateLogger<GenericService<Video>>();
+        _log = loggerFactory.CreateLogger<GenericRepository<Video>>();
+        _auditLogService = new AuditLogService(_testDatabase);
+        _videoRepository = new GenericRepository<Video>(_testDatabase, _log);
+        _videoService = new GenericService<Video>(_videoRepository, _logger, _auditLogService);
+        
         // Prepare test data
         InitializeTestData();
     }
@@ -111,7 +79,7 @@ public class VideoServiceTests
         };
 
         // Act
-        await _videoService?.CreateVideo(video)!;
+        await _videoService?.CreateAsync(video)!;
 
         // Assert
         var videoCollection = _testDatabase?.GetCollection<Video>("Videos");
@@ -131,7 +99,7 @@ public class VideoServiceTests
     public async Task GetAllVideos_ShouldReturnVideos_WhenVideosExist()
     {
         // Act
-        var videos = await _videoService?.GetAllVideos()!;
+        var videos = await _videoService?.GetAllAsync()!;
 
         // Assert
         if (videos != null)
@@ -150,7 +118,7 @@ public class VideoServiceTests
         var videoId = testVideo.Id;
     
         // Act
-        var video = await _videoService?.GetVideoById(videoId)!;
+        var video = await _videoService?.GetByIdAsync(videoId)!;
 
         // Assert
         video.Should().NotBeNull();
@@ -162,14 +130,15 @@ public class VideoServiceTests
     public async Task GetVideoById_ShouldReturnNull_WhenVideoDoesNotExist()
     {
         // Arrange
-        var nonExistentId = Guid.NewGuid();
-        
+        var nonExistentId = Guid.NewGuid(); // Generate a new GUID that does not exist in the database
+
         // Act
-        var video = await _videoService?.GetVideoById(nonExistentId)!;
+        Func<Task> act = async () => await _videoService.GetByIdAsync(nonExistentId);
 
         // Assert
-        video.Should().BeNull();
-    } 
+        await act.Should().ThrowAsync<KeyNotFoundException>()
+            .WithMessage($"Entity with ID: {nonExistentId} not found");
+    }
     [TestMethod]
     public async Task UpdateVideo_ShouldUpdateVideo_WhenValidVideoIsProvided()
     {
@@ -191,7 +160,7 @@ public class VideoServiceTests
         };
 
         // Act
-        await _videoService?.UpdateVideo(updatedVideo)!;
+        await _videoService?.UpdateAsync(updatedVideo.Id, updatedVideo)!;
 
         // Assert
         var videoFromDb = await videoCollection.Find(v => v.Id == updatedVideo.Id).FirstOrDefaultAsync();
@@ -214,7 +183,7 @@ public class VideoServiceTests
         await videoCollection?.InsertOneAsync(existingVideo)!;
 
         // Act
-        await _videoService?.DeleteVideo(existingVideo.Id)!;
+        await _videoService?.DeleteAsync(existingVideo.Id)!;
 
         // Assert
         var videoFromDb = await videoCollection.Find(v => v.Id == existingVideo.Id).FirstOrDefaultAsync();
