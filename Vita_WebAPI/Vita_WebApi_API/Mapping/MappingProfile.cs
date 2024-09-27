@@ -8,8 +8,12 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
-        CreateMap<Video, VideoDto>().ReverseMap();
+        CreateMap<Video, VideoDto>()
+            .ReverseMap();
         CreateMap<Activity, ActivityDto>()
             .ReverseMap();
+        CreateMap<Users, UserDto>()
+            .ReverseMap();
+        
     }
 }

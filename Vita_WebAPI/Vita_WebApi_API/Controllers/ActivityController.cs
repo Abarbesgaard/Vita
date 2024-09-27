@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http.Headers;
 using AutoMapper;
@@ -22,6 +23,7 @@ public class ActivityController(
     private static readonly string[] Secret = ["secret1"];
     
     [HttpGet("GetAll")]
+    [SuppressMessage("ReSharper.DPA", "DPA0011: High execution time of MVC action", MessageId = "time: 526ms")]
     public async Task<IActionResult?> GetAllAsync()
     {
         try
