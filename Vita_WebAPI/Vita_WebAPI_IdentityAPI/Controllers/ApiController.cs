@@ -4,8 +4,8 @@ using Vita_WebAPI_Services;
 
 namespace Vita_WebAPI_IdentityAPI.Controllers;
 
-[Route("api")]
 [ApiController]
+[Route("api/[controller]")]
 public class ApiController : ControllerBase
 {
     private readonly Auth0Service _auth0Service = new();
