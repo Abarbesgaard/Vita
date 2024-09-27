@@ -32,7 +32,7 @@ export default function Dashboard() {
 				url: linkUrl.replace("youtube", "youtube-nocookie"),
 				description,
 			},
-			user.user_id
+			user.sub
 		);
 		setDescription("");
 		setTitle("");
