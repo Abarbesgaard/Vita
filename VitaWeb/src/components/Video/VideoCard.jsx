@@ -15,7 +15,7 @@ export default function VideoCard({ video, deleteVideo }) {
 						Slet
 					</button>
 				</div>
-				<div className="md:w-[640px] md:h-[360px] relative mx-auto">
+				<div className="md:h-[360px] relative mx-auto">
 					<ReactPlayer
 						url={video.url}
 						controls={true}

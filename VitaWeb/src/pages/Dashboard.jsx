@@ -4,6 +4,8 @@ import VideoForm from "../components/Video/VideoForm";
 import Layout from "../components/Layout";
 import { saveVideo, getAllVideos, deleteVideoFromDb } from "../API/VideoAPI";
 import { useAuth0 } from "@auth0/auth0-react";
+import VideoAccordion from "../components/Video/VideoAccordion";
+import { AnimatePresence } from "framer-motion";
 
 export default function Dashboard() {
 	const { user } = useAuth0();
@@ -41,7 +43,7 @@ export default function Dashboard() {
 	};
 
 	const fetchVideos = async () => {
-		const videos = await getAllVideos(user.user_id);
+		const videos = await getAllVideos(user.sub);
 		console.log(videos);
 		setVideos([...videos]);
 		console.log(user);
@@ -63,10 +65,8 @@ export default function Dashboard() {
 					description={description}
 					setDescription={setDescription}
 				/>
-				<div className="flex flex-col w-full">
-					{videos.map((video) => (
-						<VideoCard key={video.id} video={video} deleteVideo={deleteVideo} />
-					))}
+				<div className="flex flex-col w-full py-14 px-10 overflow-visible">
+					<VideoAccordion videos={videos} deleteVideo={deleteVideo} />
 				</div>
 			</div>
 		</Layout>
