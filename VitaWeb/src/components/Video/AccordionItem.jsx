@@ -1,16 +1,17 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
-import { FaChevronCircleDown } from "react-icons/fa";
+import { FaChevronDown } from "react-icons/fa";
 
 const AccordionItem = ({ title, description, children }) => {
 	const [isOpen, setIsOpen] = useState(false);
+	const [isVisible, setIsVisible] = useState(false);
 
 	const toggleAccordion = () => {
 		setIsOpen(!isOpen);
 	};
 
 	const truncatedDesc =
-		description.length > 50 ? description.slice(0, 50) + "..." : description;
+		description.length > 50 ? description.slice(0, 40) + "..." : description;
 
 	return (
 		<>
@@ -19,18 +20,49 @@ const AccordionItem = ({ title, description, children }) => {
 				onClick={toggleAccordion}
 			>
 				<div className="flex">
-					<div>
+					<div className="w-1/2">
 						<p className="font-bold">{title}</p>
 						<p>{truncatedDesc}</p>
 					</div>
+					<div
+						className="mx-auto w-20 flex flex-col items-center"
+						onClick={(e) => {
+							e.stopPropagation();
+							setIsVisible(!isVisible);
+						}}
+					>
+						<p className="text-center">
+							{isVisible ? "Synlig" : "Ikke synlig"}
+						</p>
+						<motion.div
+							className={`bg-gray-600 w-10 h-5 rounded-full px-0.5 flex items-center shadow-inner ${
+								isVisible ? "justify-end" : "justify-start"
+							}`}
+							initial={false}
+							animate={{
+								backgroundColor: isVisible ? "#9ca3af" : "#374151",
+							}}
+						>
+							<motion.button
+								className="bg-white h-4 w-4 rounded-full shadow-md"
+								layout
+								initial={false}
+								animate={{
+									backgroundColor: isVisible ? "white" : "#4b5563",
+								}}
+								transition={{ type: "spring", stiffness: 700, damping: 30 }}
+							></motion.button>
+						</motion.div>
+					</div>
 					<motion.div
-						className="ml-auto mr-4 my-auto"
+						className="ml-auto mr-4 my-auto flex items-center"
 						initial={false}
 						animate={{
 							rotate: isOpen ? 180 : 0,
 						}}
+						transition={{ duration: 0.3 }}
 					>
-						<FaChevronCircleDown className=" h-6 w-6" />
+						<FaChevronDown className=" h-6 w-6" />
 					</motion.div>
 				</div>
 			</motion.div>

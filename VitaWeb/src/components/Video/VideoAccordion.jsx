@@ -30,13 +30,14 @@ const VideoAccordion = ({ videos, deleteVideo }) => {
 							transition={{ duration: 0.3, ease: "easeInOut" }}
 							className="overflow-hidden flex-shrink-0"
 						>
-							<div className="flex h-full columns-2 mb-2">
+							<div className="flex h-full columns-2 mb-2 justify-center">
 								<ReactPlayer
 									url={video.url}
 									controls={true}
 									height="100%"
 									light={true}
 									playing={true}
+									loop={true}
 									playIcon={
 										<div className="h-full w-full bg-black flex flex-col items-center justify-center">
 											<FaYoutube className="hover:scale-110 h-40 w-40 transition-all text-red-600" />
@@ -46,7 +47,7 @@ const VideoAccordion = ({ videos, deleteVideo }) => {
 										</div>
 									}
 								/>
-								<textarea className="basis-1/2 bg-gray-400 shadow-inner p-2">
+								<textarea className="basis-1/2 bg-gray-300 shadow-inner p-2">
 									{video.description}
 								</textarea>
 							</div>
