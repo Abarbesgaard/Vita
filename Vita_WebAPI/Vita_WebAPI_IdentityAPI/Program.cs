@@ -6,15 +6,16 @@ using Vita_WebAPI_IdentityAPI.Helpers;
 using Vita_WebAPI_Services;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddScoped<IAuth0Service, Auth0Service>();
+builder.Services.AddHttpClient<IAuth0Service, Auth0Service>();
 
 var domain = $"https://{builder.Configuration["Auth0:Domain"]}/";
+var audience = builder.Configuration["Auth0:Audience"];
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.Authority = domain;
-        options.Audience = builder.Configuration["Auth0:Audience"];
+        options.Audience = audience;
         options.TokenValidationParameters = new TokenValidationParameters
         {
             NameClaimType = ClaimTypes.NameIdentifier,
@@ -22,11 +23,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("read:messages", policy => policy.Requirements.Add(new 
-        HasScopeRequirement("read:messages", domain)));
-});
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("read:messages", policy =>
+        policy.Requirements.Add(new HasScopeRequirement("read:messages", domain)));
 
 builder.Services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
 

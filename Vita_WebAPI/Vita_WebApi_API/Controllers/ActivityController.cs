@@ -61,7 +61,7 @@ public class ActivityController(
     }
     
     [HttpPost("Create")]
-    public async Task<ActionResult<ActivityDto>> CreateActivityAsync([FromBody] ActivityDto activityDto)
+    public async Task<ActionResult<ActivityDto>> CreateActivityAsync([FromBody] ActivityDto? activityDto)
     {
         if (activityDto is null)
         {

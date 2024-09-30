@@ -61,6 +61,11 @@ public class VideoController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult?> GetAllVideos()
     {
+        //--------------------------------------------------------------------------
+        // Development mode block:
+        // In development, log and return all videos available in the service.
+        // Proper error handling is included to log issues and return correct status codes.
+        //-------------------------------------------------------------------------- 
         if (env.IsDevelopment())
         {
             try
@@ -81,32 +86,41 @@ public class VideoController(
                 return StatusCode(500, "Internal server error");
             }
         }
-
-        // Token validation logic for non-development environments
-        var tokenValidationResult = await ValidateToken();
-        if (tokenValidationResult != null)
+        
+        //--------------------------------------------------------------------------
+        // Production mode
+        // In production, validate the token and return the videos if the token is valid.
+        // Proper error handling is included to log issues and return correct status codes.
+        //--------------------------------------------------------------------------
+        if (!env.IsDevelopment())
         {
-            return tokenValidationResult; // Return unauthorized response if any issue occurs
-        }
 
-        // If token validation passes, proceed to get videos
-        try
-        {
-            logger.LogInformation("Getting all videos");
-            var videos = await service.GetAllAsync();
-            var videoDtos = mapper?.Map<IEnumerable<VideoDto>>(videos);
-            if (videoDtos == null || !videoDtos.Any())
+            var tokenValidationResult = await ValidateToken();
+            if (tokenValidationResult != null)
             {
-                logger.LogWarning("No videos found");
-                return NotFound("No videos found");
+                return tokenValidationResult; // Return unauthorized response if any issue occurs
             }
-            return Ok(videoDtos);
-        }
-        catch (Exception e)
-        {
-            logger.LogError($"An error occurred: {e.Message}");
-            return StatusCode(500, "Internal server error");
-        }    }   
+
+            try
+            {
+                logger.LogInformation("Getting all videos");
+                var videos = await service.GetAllAsync();
+                var videoDtos = mapper?.Map<IEnumerable<VideoDto>>(videos);
+                if (videoDtos == null || !videoDtos.Any())
+                {
+                    logger.LogWarning("No videos found");
+                    return NotFound("No videos found");
+                }
+                return Ok(videoDtos);
+            }
+            catch (Exception e)
+            {
+                logger.LogError($"An error occurred: {e.Message}");
+                return StatusCode(500, "Internal server error");
+            }    }
+
+        return null;
+    }
     
     /// <summary>
     /// Retrieves a video by its ID.
@@ -213,8 +227,12 @@ public class VideoController(
             var decodedString = JwtBuilder
                 .Create()
                 .WithAlgorithm(new HMACSHA256Algorithm())
-                .WithSecret(Secret).MustVerifySignature().Decode<IDictionary<string, string>>(tokenString);
-            var isValid = decodedString.TryGetValue("sub", out var sub);
+                .WithSecret(Secret)
+                .MustVerifySignature()
+                .Decode<IDictionary<string, string>>(tokenString);
+            
+            var isValid = decodedString
+                .TryGetValue("sub", out var sub);
 
             if (!isValid) return Unauthorized("Invalid token");
 
@@ -231,7 +249,8 @@ public class VideoController(
                 UpdatedAt = videoDto.UpdatedAt
             };
         
-            await service.CreateAsync(video)!;
+            await service
+                .CreateAsync(video)!;
             return CreatedAtAction(nameof(GetVideoByIdAsync), new { id = video.Id }, video.AsCreateVideoDto());
         }
         
@@ -248,7 +267,8 @@ public class VideoController(
                 Url = videoDto.Url,
                 UpdatedAt = videoDto.UpdatedAt
             };
-            await service.CreateAsync(videoTest)!;
+            await service
+                .CreateAsync(videoTest)!;
             return CreatedAtAction(nameof(GetVideoByIdAsync), new { id = videoTest.Id }, videoTest.AsCreateVideoDto());
         }
 
@@ -297,6 +317,13 @@ public class VideoController(
     [HttpPut("Put/{id:guid}")]
     public async Task<IActionResult> PutAsync(Guid id, UpdateVideoDto videoDto)
     {
+        var tokenValidationResult = await ValidateToken();
+        if (tokenValidationResult != null)
+        {
+            return tokenValidationResult; // Return unauthorized response if any issue occurs
+        }
+
+ 
         var existingVideo = await service.GetByIdAsync(id);
 
         existingVideo.Title = videoDto.Title;
@@ -334,6 +361,13 @@ public class VideoController(
     [HttpDelete("delete/{id:guid}")]
     public async Task<IActionResult> DeleteAsync(Guid id)
     {
+        var tokenValidationResult = await ValidateToken();
+        if (tokenValidationResult != null)
+        {
+            return tokenValidationResult; // Return unauthorized response if any issue occurs
+        }
+
+ 
         await service.DeleteAsync(id);
         return NoContent();
     }
@@ -391,5 +425,6 @@ public class VideoController(
             logger.LogError($"Request error: {ex.Message}");
             return StatusCode(500, $"{ex.Message}");
         }
-    }  
+    } 
+    
 }

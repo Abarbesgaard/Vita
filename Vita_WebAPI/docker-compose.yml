@@ -1,16 +1,14 @@
 
 services:
   Vita_WebAPI:
-    image: vitawebapi:dev
+    image: vitawebapi:prod
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.Prod
     ports:
-      - "8080:8080"
+      - "8081:5001"
     depends_on:
       - Vita_WebAPI_Database
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
 
 
   Vita_WebAPI_Database:

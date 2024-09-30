@@ -2,9 +2,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
-var auth0Domain = builder.Configuration["Auth0:Domain"];
-var auth0Audience = builder.Configuration["Auth0:Audience"]; 
-
 builder.Services.AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -12,8 +9,8 @@ builder.Services.AddAuthentication(options =>
     })
     .AddJwtBearer(options =>
     {
-        options.Authority = auth0Domain;  // Use the Auth0 domain
-        options.Audience = auth0Audience; // This must match the API's audience in Auth0
+        options.Authority = "https://dev-dj6iiunlxv3pukjx.us.auth0.com/";
+        options.Audience = "http://localhost:5226";
         options.RequireHttpsMetadata = true;
 
         // Add logging for token validation issues
@@ -59,9 +56,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseAuthorization();
 app.UseAuthentication();
-app.MapReverseProxy();
+app.UseAuthorization();
+app.MapReverseProxy()
+    .RequireAuthorization("authPolicy");
 app.MapControllers();
 
 app.Run();
