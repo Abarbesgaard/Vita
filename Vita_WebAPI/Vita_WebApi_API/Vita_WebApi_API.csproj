@@ -9,6 +9,7 @@
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS> 
     </PropertyGroup>
     <ItemGroup>
+        <PackageReference Include="AutoMapper" Version="13.0.1" />
         <PackageReference Include="JWT" Version="10.1.1" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.8" />
@@ -47,6 +48,14 @@
 
     <ItemGroup>
       <_ContentIncludedByDefault Remove="wwwroot\css\swagger-ui\custom.css" />
+    </ItemGroup>
+
+
+
+    <ItemGroup>
+      <Reference Include="Vita_WebAPI_Repository">
+        <HintPath>..\Vita_Test\bin\Debug\net8.0\Vita_WebAPI_Repository.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>

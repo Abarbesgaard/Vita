@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
@@ -11,38 +12,42 @@ namespace Vita_Test;
 [TestClass]
 public class VideoServiceTests
 {
-    private static IVideoRepository? _videoRepository;
-    private VideoService? _videoService; // Remove nullable
-    private IMongoDatabase? _testDatabase; 
+    private IGenericRepository<Video> _videoRepository;
+    private IGenericService<Video> _videoService; // No nullable now
+    private IMongoDatabase? _testDatabase;
+    private IMongoClient? _mongoClient;
+    private ILogger<GenericService<Video>>? _logger;
+    private ILogger<GenericRepository<Video>>? _log;
+    private IAuditLogService? _auditLogService;
     private const string TestDatabaseName = "VideoRepositoryTestDatabase";
 
     [TestInitialize]
     public void Setup()
     {
-        // Set up MongoDB connection
-        const string connectionString = "mongodb://localhost:27017"; // Your MongoDB connection string
-        var client = new MongoClient(connectionString);
-        _testDatabase = client.GetDatabase(TestDatabaseName);
-
-        // Initialize logger
-        var loggerFactory = new LoggerFactory();
-        var logger = loggerFactory.CreateLogger<VideoRepository>();
-
-        // Initialize VideoRepository with real database connection
-        var videoDatabaseSetting = new VideoDatabaseSetting
+       const string connectionString = "mongodb://localhost:27017";
+        _mongoClient = new MongoClient(connectionString);
+        _testDatabase = _mongoClient.GetDatabase(TestDatabaseName);
+        var loggerFactory = LoggerFactory.Create(builder =>
         {
-            Host = "localhost",
-            Port = 27017,
-            DatabaseName = TestDatabaseName
-        };
+            builder.AddConsole();  // Adds console logging
+            builder.SetMinimumLevel(LogLevel.Debug);  // Set the logging level
+        });
+
+        _logger = loggerFactory.CreateLogger<GenericService<Video>>();
+        _log = loggerFactory.CreateLogger<GenericRepository<Video>>();
+        _auditLogService = new AuditLogService(_testDatabase);
+        _videoRepository = new GenericRepository<Video>(_testDatabase, _log);
+        _videoService = new GenericService<Video>(_videoRepository, _logger, _auditLogService);
         
-        _videoRepository = new VideoRepository(logger, Options.Create(videoDatabaseSetting));
-
-        // Initialize VideoService after VideoRepository is set up
-        _videoService = new VideoService(_videoRepository, loggerFactory.CreateLogger<VideoService>(), new AuditLogService(_testDatabase));
-
         // Prepare test data
         InitializeTestData();
+    }
+
+    [TestCleanup]
+    public void Cleanup()
+    {
+        // Drop the test database after each test to ensure a clean slate
+        _testDatabase?.Client.DropDatabase(TestDatabaseName);
     }
     private void InitializeTestData()
     {
@@ -61,12 +66,6 @@ public class VideoServiceTests
 
         videoCollection.InsertOne(testVideo);
     } 
-    [TestCleanup]
-    public void Cleanup()
-    {
-        var videoCollection = _testDatabase?.GetCollection<Video>("Videos");
-        videoCollection?.DeleteMany(FilterDefinition<Video>.Empty);
-    }
     
     [TestMethod]
     public async Task CreateVideo_ShouldCreateVideo_WhenValidVideoIsProvided()
@@ -80,7 +79,7 @@ public class VideoServiceTests
         };
 
         // Act
-        await _videoService?.CreateVideo(video)!;
+        await _videoService?.CreateAsync(video)!;
 
         // Assert
         var videoCollection = _testDatabase?.GetCollection<Video>("Videos");
@@ -100,7 +99,7 @@ public class VideoServiceTests
     public async Task GetAllVideos_ShouldReturnVideos_WhenVideosExist()
     {
         // Act
-        var videos = await _videoService?.GetAllVideos()!;
+        var videos = await _videoService?.GetAllAsync()!;
 
         // Assert
         if (videos != null)
@@ -119,7 +118,7 @@ public class VideoServiceTests
         var videoId = testVideo.Id;
     
         // Act
-        var video = await _videoService?.GetVideoById(videoId)!;
+        var video = await _videoService?.GetByIdAsync(videoId)!;
 
         // Assert
         video.Should().NotBeNull();
@@ -131,14 +130,15 @@ public class VideoServiceTests
     public async Task GetVideoById_ShouldReturnNull_WhenVideoDoesNotExist()
     {
         // Arrange
-        var nonExistentId = Guid.NewGuid();
-        
+        var nonExistentId = Guid.NewGuid(); // Generate a new GUID that does not exist in the database
+
         // Act
-        var video = await _videoService?.GetVideoById(nonExistentId)!;
+        Func<Task> act = async () => await _videoService.GetByIdAsync(nonExistentId);
 
         // Assert
-        video.Should().BeNull();
-    } 
+        await act.Should().ThrowAsync<KeyNotFoundException>()
+            .WithMessage($"Entity with ID: {nonExistentId} not found");
+    }
     [TestMethod]
     public async Task UpdateVideo_ShouldUpdateVideo_WhenValidVideoIsProvided()
     {
@@ -160,14 +160,14 @@ public class VideoServiceTests
         };
 
         // Act
-        await _videoService?.UpdateVideo(updatedVideo)!;
+        await _videoService?.UpdateAsync(updatedVideo.Id, updatedVideo)!;
 
         // Assert
         var videoFromDb = await videoCollection.Find(v => v.Id == updatedVideo.Id).FirstOrDefaultAsync();
     
         videoFromDb.Should().NotBeNull();
-        videoFromDb.Title.Should().Be(updatedVideo.Title);
-        videoFromDb.Url.Should().Be(updatedVideo.Url);
+        videoFromDb.Title.Should().Be(updatedVideo.Title, "the title should have been updated to the new value");
+        videoFromDb.Url.Should().Be(updatedVideo.Url, "the URL should have been updated to the new value");
     }
     [TestMethod] 
     public async Task DeleteVideo_ShouldDeleteVideo_WhenValidIdIsProvided()
@@ -183,7 +183,7 @@ public class VideoServiceTests
         await videoCollection?.InsertOneAsync(existingVideo)!;
 
         // Act
-        await _videoService?.DeleteVideo(existingVideo.Id)!;
+        await _videoService?.DeleteAsync(existingVideo.Id)!;
 
         // Assert
         var videoFromDb = await videoCollection.Find(v => v.Id == existingVideo.Id).FirstOrDefaultAsync();

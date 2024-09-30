@@ -4,21 +4,30 @@ using Vita_WebAPI_Services;
 
 namespace Vita_WebAPI_IdentityAPI.Controllers;
 
-[Route("api")]
 [ApiController]
+[Route("api/[controller]")]
 public class ApiController : ControllerBase
 {
-    private readonly Auth0Service _auth0Service = new();
+    private readonly Auth0Service _auth0Service;
+    
+    public ApiController(Auth0Service auth0Service)
+    {
+        _auth0Service = auth0Service;
+    }
 
     [HttpPost("add-user")]
-    public async Task AddUser()
+    public async Task<IActionResult> AddUser()
     {
-      await _auth0Service.AddUser(); 
+        var bearerToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", string.Empty);
+        await _auth0Service.AddUser(bearerToken); 
+        return Ok();
     }
 
     [HttpGet("id")]
-    public async Task GetUser(string id)
-    {
-        await _auth0Service.GetUser(id);
+    public async Task<IActionResult> GetUser(string id)
+    { 
+        var bearerToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", string.Empty);
+        await _auth0Service.GetUser(id, bearerToken);
+        return Ok();
     }
 }
