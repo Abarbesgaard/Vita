@@ -9,6 +9,12 @@ services:
       - "8081:5001"
     depends_on:
       - Vita_WebAPI_Database
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - MongoDbSettings__Host=Vita_WebAPI_Database
+      - MongoDbSettings__Port=27017
+      - MongoDbSettings__DatabaseName=your-database-name
+
 
 
   Vita_WebAPI_Database:

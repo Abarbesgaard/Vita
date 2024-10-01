@@ -1,7 +1,10 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+
 builder.Services.AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -11,6 +14,20 @@ builder.Services.AddAuthentication(options =>
     {
         options.Authority = "https://dev-dj6iiunlxv3pukjx.us.auth0.com/";
         options.Audience = "https://dev-dj6iiunlxv3pukjx.us.auth0.com/api/v2/";
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,  // Validates that the token's issuer is correct
+            ValidateAudience = true,  // Validates that the audience is correct
+            ValidateIssuerSigningKey = true,  // Checks that the signature matches the public key from Auth0
+            ValidateLifetime = true,  // Ensures the token has not expired
+            ClockSkew = TimeSpan.Zero,  // Reduces the allowed clock skew time
+            IssuerSigningKeyResolver =  (token, securityToken, kid, validationParameters) =>
+            {
+                using var client = new HttpClient();
+                var jwks = client.GetStringAsync("https://dev-dj6iiunlxv3pukjx.us.auth0.com/.well-known/jwks.json").Result;
+                return new JsonWebKeySet(jwks).GetSigningKeys();
+            }
+        }; 
         options.RequireHttpsMetadata = true;
 
         // Add logging for token validation issues
@@ -25,15 +42,29 @@ builder.Services.AddAuthentication(options =>
             OnTokenValidated = context =>
             {
                 // Log successful token validation
-                Console.WriteLine("Token validated successfully.");
+                if (context.Principal!.Identity is ClaimsIdentity identity)
+                {
+                    Console.WriteLine($"Token validated. Subject: {identity.Name}");
+                }
                 return Task.CompletedTask;
             },
             OnChallenge = context =>
             {
                 // Log when a challenge is issued
-                Console.WriteLine("Token validation challenge issued.");
+                if (context.AuthenticateFailure != null)
+                {
+                    Console.WriteLine($"Authentication challenge failed: {context.AuthenticateFailure.Message}");
+                }
                 return Task.CompletedTask;
-            }
+            },
+            OnMessageReceived = context =>
+            {
+                if (string.IsNullOrEmpty(context.Token))
+                {
+                    Console.WriteLine("No Authorization header present.");
+                }
+                return Task.CompletedTask;
+            } 
         };
     });
 
