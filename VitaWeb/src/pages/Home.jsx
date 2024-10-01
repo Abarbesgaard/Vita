@@ -15,8 +15,6 @@ export default function Home() {
 						whileTap={{ scale: 0.9 }}
 						transition={{ type: "spring", stiffness: 400, damping: 10 }}
 					>
-						<div className="absolute -right-1 -top-1 w-3 h-3 bg-green-600 rounded-full animate-ping"></div>
-						<div className="absolute -right-1 -top-1 w-3 h-3 bg-green-600 rounded-full z-10"></div>
 						<img
 							className="h-full opacity-50 rounded-lg"
 							src="https://thumbs.dreamstime.com/z/upload-video-icon-web-eps-file-easy-to-edit-318039386.jpg?ct=jpeg"

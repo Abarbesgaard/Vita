@@ -4,6 +4,8 @@ import VideoForm from "../components/Video/VideoForm";
 import Layout from "../components/Layout";
 import { saveVideo, getAllVideos, deleteVideoFromDb } from "../API/VideoAPI";
 import { useAuth0 } from "@auth0/auth0-react";
+import VideoAccordion from "../components/Video/VideoAccordion";
+import { AnimatePresence } from "framer-motion";
 
 export default function Dashboard() {
 	const { user } = useAuth0();
@@ -32,16 +34,19 @@ export default function Dashboard() {
 				url: linkUrl.replace("youtube", "youtube-nocookie"),
 				description,
 			},
-			user.user_id
+			user.sub
 		);
-		console.log(video);
+		setDescription("");
+		setTitle("");
+		setLinkUrl("");
 		await fetchVideos();
 	};
 
 	const fetchVideos = async () => {
-		const videos = await getAllVideos(user.user_id);
+		const videos = await getAllVideos(user.sub);
 		console.log(videos);
 		setVideos([...videos]);
+		console.log(user);
 	};
 
 	useEffect(() => {
@@ -50,7 +55,7 @@ export default function Dashboard() {
 
 	return (
 		<Layout>
-			<div className="bg-slate-400 w-full h-full flex flex-col items-center overflow-auto">
+			<div className="bg-slate-400 w-full h-full flex flex-col lg:flex-row overflow-auto">
 				<VideoForm
 					handleVideoFormSubmit={handleVideoFormSubmit}
 					title={title}
@@ -60,15 +65,9 @@ export default function Dashboard() {
 					description={description}
 					setDescription={setDescription}
 				/>
-				{videos.map((video) => (
-					<VideoCard
-						key={video.id}
-						id={video.id}
-						title={video.title}
-						url={video.url}
-						deleteVideo={deleteVideo}
-					/>
-				))}
+				<div className="flex flex-col w-full py-14 px-10 overflow-visible">
+					<VideoAccordion videos={videos} deleteVideo={deleteVideo} />
+				</div>
 			</div>
 		</Layout>
 	);
