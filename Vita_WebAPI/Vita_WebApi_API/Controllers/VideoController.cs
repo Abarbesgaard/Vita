@@ -371,60 +371,76 @@ public class VideoController(
         await service.DeleteAsync(id);
         return NoContent();
     }
+
     private async Task<IActionResult?> ValidateToken()
     {
+        // Check for Authorization header
         if (!Request.Headers.TryGetValue("Authorization", out var token))
         {
+            logger.LogWarning("No Authorization header present");
             return Unauthorized("Unauthorized - no token");
         }
-    
-        var tokenString = token.ToString();
-        if (!tokenString.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+
+        // Check if token format is valid
+        if (!token.ToString().StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
         {
+            logger.LogWarning("Invalid token format");
             return Unauthorized("Invalid token format");
         }
-    
-        tokenString = tokenString["Bearer ".Length..].Trim();
-    
-        var decodedString = JwtBuilder
-            .Create()
-            .WithAlgorithm(new HMACSHA256Algorithm())
-            .WithSecret(Secret)
-            .MustVerifySignature()
-            .Decode<IDictionary<string, string>>(tokenString);
-    
-        if (!decodedString.TryGetValue("sub", out var sub))
+
+        var tokenString = token.ToString()["Bearer ".Length..].Trim();
+
+        // Decode and validate JWT token
+        IDictionary<string, string> decodedToken;
+        try
         {
+            decodedToken = JwtBuilder
+                .Create()
+                .WithAlgorithm(new HMACSHA256Algorithm())
+                .WithSecret(Secret)
+                .MustVerifySignature()
+                .Decode<IDictionary<string, string>>(tokenString);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"Token decoding failed: {ex.Message}");
             return Unauthorized("Invalid token");
         }
-    
-        // Call your external user validation service
+
+        if (!decodedToken.TryGetValue("sub", out var sub))
+        {
+            logger.LogWarning("Token missing 'sub' claim");
+            return Unauthorized("Invalid token - missing 'sub' claim");
+        }
+
+        // Validate the user with an external service
         var client = new HttpClient();
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
-    
+
         try
         {
             var response = await client.GetAsync($"https://localhost:5226/auth/getuser/{sub}");
-    
+
             if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
+                logger.LogWarning("User validation failed - unauthorized response");
                 return Unauthorized();
             }
-    
+
             if (!response.IsSuccessStatusCode)
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
                 logger.LogWarning($"User validation failed: {responseContent}");
                 return Unauthorized("User validation failed");
             }
-    
+
             return null; // Valid token and user
         }
         catch (HttpRequestException ex)
         {
             logger.LogError($"Request error: {ex.Message}");
-            return StatusCode(500, $"{ex.Message}");
+            return StatusCode(500, $"Request error: {ex.Message}");
         }
-    } 
-    
+    }
+
 }
