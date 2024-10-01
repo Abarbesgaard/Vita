@@ -1,7 +1,16 @@
 import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 
 const EventModal = ({ onClose, event, resources }) => {
+	const [color, setColor] = useState("bg-[#265985]");
+
+	useEffect(() => {
+		if (event.type === "meeting") {
+			setColor("bg-red-500");
+		}
+	}, [event.type]);
+
 	return (
 		<>
 			{createPortal(
@@ -20,16 +29,46 @@ const EventModal = ({ onClose, event, resources }) => {
 						transition={{ type: "spring", stiffness: 260, damping: 20 }}
 						exit={{ scale: 0 }}
 					>
-						<div className="flex justify-between items-center p-5">
-							<h2 className="text-xl font-bold">{event.title}</h2>
+						<div className={`flex justify-between p-5 ${color} rounded-t-lg`}>
+							<h2 className="text-xl text-white font-bold ml-2">
+								{event.title}
+							</h2>
 							<button onClick={onClose}>X</button>
 						</div>
 						<div className="p-5">
-							<p className="my-10">{event.description}</p>
-							<p className="font-bold text-lg">Deltagere:</p>
-							{event.resourceId.map((id) => (
-								<p key={id}>{resources.find((r) => r.id === id).title}</p>
-							))}
+							<textarea
+								rows={4}
+								disabled
+								value={event.description}
+								className="py-1 px-2 w-full bg-gray-100 shadow-inner resize-none"
+							/>
+							<div className="flex justify-evenly w-1/2">
+								<div>
+									<p className="font-bold text-lg">Inviterede:</p>
+									{event.invites
+										.filter((id) => {
+											return (
+												!event.accepted.includes(id) &&
+												!event.declined.includes(id)
+											);
+										})
+										.map((id) => (
+											<p key={id}>{resources.find((r) => r.id === id).title}</p>
+										))}
+								</div>
+								<div>
+									<p className="font-bold text-lg">Deltager:</p>
+									{event.accepted.map((id) => (
+										<p key={id}>{resources.find((r) => r.id === id).title}</p>
+									))}
+								</div>
+								<div>
+									<p className="font-bold text-lg">Deltager ikke:</p>
+									{event.declined.map((id) => (
+										<p key={id}>{resources.find((r) => r.id === id).title}</p>
+									))}
+								</div>
+							</div>
 						</div>
 					</motion.div>
 				</motion.div>,

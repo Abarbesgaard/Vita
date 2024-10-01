@@ -69,38 +69,46 @@ builder.Services.AddAuthentication(options =>
     });
 
 
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddControllers();
 builder.Services.AddAuthorizationBuilder()
-    .AddPolicy("authPolicy", policy =>
-    {
-        policy.RequireAuthenticatedUser();
-    });
+	.AddPolicy("authPolicy", policy =>
+	{
+		policy.RequireAuthenticatedUser();
+	});
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Vita API", Version = "v1" });
+	c.SwaggerDoc("v1", new OpenApiInfo { Title = "Vita API", Version = "v1" });
 });
 builder.Services.AddReverseProxy()
-    .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
+	.LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
+
+builder.Services.AddCors(options =>
+{
+	options.AddDefaultPolicy(b => b.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+});
 
 var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-        {
-            c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API Gateway");
-        }
-    );
-    app.UseExceptionHandler("/Home/Error");
+	app.UseSwagger();
+	app.UseSwaggerUI(c =>
+		{
+			c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API Gateway");
+		}
+	);
+	app.UseExceptionHandler("/Home/Error");
 }
 
 app.UseHttpsRedirection();
+app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapReverseProxy()
-    .RequireAuthorization("authPolicy");
+	.RequireAuthorization("authPolicy");
 app.MapControllers();
 
 app.Run();

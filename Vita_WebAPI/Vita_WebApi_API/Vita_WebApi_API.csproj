@@ -13,7 +13,7 @@
         <PackageReference Include="JWT" Version="10.1.1" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.8" />
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.8"/>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.8" />
         <PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0-preview.7.24405.3">
           <PrivateAssets>all</PrivateAssets>
@@ -30,7 +30,7 @@
         <PackageReference Include="Serilog" Version="4.0.2-dev-02226" />
         <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.1-dev-10398" />
         <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
         <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="6.7.1" />
     </ItemGroup>
 
@@ -47,15 +47,15 @@
 
 
     <ItemGroup>
-      <_ContentIncludedByDefault Remove="wwwroot\css\swagger-ui\custom.css" />
+      <Reference Include="Vita_WebAPI_Repository">
+        <HintPath>..\Vita_Test\bin\Debug\net8.0\Vita_WebAPI_Repository.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 
 
     <ItemGroup>
-      <Reference Include="Vita_WebAPI_Repository">
-        <HintPath>..\Vita_Test\bin\Debug\net8.0\Vita_WebAPI_Repository.dll</HintPath>
-      </Reference>
+      <Folder Include="wwwroot\" />
     </ItemGroup>
 
 </Project>
