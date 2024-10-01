@@ -35,7 +35,7 @@ const AccordionItem = ({ title, description, children }) => {
 							{isVisible ? "Synlig" : "Ikke synlig"}
 						</p>
 						<motion.div
-							className={`bg-gray-600 w-10 h-5 rounded-full px-0.5 flex items-center shadow-inner ${
+							className={`bg-gray-600 w-10 h-5 rounded-full px-1 flex items-center shadow-inner ${
 								isVisible ? "justify-end" : "justify-start"
 							}`}
 							initial={false}
