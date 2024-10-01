@@ -13,5 +13,9 @@
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Vita_WebAPI_Services\Vita_WebAPI_Services.csproj" />
+    </ItemGroup>
+
 
 </Project>

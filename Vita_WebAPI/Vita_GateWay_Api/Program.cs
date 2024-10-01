@@ -10,7 +10,7 @@ builder.Services.AddAuthentication(options =>
     .AddJwtBearer(options =>
     {
         options.Authority = "https://dev-dj6iiunlxv3pukjx.us.auth0.com/";
-        options.Audience = "http://localhost:5226";
+        options.Audience = "https://dev-dj6iiunlxv3pukjx.us.auth0.com/api/v2/";
         options.RequireHttpsMetadata = true;
 
         // Add logging for token validation issues
@@ -21,6 +21,18 @@ builder.Services.AddAuthentication(options =>
                 // Log authentication failure for debugging
                 Console.WriteLine($"Authentication failed: {context.Exception.Message}");
                 return Task.CompletedTask;
+            },
+            OnTokenValidated = context =>
+            {
+                // Log successful token validation
+                Console.WriteLine("Token validated successfully.");
+                return Task.CompletedTask;
+            },
+            OnChallenge = context =>
+            {
+                // Log when a challenge is issued
+                Console.WriteLine("Token validation challenge issued.");
+                return Task.CompletedTask;
             }
         };
     });
@@ -28,13 +40,11 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddControllers();
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("authPolicy", policy =>
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("authPolicy", policy =>
     {
         policy.RequireAuthenticatedUser();
     });
-});
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Vita API", Version = "v1" });
