@@ -1,15 +1,11 @@
-using System.Diagnostics;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
-var url = "https://vhomzkchzmeaxpjfjmvd.supabase.co";
-var key =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZob216a2Noem1lYXhwamZqbXZkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcyNzkzOTYyNywiZXhwIjoyMDQzNTE1NjI3fQ.fZnEYMM3aY9ixGFclig6C-6M71sGCi25NoRaDvPfcuI";
+const string url = "https://vhomzkchzmeaxpjfjmvd.supabase.co";
+const string key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZob216a2Noem1lYXhwamZqbXZkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcyNzkzOTYyNywiZXhwIjoyMDQzNTE1NjI3fQ.fZnEYMM3aY9ixGFclig6C-6M71sGCi25NoRaDvPfcuI";
 var options = new Supabase.SupabaseOptions
 {
     AutoConnectRealtime = true
@@ -45,7 +41,7 @@ builder.Services.AddAuthentication(optAuth =>
             ],
             ValidateIssuerSigningKey = true,  // Checks that the signature matches the public key from Auth0
             ValidateLifetime = true,  // Ensures the token has not expired
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Jc4ZvGS+REA18iW9pKsEDGEOXKTF5EGrttm7aTgKvQRGKL/EcI60b3PvdbMdNYnQWLDbxoqYy0uDkvh+/E4Gew==")),
+            IssuerSigningKey = new SymmetricSecurityKey("Jc4ZvGS+REA18iW9pKsEDGEOXKTF5EGrttm7aTgKvQRGKL/EcI60b3PvdbMdNYnQWLDbxoqYy0uDkvh+/E4Gew=="u8.ToArray()),
             ValidIssuers =
             [
                 "https://vhomzkchzmeaxpjfjmvd.supabase.co/auth/v1",
@@ -91,7 +87,7 @@ builder.Services.AddAuthentication(optAuth =>
                     Console.WriteLine("No Authorization header present.");
                 }
                 return Task.CompletedTask;
-            },
+            }
           
         };
     });
@@ -128,9 +124,9 @@ builder.Services.AddReverseProxy()
 // ============================
 // Configure CORS
 // ============================
-builder.Services.AddCors(options =>
+builder.Services.AddCors(corsOptions =>
 {
-	options.AddDefaultPolicy(b => b.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+	corsOptions.AddDefaultPolicy(b => b.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 });
 
 var app = builder.Build();
