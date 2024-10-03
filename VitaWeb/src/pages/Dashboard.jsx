@@ -1,14 +1,10 @@
 import { useEffect, useState } from "react";
-import VideoCard from "../components/Video/VideoCard";
 import VideoForm from "../components/Video/VideoForm";
 import Layout from "../components/Layout";
 import { saveVideo, getAllVideos, deleteVideoFromDb } from "../API/VideoAPI";
-import { useAuth0 } from "@auth0/auth0-react";
 import VideoAccordion from "../components/Video/VideoAccordion";
-import { AnimatePresence } from "framer-motion";
 
 export default function Dashboard() {
-	const { user } = useAuth0();
 	const [title, setTitle] = useState("");
 	const [description, setDescription] = useState("");
 	const [linkUrl, setLinkUrl] = useState("");
@@ -28,13 +24,13 @@ export default function Dashboard() {
 
 	const handleVideoFormSubmit = async (e) => {
 		e.preventDefault();
-		const video = await saveVideo(
+		await saveVideo(
 			{
 				title,
 				url: linkUrl.replace("youtube", "youtube-nocookie"),
 				description,
 			},
-			user.sub
+			123
 		);
 		setDescription("");
 		setTitle("");
@@ -43,10 +39,9 @@ export default function Dashboard() {
 	};
 
 	const fetchVideos = async () => {
-		const videos = await getAllVideos(user.sub);
+		const videos = await getAllVideos(123);
 		console.log(videos);
 		setVideos([...videos]);
-		console.log(user);
 	};
 
 	useEffect(() => {

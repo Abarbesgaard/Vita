@@ -1,6 +1,5 @@
 import UserCard from "../UserCard";
 import { NavLink } from "react-router-dom";
-import { useAuth0 } from "@auth0/auth0-react";
 import LoginButton from "../Auth/LoginButton";
 import LogoutButton from "../Auth/LogoutButton";
 import NonUserCard from "../NonUserCard";
@@ -9,7 +8,8 @@ import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
 
 export default function MobileNavBar({ onClose }) {
-	const { user, isAuthenticated } = useAuth0();
+	const isAuthenticated = false;
+	const user = [];
 	// const [isOpen, setIsOpen] = useState("hidden opacity-0 h-0");
 
 	return (
