@@ -3,7 +3,6 @@ using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Vita_WebApi_API.Dto;
-using Vita_WebApi_API.Extensions;
 using AutoMapper;
 using Microsoft.IdentityModel.Tokens;
 using Vita_WebAPI_Services;
@@ -154,11 +153,11 @@ public class VideoController(
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<GetVideoDto>> GetVideoByIdAsync(Guid id)
+    public async Task<IEnumerable<VideoDto>?> GetVideoByIdAsync(Guid id)
     {
         var video = await service.GetByIdAsync(id);
-
-        return video.AsGetVideoDto();
+        var videoDto = mapper?.Map<IEnumerable<VideoDto>>(video);
+        return videoDto;
     }
     
 
@@ -237,7 +236,7 @@ public class VideoController(
         
             await service
                 .CreateAsync(video)!;
-            return CreatedAtAction(nameof(GetVideoByIdAsync), new { id = video.Id }, video.AsCreateVideoDto());
+            return CreatedAtAction(nameof(GetVideoByIdAsync), new { id = video.Id }, video);
         }
         
         if (env.IsDevelopment())
@@ -254,7 +253,7 @@ public class VideoController(
             };
 
             await service.CreateAsync(videoTest)!;
-            return CreatedAtAction(nameof(GetVideoByIdAsync), new { id = videoTest.Id }, videoTest.AsCreateVideoDto());
+            return CreatedAtAction(nameof(GetVideoByIdAsync), new { id = videoTest.Id }, videoTest);
         }
 
         return null!;
