@@ -399,7 +399,7 @@ public class VideoController(
 
     // Retrieve JWKS
     var client = new HttpClient();
-    var jwks = await client.GetStringAsync("https://dev-dj6iiunlxv3pukjx.us.auth0.com/.well-known/jwks.json");
+    var jwks = await client.GetStringAsync("https://vhomzkchzmeaxpjfjmvd.supabase.co/");
     var keys = new JsonWebKeySet(jwks).GetSigningKeys();
 
     var tokenValidationParameters = new TokenValidationParameters
@@ -408,8 +408,7 @@ public class VideoController(
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = "https://dev-dj6iiunlxv3pukjx.us.auth0.com/",
-        ValidAudience = "https://dev-dj6iiunlxv3pukjx.us.auth0.com/api/v2/",
+        ValidIssuer = "https://vhomzkchzmeaxpjfjmvd.supabase.co",
         IssuerSigningKeys = keys // Use the JWKS keys here
     };
 
