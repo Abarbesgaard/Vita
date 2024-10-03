@@ -1,4 +1,3 @@
-import VideoCard from "./VideoCard";
 import { motion } from "framer-motion";
 import AccordionItem from "./AccordionItem";
 import ReactPlayer from "react-player";
