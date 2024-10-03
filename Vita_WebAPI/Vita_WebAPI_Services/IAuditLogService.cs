@@ -21,16 +21,11 @@ public class AuditLog
       
 }
 
-public class AuditLogService: IAuditLogService
+public class AuditLogService(IMongoDatabase database) : IAuditLogService
 {
-    private readonly IMongoCollection<AuditLog> _auditLogsCollection;
+    private readonly IMongoCollection<AuditLog> _auditLogsCollection = database.GetCollection<AuditLog>("AuditLogs") 
+                                                                       ?? throw new ArgumentNullException(nameof(database));
 
-    
-    public AuditLogService(IMongoDatabase database)
-    {
-        _auditLogsCollection = database.GetCollection<AuditLog>("AuditLogs") 
-                               ?? throw new ArgumentNullException(nameof(database));
-    }
 
     public async Task LogAsync(AuditLog auditLog)
     {
