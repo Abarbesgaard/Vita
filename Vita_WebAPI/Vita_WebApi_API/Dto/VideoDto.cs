@@ -7,6 +7,7 @@ public record UpdateVideoDto(
     string? Description, 
     string? Url);
 public record CreateVideoDto(
+    Guid UserId,
     string? CreatedBy,
     string? UpdatedBy,
     DateTimeOffset CreatedAt, 
@@ -17,6 +18,7 @@ public record CreateVideoDto(
 
 public record GetVideoDto(
     Guid Id, 
+    Guid UserId,
     DateTimeOffset CreatedAt, 
     DateTimeOffset UpdatedAt, 
     string? Title, 
@@ -24,6 +26,7 @@ public record GetVideoDto(
     string? Url);
 public record VideoDto(
     Guid Id, 
+    Guid UserId,
     DateTimeOffset CreatedAt, 
     DateTimeOffset UpdatedAt, 
     string? Title, 

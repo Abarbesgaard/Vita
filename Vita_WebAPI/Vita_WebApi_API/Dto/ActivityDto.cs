@@ -4,6 +4,8 @@ public record ActivityDto
 {
     public Guid Id { get; init; }
     
+    public Guid UserId { get; init; }
+    
     public DateTimeOffset Start { get; init; }
 
     public DateTimeOffset End { get; init; }
