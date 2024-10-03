@@ -151,7 +151,7 @@ public class GenericRepository<T>(IMongoDatabase database, ILogger<GenericReposi
         }
     }
     
-    public async Task<T> GetByIdAsync(Guid id)
+    public async Task<T?> GetByIdAsync(Guid id)
     {
         var stopwatch = Stopwatch.StartNew();
         if (id == Guid.Empty)
