@@ -1,0 +1,29 @@
+@Vita_GateWay_Api_HostAddress = https://localhost:8081
+@Bearer_Token =eyJhbGciOiJIUzI1NiIsImtpZCI6IjR4ZXdaMU5IVlBoUld2YjMiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3Zob216a2Noem1lYXhwamZqbXZkLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiI1NmYyODA1My00ZmViLTQ2MDEtYjExMC0yMjhkNGRkZjU0MTAiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzI3OTQ1MzM1LCJpYXQiOjE3Mjc5NDE3MzUsImVtYWlsIjoiYXNrZWx5c2dhYXJkQGdtYWlsLmNvbSIsInBob25lIjoiIiwiYXBwX21ldGFkYXRhIjp7InByb3ZpZGVyIjoiZW1haWwiLCJwcm92aWRlcnMiOlsiZW1haWwiXX0sInVzZXJfbWV0YWRhdGEiOnt9LCJyb2xlIjoiYXV0aGVudGljYXRlZCIsImFhbCI6ImFhbDEiLCJhbXIiOlt7Im1ldGhvZCI6InBhc3N3b3JkIiwidGltZXN0YW1wIjoxNzI3OTQxNzM1fV0sInNlc3Npb25faWQiOiI2MDU5MThkYS0zYzA2LTRjZTAtYjM2Ni01MTVmNGFjY2M2ZWYiLCJpc19hbm9ueW1vdXMiOmZhbHNlfQ.iZUG473QGG3kwIXjQZEzLRaIJzPlvd3r25NgLSHBVYo 
+
+ 
+
+GET {{Vita_GateWay_Api_HostAddress}}/api/Video/getall/
+Accept: application/json
+Authorization: Bearer {{Bearer_Token}}
+
+###
+
+POST {{Vita_GateWay_Api_HostAddress}}/api/Video/Create/
+Content-Type: application/json
+Authorization: Bearer {{Bearer_Token}}
+
+{
+  "Title": "Test Video",
+  "Description": "Test Video Description",
+  "Url": "https://www.youtube.com/watch?v=JGwWNGJdvx8",
+  "Thumbnail": "https://www.youtube.com/watch?v=JGwWNGJdvx8",
+  "IsFeatured": true,
+  "IsTrending": true,
+  "IsApproved": true,
+  "IsDeleted": false,
+  "CreatedDate": "2022-03-24T00:00:00",
+  "CreatedBy": "Admin",
+  "ModifiedDate": "2022-03-24T00:00:00",
+  "ModifiedBy": "Admin"
+}

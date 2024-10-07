@@ -7,28 +7,25 @@ public interface IAuditLogService
    Task LogAsync(AuditLog auditLog);
 }
 
+public abstract class AuditData
+{
+    public Guid? Id { get; set; }
+}
 public class AuditLog
 {
-      public string? UserId { get; set; }
+      public Guid UserId { get; set; }
       public string? Operation { get; set; }
       public string? Collection { get; set; }
-      public Guid DocumentId { get; set; }
-      public object? Before { get; set; }
-      public object? After { get; set; }
+      public Guid? DocumentId { get; set; }
       public DateTimeOffset Timestamp { get; set; }
       
 }
 
-public class AuditLogService: IAuditLogService
+public class AuditLogService(IMongoDatabase database) : IAuditLogService
 {
-    private readonly IMongoCollection<AuditLog> _auditLogsCollection;
+    private readonly IMongoCollection<AuditLog> _auditLogsCollection = database.GetCollection<AuditLog>("AuditLogs") 
+                                                                       ?? throw new ArgumentNullException(nameof(database));
 
-    
-    public AuditLogService(IMongoDatabase database)
-    {
-        _auditLogsCollection = database.GetCollection<AuditLog>("AuditLogs") 
-                               ?? throw new ArgumentNullException(nameof(database));
-    }
 
     public async Task LogAsync(AuditLog auditLog)
     {

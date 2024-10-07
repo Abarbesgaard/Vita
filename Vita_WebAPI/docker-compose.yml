@@ -1,23 +1,29 @@
 
 services:
   Vita_WebAPI:
-    image: ${DOCKER_REGISTRY-}vitawebapi
-    build: 
+    image: vitawebapi:prod
+    build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.Prod
     ports:
-      - "8080:8080"
+      - "8081:5001"
+    depends_on:
+      - Vita_WebAPI_Database
     environment:
-      - MONGO_URI=mongodb://Vita_WebAPI_Database:27017
-      - ASPNETCORE_ENVIRONMENT=Development  
+      - ASPNETCORE_ENVIRONMENT=Production
+      - MongoDbSettings__Host=Vita_WebAPI_Database
+      - MongoDbSettings__Port=27017
+      - MongoDbSettings__DatabaseName=your-database-name
+
+
 
   Vita_WebAPI_Database:
     image: mongo:latest
-    container_name: Vita_WebAPI.database
-    volumes:
-      - Vita_db_data:/data/db
+    container_name: Vita_WebAPI_Database
     ports:
-      - "27017:27017"
+      - "27017:27017"  # Exposes MongoDB on port 27017
+    volumes:
+      - Vita_db_data:/data/db  # Persistent storage for MongoDB data
 
 volumes:
   Vita_db_data:

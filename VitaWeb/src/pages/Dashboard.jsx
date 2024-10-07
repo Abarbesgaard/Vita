@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
-import VideoCard from "../components/Video/VideoCard";
 import VideoForm from "../components/Video/VideoForm";
 import Layout from "../components/Layout";
 import { saveVideo, getAllVideos, deleteVideoFromDb } from "../API/VideoAPI";
-import { useAuth0 } from "@auth0/auth0-react";
+import VideoAccordion from "../components/Video/VideoAccordion";
 
 export default function Dashboard() {
-	const { user } = useAuth0();
 	const [title, setTitle] = useState("");
 	const [description, setDescription] = useState("");
 	const [linkUrl, setLinkUrl] = useState("");
@@ -26,20 +24,22 @@ export default function Dashboard() {
 
 	const handleVideoFormSubmit = async (e) => {
 		e.preventDefault();
-		const video = await saveVideo(
+		await saveVideo(
 			{
 				title,
 				url: linkUrl.replace("youtube", "youtube-nocookie"),
 				description,
 			},
-			user.user_id
+			123
 		);
-		console.log(video);
+		setDescription("");
+		setTitle("");
+		setLinkUrl("");
 		await fetchVideos();
 	};
 
 	const fetchVideos = async () => {
-		const videos = await getAllVideos(user.user_id);
+		const videos = await getAllVideos(123);
 		console.log(videos);
 		setVideos([...videos]);
 	};
@@ -50,7 +50,7 @@ export default function Dashboard() {
 
 	return (
 		<Layout>
-			<div className="bg-slate-400 w-full h-full flex flex-col items-center overflow-auto">
+			<div className="bg-slate-400 w-full h-full flex flex-col lg:flex-row overflow-auto">
 				<VideoForm
 					handleVideoFormSubmit={handleVideoFormSubmit}
 					title={title}
@@ -60,15 +60,9 @@ export default function Dashboard() {
 					description={description}
 					setDescription={setDescription}
 				/>
-				{videos.map((video) => (
-					<VideoCard
-						key={video.id}
-						id={video.id}
-						title={video.title}
-						url={video.url}
-						deleteVideo={deleteVideo}
-					/>
-				))}
+				<div className="flex flex-col w-full py-14 px-10 overflow-visible">
+					<VideoAccordion videos={videos} deleteVideo={deleteVideo} />
+				</div>
 			</div>
 		</Layout>
 	);
