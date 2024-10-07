@@ -2,8 +2,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px;
+  padding: 5px 10px; /* Reduced padding */
   background-color: #3e6cc6; /* Dark background */
+  height: auto; /* Adjust height to fit content */
 }
 
 .nav-button {
@@ -11,16 +12,106 @@
   background-color: #05364a; /* Button color */
   border: none;
   border-radius: 5px;
-  padding: 10px 20px;
+  padding: 5px 10px; /* Reduced padding */
   cursor: pointer;
-  font-size: 16px;
+  font-size: 14px; /* Reduced font size */
   transition: background-color 0.3s ease; /* Smooth transition for hover effect */
 }
 
 .nav-button:hover {
-  background-color: #03263b; /* Darker blue on hover */
+  background-color: #2a7cae; /* Lighter blue on hover */
+}
+
+.nav-button-active {
+  color: white; /* Text color */
+  background-color: #011f2b; /* Button color */
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px; /* Reduced padding */
+  cursor: pointer;
+  font-size: 14px; /* Reduced font size */
+  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
 }
 .nav-image {
-  max-width: 20%;
+  max-width: 8%;
   height:auto;
+}
+
+.video-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin: 16px;
+  max-width: 400px;
+  transition: transform 0.2s;
+}
+
+.video-card:hover {
+  transform: scale(1.05);
+}
+
+.video-card iframe {
+  border: none;
+  border-bottom: 1px solid #ddd;
+}
+
+.video-title {
+  font-size: 1.2em;
+  margin: 16px;
+}
+
+.video-description {
+  font-size: 1em;
+  margin: 16px;
+  color: #555;
+}
+
+.video-card button {
+  background-color: #ff4b5c;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.video-card button:hover {
+  background-color: #ff1c3c;
+}
+
+.create-video-form {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin: 16px;
+  max-width: 400px;
+  padding: 16px;
+}
+
+.create-video-form input,
+.create-video-form textarea {
+  width: calc(100% - 32px);
+  margin: 8px 16px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.create-video-form button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.create-video-form button:hover {
+  background-color: #45a049;
 }

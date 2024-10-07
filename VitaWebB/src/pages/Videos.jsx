@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createVideo, deleteVideo, getAllVideos } from '../APIs/VideoAPI';
+import VideoCard from '../Components/VideoCard.jsx';
 
 export default function Videos() {
     const [videos, setVideos] = useState([]); 
@@ -50,13 +51,14 @@ export default function Videos() {
         else {
             console.log('Kunne ikke slette videoen, prøv igen')
         }
+        await fetchVideos();
         
     }
-    const getVideoIdFromUrl = (url) => {
-        const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^&\n]{11})/;
-        const match = url.match(regex);
-        return match ? match[1] : null;
-    };
+    // const getVideoIdFromUrl = (url) => {
+    //     const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^&\n]{11})/;
+    //     const match = url.match(regex);
+    //     return match ? match[1] : null;
+    // };
 
     return (
         <div>
@@ -89,23 +91,11 @@ export default function Videos() {
                 <button type="submit">Add Video</button>
             </form>
 
-            <h2>Video List</h2>
-            <ul className='videoCard'>
-                {videos.map(video => (
-                    <li key={video.id}>
-                        <h3>{video.title}</h3>
-                        <p>{video.description}</p>
-                        <iframe
-                            width="320"
-                            height="240"
-                            src={`https://www.youtube.com/embed/${getVideoIdFromUrl(video.url)}`}
-                            title={video.title}
-                            allowFullScreen
-                        ></iframe> 
-                        <button onClick={() => handleDelete(video.id)}>Delete</button>
-                    </li>
-                ))}
-            </ul>
+            <div className="video-list">
+            {videos.map(video => (
+                <VideoCard key={video.id} video={video} onDelete={handleDelete} />
+            ))}
+            </div>
         </div>
     );
 }
