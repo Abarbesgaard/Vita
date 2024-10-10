@@ -1,4 +1,5 @@
 import UserCard from "../UserCard";
+import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import LoginButton from "../Auth/LoginButton";
 import LogoutButton from "../Auth/LogoutButton";
@@ -6,11 +7,11 @@ import NonUserCard from "../NonUserCard";
 import { IoIosClose } from "react-icons/io";
 import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
+import supabase from "../../services/Supabase";
+import { useAuth } from "../../context/AuthContext";
 
 export default function MobileNavBar({ onClose }) {
-	const isAuthenticated = false;
-	const user = [];
-	// const [isOpen, setIsOpen] = useState("hidden opacity-0 h-0");
+	const { user } = useAuth();
 
 	return (
 		<>
@@ -37,7 +38,7 @@ export default function MobileNavBar({ onClose }) {
 						>
 							<IoIosClose className="h-11 w-11" />
 						</button>
-						{isAuthenticated ? (
+						{user ? (
 							<div className="h-full w-2/3 flex flex-col md:flex-row items-center justify-center px-10 py-4 mb-2 lg:mb-0">
 								<UserCard user={user} />
 								<div className="w-full h-full flex flex-col items-center">
