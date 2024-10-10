@@ -6,6 +6,7 @@ using Vita_WebAPI_Services.HealthCheck;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Vita_Test;
+
 [TestClass]
 public class MongoDbHealthCheckTests
 {
@@ -65,7 +66,10 @@ public class HealthCheckTests
         // Act
         if (_healthCheck != null)
         {
-            var result = await _healthCheck.CheckHealthAsync(new HealthCheckContext(), CancellationToken.None);
+            var result = await _healthCheck.CheckHealthAsync(
+                new HealthCheckContext(),
+                CancellationToken.None
+            );
 
             // Assert
             result.Status.Should().Be(HealthStatus.Healthy);
@@ -80,62 +84,112 @@ public class HealthCheckTests
         var healthCheck = new HealthCheck(isHealthy: false); // Konfigurér til at være usund
 
         // Act
-        var result = await healthCheck.CheckHealthAsync(new HealthCheckContext(), CancellationToken.None);
+        var result = await healthCheck.CheckHealthAsync(
+            new HealthCheckContext(),
+            CancellationToken.None
+        );
 
         // Assert
         result.Status.Should().Be(HealthStatus.Unhealthy);
         result.Description.Should().Be("Unhealthy API");
     }
-   [TestMethod]
-public async Task WriteResponse_ShouldWriteExpectedJson()
-{
-    // Arrange
-    var healthReport = new HealthReport(
-        new Dictionary<string, HealthReportEntry>
-        {
-            { "check1", new HealthReportEntry(HealthStatus.Healthy, "All good", TimeSpan.Zero, null, null) },
-            { "check2", new HealthReportEntry(HealthStatus.Unhealthy, "Something went wrong", TimeSpan.Zero, null, null) }
-        },
-        TimeSpan.Zero
-    );
 
-    var context = new DefaultHttpContext();
-    context.Response.Body = new MemoryStream(); // Ensure the response body is reset
-
-    // Act
-    await HealthCheck.WriteResponse(context, healthReport);
-
-    // Read the response
-    context.Response.Body.Seek(0, SeekOrigin.Begin);
-    var responseBody = await new StreamReader(context.Response.Body).ReadToEndAsync();
-
-    // Assert
-    var expectedJson = new
+    [TestMethod]
+    public async Task WriteResponse_ShouldWriteExpectedJson()
     {
-        status = "Unhealthy",
-        results = new
-        {
-            check1 = new
+        // Arrange
+        var healthReport = new HealthReport(
+            new Dictionary<string, HealthReportEntry>
             {
-                status = "Healthy",
-                description = "All good",
-                data = new { }
+                {
+                    "check1",
+                    new HealthReportEntry(
+                        HealthStatus.Healthy,
+                        "All good",
+                        TimeSpan.Zero,
+                        null,
+                        null
+                    )
+                },
+                {
+                    "check2",
+                    new HealthReportEntry(
+                        HealthStatus.Unhealthy,
+                        "Something went wrong",
+                        TimeSpan.Zero,
+                        null,
+                        null
+                    )
+                }
             },
-            check2 = new
+            TimeSpan.Zero
+        );
+
+        var context = new DefaultHttpContext();
+        context.Response.Body = new MemoryStream(); // Ensure the response body is reset
+
+        // Act
+        await HealthCheck.WriteResponse(context, healthReport);
+
+        // Read the response
+        context.Response.Body.Seek(0, SeekOrigin.Begin);
+        var responseBody = await new StreamReader(context.Response.Body).ReadToEndAsync();
+
+        // Assert
+        var expectedJson = new
+        {
+            status = "Unhealthy",
+            results = new
             {
-                status = "Unhealthy",
-                description = "Something went wrong",
-                data = new { }
+                check1 = new
+                {
+                    status = "Healthy",
+                    description = "All good",
+                    data = new { }
+                },
+                check2 = new
+                {
+                    status = "Unhealthy",
+                    description = "Something went wrong",
+                    data = new { }
+                }
             }
-        }
-    };
+        };
 
-    var actualJson = JsonSerializer.Deserialize<JsonElement>(responseBody);
-    Assert.AreEqual(expectedJson.status, actualJson.GetProperty("status").GetString());
-    Assert.AreEqual(expectedJson.results.check1.status, actualJson.GetProperty("results").GetProperty("check1").GetProperty("status").GetString());
-    Assert.AreEqual(expectedJson.results.check1.description, actualJson.GetProperty("results").GetProperty("check1").GetProperty("description").GetString());
-    Assert.AreEqual(expectedJson.results.check2.status, actualJson.GetProperty("results").GetProperty("check2").GetProperty("status").GetString());
-    Assert.AreEqual(expectedJson.results.check2.description, actualJson.GetProperty("results").GetProperty("check2").GetProperty("description").GetString());
+        var actualJson = JsonSerializer.Deserialize<JsonElement>(responseBody);
+        Assert.AreEqual(expectedJson.status, actualJson.GetProperty("status").GetString());
+        Assert.AreEqual(
+            expectedJson.results.check1.status,
+            actualJson
+                .GetProperty("results")
+                .GetProperty("check1")
+                .GetProperty("status")
+                .GetString()
+        );
+        Assert.AreEqual(
+            expectedJson.results.check1.description,
+            actualJson
+                .GetProperty("results")
+                .GetProperty("check1")
+                .GetProperty("description")
+                .GetString()
+        );
+        Assert.AreEqual(
+            expectedJson.results.check2.status,
+            actualJson
+                .GetProperty("results")
+                .GetProperty("check2")
+                .GetProperty("status")
+                .GetString()
+        );
+        Assert.AreEqual(
+            expectedJson.results.check2.description,
+            actualJson
+                .GetProperty("results")
+                .GetProperty("check2")
+                .GetProperty("description")
+                .GetString()
+        );
+    }
 }
 
-}
