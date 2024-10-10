@@ -20,14 +20,20 @@ const EventCard = ({ show, onClose, onSave, selectedSlot }) => {
     };
 
     const handleSave = () => {
+        if (!title.trim() || !description.trim()) {
+            alert('Titel og beskrivelse skal udfyldes');
+            return;
+        }
         const startDate = new Date(start);
         const endDate = new Date(end);
         onSave({
-            title,
-            description,
+            title: title.trim(),
+            description: description.trim(),
             start: new Date(startDate.getTime() + startDate.getTimezoneOffset() * 60 * 1000),
             end: new Date(endDate.getTime() + endDate.getTimezoneOffset() * 60 * 1000)
         });
+        setTitle('');
+        setDescription('');
         onClose();
     };
 
