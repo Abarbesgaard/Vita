@@ -14,7 +14,7 @@ const NavBar = () => {
                     to='/videos'>Videos</NavLink>
                 <NavLink 
                     className={({ isActive }) => isActive ? "nav-button-active" : "nav-button"} 
-                    to='/calendar'>Calendar</NavLink>
+                    to='/calender'>Calendar</NavLink>
             </div> 
         </nav>
     );

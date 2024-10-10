@@ -58,9 +58,16 @@ export const deleteVideo = async (id) => {
             throw new Error('Failed to delete video');
         }
 
-        return await response.json();
+        // Check if the response has content before parsing
+        const text = await response.text();
+        if (text) {
+            return JSON.parse(text);
+        } else {
+            // If no content, return a success message
+            return { success: true, message: "Video deleted successfully" };
+        }
     } catch (error) {
         console.error("Error deleting video:", error);
-        return null; // Handle error appropriately
+        return { success: false, error: error.message };
     }
 };
