@@ -1,7 +1,18 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { Navigate } from "react-router-dom";
+import { createUser } from "../services/Supabase";
 
 export default function Home() {
+	const { user } = useAuth();
+
+	if (!user) {
+		return <Navigate to="/login" />;
+	}
+
+	// createUser("test@test.dk", "Test1234", "Aske Lysgaard", "asly");
+
 	return (
 		<div className="flex h-dvh items-center justify-center bg-[url('https://www.vitahus.dk/wp-content/uploads/Vitahus-Logo-Web.png')] bg-center bg-no-repeat">
 			<div className="h-full w-full flex items-center justify-center bg-black bg-opacity-15">

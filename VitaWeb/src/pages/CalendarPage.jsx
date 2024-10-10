@@ -7,6 +7,8 @@ import { useState } from "react";
 import EventModal from "../components/Calendar/EventModal";
 import { AnimatePresence } from "framer-motion";
 import Layout from "../components/Layout";
+import { useAuth } from "../context/AuthContext";
+import { Navigate } from "react-router-dom";
 
 const messages = {
 	date: "Dato",
@@ -113,6 +115,7 @@ const events = [
 ];
 
 const CalendarPage = () => {
+	const { user } = useAuth();
 	const [selectedDay, setSelectedDay] = useState(new Date());
 	const [selectedResources, setSelectedResources] = useState(resources);
 	const [showEventModal, setShowEventModal] = useState(false);
@@ -121,6 +124,10 @@ const CalendarPage = () => {
 	const handleChangeSelectedDay = (value) => {
 		setSelectedDay(value);
 	};
+
+	if (!user) {
+		return <Navigate to="/login" replace />;
+	}
 
 	return (
 		<Layout>

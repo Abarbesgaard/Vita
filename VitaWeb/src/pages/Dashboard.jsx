@@ -3,8 +3,11 @@ import VideoForm from "../components/Video/VideoForm";
 import Layout from "../components/Layout";
 import { saveVideo, getAllVideos, deleteVideoFromDb } from "../API/VideoAPI";
 import VideoAccordion from "../components/Video/VideoAccordion";
+import { useAuth } from "../context/AuthContext";
+import { Navigate } from "react-router-dom";
 
 export default function Dashboard() {
+	const { user } = useAuth();
 	const [title, setTitle] = useState("");
 	const [description, setDescription] = useState("");
 	const [linkUrl, setLinkUrl] = useState("");
@@ -47,6 +50,10 @@ export default function Dashboard() {
 	useEffect(() => {
 		fetchVideos();
 	}, []);
+
+	if (!user) {
+		return <Navigate to="/login" replace />;
+	}
 
 	return (
 		<Layout>

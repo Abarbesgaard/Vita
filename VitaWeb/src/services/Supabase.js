@@ -1,0 +1,25 @@
+import { createClient } from "@supabase/supabase-js";
+
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseKey = import.meta.env.VITE_SUPABASE_SERVICE_KEY;
+
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+export const getUsers = async () => {
+	return await supabase.auth.admin.listUsers();
+};
+
+export const createUser = async (email, password, fullName, userName) => {
+	const newUser = await supabase.functions.invoke("createNewUser", {
+		body: {
+			email,
+			password,
+			fullname: fullName,
+			username: userName,
+		},
+	});
+	console.log(newUser);
+	return newUser;
+};
+
+export default supabase;
