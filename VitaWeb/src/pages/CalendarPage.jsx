@@ -131,7 +131,7 @@ const CalendarPage = () => {
 
 	return (
 		<Layout>
-			<div className="bg-white h-full w-full p-10 flex">
+			<div className="bg-white h-full w-full p-10 pt-5 flex">
 				<AnimatePresence>
 					{showEventModal && (
 						<EventModal

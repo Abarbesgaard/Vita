@@ -1,5 +1,4 @@
 import UserCard from "../UserCard";
-import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import LoginButton from "../Auth/LoginButton";
 import LogoutButton from "../Auth/LogoutButton";
@@ -7,7 +6,6 @@ import NonUserCard from "../NonUserCard";
 import { IoIosClose } from "react-icons/io";
 import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
-import supabase from "../../services/Supabase";
 import { useAuth } from "../../context/AuthContext";
 
 export default function MobileNavBar({ onClose }) {

@@ -8,7 +8,7 @@ export default function VideoForm({
 	setDescription,
 }) {
 	return (
-		<div className="bg-white shadow-md md:sticky md:top-0">
+		<div className="bg-white w-full">
 			<form
 				className="flex flex-col space-y-4 p-3 items-center"
 				onSubmit={handleVideoFormSubmit}
@@ -20,7 +20,7 @@ export default function VideoForm({
 					}}
 					type="text"
 					placeholder="Indsæt titel"
-					className="bg-gray-300 pl-2 sm:py-1 shadow-depth_gray rounded sm:w-96"
+					className="bg-gray-50 pl-2 py-1 shadow-depth_gray w-2/3 rounded"
 				/>
 				<input
 					value={url}
@@ -29,7 +29,7 @@ export default function VideoForm({
 					}}
 					type="text"
 					placeholder="Indsæt link"
-					className="bg-gray-300 pl-2 sm:py-1 shadow-depth_gray rounded sm:w-96"
+					className="bg-gray-50 pl-2 py-1 shadow-depth_gray w-2/3 rounded"
 				/>
 				<textarea
 					value={description}
@@ -38,7 +38,7 @@ export default function VideoForm({
 					}}
 					rows={5}
 					placeholder="Indsæt beskrivelse"
-					className="bg-gray-300 pl-2 sm:py-1 shadow-depth_gray rounded sm:w-96 resize-none"
+					className="bg-gray-50 pl-2 py-1 shadow-depth_gray w-2/3 rounded resize-none"
 				/>
 				<button
 					type="submit"

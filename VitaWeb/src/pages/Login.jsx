@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { useContext } from "react";
+import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Navigate } from "react-router-dom";
 
@@ -10,7 +9,6 @@ const Login = () => {
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		// Handle login logic here
 		signIn(email, password);
 	};
 
