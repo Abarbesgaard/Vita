@@ -16,7 +16,7 @@ const AccordionItem = ({ title, description, children }) => {
 	return (
 		<>
 			<motion.div
-				className="border border-black rounded-lg text-gray-200 p-2 h-20 cursor-pointer flex-shrink-0 flex flex-col justify-center mb-2 bg-gray-900"
+				className="border border-black rounded-lg text-gray-200 p-2 h-20 w-full cursor-pointer flex-shrink-0 flex flex-col justify-center mb-2 bg-gray-900"
 				onClick={toggleAccordion}
 			>
 				<div className="flex">

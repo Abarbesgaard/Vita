@@ -9,6 +9,13 @@ export const getUsers = async () => {
 	return await supabase.auth.admin.listUsers();
 };
 
+export const getSessionToken = async () => {
+	const { data: session, error } = await supabase.auth.getSession();
+	if (!error) {
+		return session.session.access_token;
+	}
+};
+
 export const createUser = async (email, password, fullName, userName) => {
 	const newUser = await supabase.functions.invoke("createNewUser", {
 		body: {
