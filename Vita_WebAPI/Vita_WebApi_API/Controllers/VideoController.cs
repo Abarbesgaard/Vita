@@ -320,10 +320,13 @@ public class VideoController(
 	[HttpPut("Put/{id:guid}")]
 	public async Task<IActionResult> PutAsync(Guid id, UpdateVideoDto videoDto)
 	{
-		var tokenValidationResult = await ValidateToken();
-		if (tokenValidationResult != null)
+		if (!env.IsDevelopment())
 		{
-			return tokenValidationResult; // Return unauthorized response if any issue occurs
+			var tokenValidationResult = await ValidateToken();
+			if (tokenValidationResult != null)
+			{
+				return tokenValidationResult; // Return unauthorized response if any issue occurs
+			}
 		}
 
 
