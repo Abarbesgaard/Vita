@@ -29,7 +29,6 @@
     <ItemGroup>
       <ProjectReference Include="..\Vita_WebApi_API\Vita_WebApi_API.csproj" />
       <ProjectReference Include="..\Vita_WebAPI_Data\Vita_WebAPI_Data.csproj" />
-      <ProjectReference Include="..\Vita_WebAPI_IdentityAPI\Vita_WebAPI_IdentityAPI.csproj" />
       <ProjectReference Include="..\Vita_WebAPI_Repository\Vita_WebAPI_Repository.csproj" />
       <ProjectReference Include="..\Vita_WebAPI_Services\Vita_WebAPI_Services.csproj" />
       <ProjectReference Include="..\Vita_WebApi_Shared\Vita_WebApi_Shared.csproj" />

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createVideo, deleteVideo, getAllVideos } from '../APIs/VideoAPI';
+import VideoCard from '../Components/VideoCard.jsx';
 
 export default function Videos() {
     const [videos, setVideos] = useState([]); 
@@ -12,13 +13,14 @@ export default function Videos() {
 
     // Fetch all videos when the component mounts
     useEffect(() => {
-        const fetchVideos = async () => {
-            const videoList = await getAllVideos();
-            setVideos(videoList);
-        };
-
         fetchVideos();
     }, []);
+
+    const fetchVideos = async () => {
+        const videoList = await getAllVideos();
+        setVideos(videoList);
+        console.log("Fetched videos");
+    };
 
     // Handle input changes for the new video form
     const handleChange = (e) => {
@@ -33,29 +35,30 @@ export default function Videos() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (newVideo.title && newVideo.description && newVideo.url) {
-            const addedVideo = await createVideo(newVideo); // Get the response from createVideo
-            if (addedVideo) { // Check if the video was successfully added
-                setVideos((prev) => [...prev, addedVideo]); // Add newly created video to state using API response
-                setNewVideo({ title: '', description: '', url: '' }); // Reset form
+            const addedVideo = await createVideo(newVideo); 
+            if (addedVideo) { 
+                setVideos((prev) => [...prev, addedVideo]); 
+                setNewVideo({ title: '', description: '', url: '' }); 
             } else {
-                console.error("Failed to add video."); // Log error if video creation fails
+                console.error("Failed to add video."); 
             }
         }
     };
+
+    // Handle delete video
     const handleDelete = async (id) => {
-        const result = await deleteVideo(id) // API call 
-        if(result) {
-            setVideos((prev) => prev.filter(video => video.id !== id))
+        try {
+            const result = await deleteVideo(id);
+            if (result) {
+                setVideos((prev) => prev.filter(video => video.id !== id));
+            } else {
+                console.error('Kunne ikke slette videoen, prøv igen');
+            }
+        } catch (error) {
+            console.error('Fejl ved sletning af video:', error);
+        } finally {
+            await fetchVideos();
         }
-        else {
-            console.log('Kunne ikke slette videoen, prøv igen')
-        }
-        
-    }
-    const getVideoIdFromUrl = (url) => {
-        const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^&\n]{11})/;
-        const match = url.match(regex);
-        return match ? match[1] : null;
     };
 
     return (
@@ -63,6 +66,7 @@ export default function Videos() {
             <h1>Videos</h1>
             <form onSubmit={handleSubmit}>
                 <input 
+                    key= "title"
                     type="text" 
                     name="title" 
                     placeholder="Title" 
@@ -71,6 +75,7 @@ export default function Videos() {
                     required 
                 />
                 <input 
+                    key="description"
                     type="text" 
                     name="description" 
                     placeholder="Description" 
@@ -79,6 +84,7 @@ export default function Videos() {
                     required 
                 />
                 <input 
+                    key="url"
                     type="url" 
                     name="url" 
                     placeholder="Video URL" 
@@ -89,23 +95,15 @@ export default function Videos() {
                 <button type="submit">Add Video</button>
             </form>
 
-            <h2>Video List</h2>
-            <ul className='videoCard'>
-                {videos.map(video => (
-                    <li key={video.id}>
-                        <h3>{video.title}</h3>
-                        <p>{video.description}</p>
-                        <iframe
-                            width="320"
-                            height="240"
-                            src={`https://www.youtube.com/embed/${getVideoIdFromUrl(video.url)}`}
-                            title={video.title}
-                            allowFullScreen
-                        ></iframe> 
-                        <button onClick={() => handleDelete(video.id)}>Delete</button>
-                    </li>
-                ))}
-            </ul>
+            <div className="video-list">
+                {videos.length === 0 ? (
+                    <h2>Tilføj video</h2>
+                ) : (
+                    videos.map(video => (
+                        <VideoCard key={video.id} video={video} onDelete={handleDelete} />
+                    ))
+                )}
+            </div>
         </div>
     );
 }
