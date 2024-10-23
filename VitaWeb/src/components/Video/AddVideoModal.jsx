@@ -11,6 +11,7 @@ const AddVideoModal = ({
 	setUrl,
 	description,
 	setDescription,
+	mode,
 }) => {
 	return createPortal(
 		<motion.div
@@ -24,7 +25,7 @@ const AddVideoModal = ({
 		>
 			<div
 				onClick={(e) => e.stopPropagation()}
-				className="h-1/2 w-1/2 bg-white rounded-xl flex justify-center items-center shadow-lg"
+				className="h-1/2 w-1/2 bg-white rounded-xl flex justify-center items-center shadow-lg p-10"
 			>
 				<VideoForm
 					handleVideoFormSubmit={handleVideoFormSubmit}
@@ -34,6 +35,7 @@ const AddVideoModal = ({
 					setUrl={setUrl}
 					description={description}
 					setDescription={setDescription}
+					mode={mode}
 				/>
 			</div>
 		</motion.div>,

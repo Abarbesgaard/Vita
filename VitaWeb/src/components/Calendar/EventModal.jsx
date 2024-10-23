@@ -1,6 +1,7 @@
 import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { TbCalendarCancel } from "react-icons/tb";
 
 const EventModal = ({ onClose, event, resources }) => {
 	const [color, setColor] = useState("bg-[#265985]");
@@ -9,7 +10,11 @@ const EventModal = ({ onClose, event, resources }) => {
 		if (event.type === "meeting") {
 			setColor("bg-red-500");
 		}
-	}, [event.type]);
+
+		if (event.cancelled) {
+			setColor("bg-gray-500");
+		}
+	}, [event.type, event.cancelled]);
 
 	return (
 		<>
@@ -32,6 +37,7 @@ const EventModal = ({ onClose, event, resources }) => {
 						<div className={`flex justify-between p-5 ${color} rounded-t-lg`}>
 							<h2 className="text-xl text-white font-bold ml-2">
 								{event.title}
+								{event.cancelled && " | AFLYST"}
 							</h2>
 							<button onClick={onClose}>X</button>
 						</div>
@@ -45,27 +51,8 @@ const EventModal = ({ onClose, event, resources }) => {
 							<div className="flex justify-evenly w-1/2">
 								<div>
 									<p className="font-bold text-lg">Inviterede:</p>
-									{event.invites
-										.filter((id) => {
-											return (
-												!event.accepted.includes(id) &&
-												!event.declined.includes(id)
-											);
-										})
-										.map((id) => (
-											<p key={id}>{resources.find((r) => r.id === id).title}</p>
-										))}
-								</div>
-								<div>
-									<p className="font-bold text-lg">Deltager:</p>
-									{event.accepted.map((id) => (
-										<p key={id}>{resources.find((r) => r.id === id).title}</p>
-									))}
-								</div>
-								<div>
-									<p className="font-bold text-lg">Deltager ikke:</p>
-									{event.declined.map((id) => (
-										<p key={id}>{resources.find((r) => r.id === id).title}</p>
+									{event.attendee.map((attendee) => (
+										<p key={attendee.id}>{attendee.name}</p>
 									))}
 								</div>
 							</div>

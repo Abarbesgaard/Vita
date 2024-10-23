@@ -1,5 +1,5 @@
-import { MdDelete } from "react-icons/md";
-import { MdEdit } from "react-icons/md";
+import { MdDelete, MdEdit } from "react-icons/md";
+import { FaPlay } from "react-icons/fa";
 
 const videoSkeletons = Array.from({ length: 8 }, (_, i) => ({
 	id: i,
@@ -22,19 +22,16 @@ const VideoTableSkeleton = () => {
 					<tr key={video.id} className="bg-white">
 						<td className="p-2">
 							<div
-								className={`h-2 w-10 rounded-md bg-gray-500 animate-pulse`}
+								className={`h-2 w-20 rounded-md bg-gray-500 animate-pulse`}
 							></div>
 						</td>
 						<td className="p-2">
-							<div className="w-full">
-								<div
-									className={`h-2 w-${
-										Math.floor(Math.random() * (5 - 1 + 1)) + 1
-									}/6 rounded-md bg-gray-500 animate-pulse`}
-								></div>
-							</div>
+							<div
+								className={`h-2 w-full rounded-md bg-gray-500 animate-pulse`}
+							></div>
 						</td>
-						<td className="p-2 flex space-x-8 justify-end">
+						<td className="p-2 flex space-x-8 justify-end items-center">
+							<FaPlay className="cursor-pointer text-xl text-gray-500 animate-pulse" />
 							<MdEdit className="cursor-pointer text-2xl text-gray-500 animate-pulse" />
 							<MdDelete className="cursor-pointer text-2xl text-gray-500 animate-pulse" />
 						</td>

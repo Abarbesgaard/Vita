@@ -3,13 +3,13 @@ import { useAuth } from "../context/AuthContext";
 import { Navigate } from "react-router-dom";
 
 const Login = () => {
-	const [email, setEmail] = useState("");
+	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 	const { user, signIn } = useAuth();
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		signIn(email, password);
+		signIn(username, password);
 	};
 
 	if (user) {
@@ -27,13 +27,13 @@ const Login = () => {
 								htmlFor="email"
 								className="block text-sm font-medium text-gray-700"
 							>
-								Email
+								Brugernavn
 							</label>
 							<input
-								type="email"
-								id="email"
-								value={email}
-								onChange={(e) => setEmail(e.target.value)}
+								type="username"
+								id="username"
+								value={username}
+								onChange={(e) => setUsername(e.target.value)}
 								required
 								className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring focus:ring-indigo-200"
 							/>

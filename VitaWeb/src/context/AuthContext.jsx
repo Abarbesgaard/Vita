@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect, useContext } from "react";
-import supabase from "../services/Supabase";
+import supabase, { findUserEmail } from "../services/Supabase";
 import { ImSpinner2 } from "react-icons/im";
 import { IconContext } from "react-icons";
 
@@ -28,8 +28,9 @@ const AuthProvider = ({ children }) => {
 		};
 	}, []);
 
-	const signIn = async (email, password) => {
+	const signIn = async (username, password) => {
 		setLoading(true);
+		const email = await findUserEmail(username);
 		const { data, error } = await supabase.auth.signInWithPassword({
 			email,
 			password,

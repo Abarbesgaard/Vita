@@ -1,3 +1,6 @@
+import { useState } from "react";
+import { PiSpinnerGap } from "react-icons/pi";
+
 export default function VideoForm({
 	handleVideoFormSubmit,
 	title,
@@ -6,12 +9,26 @@ export default function VideoForm({
 	setUrl,
 	description,
 	setDescription,
+	mode,
 }) {
+	const [isLoading, setIsLoading] = useState(false);
+
+	if (isLoading) {
+		return (
+			<div className="flex items-center justify-center w-full h-full">
+				<PiSpinnerGap className="animate-spin text-5xl" />
+			</div>
+		);
+	}
+
 	return (
 		<div className="bg-white w-full">
 			<form
-				className="flex flex-col space-y-4 p-3 items-center"
-				onSubmit={handleVideoFormSubmit}
+				className="flex flex-col space-y-4"
+				onSubmit={() => {
+					setIsLoading(true);
+					handleVideoFormSubmit();
+				}}
 			>
 				<input
 					value={title}
@@ -38,13 +55,13 @@ export default function VideoForm({
 					}}
 					rows={5}
 					placeholder="Indsæt beskrivelse"
-					className="bg-gray-50 pl-2 py-1 shadow-depth_gray w-2/3 rounded resize-none"
+					className="bg-gray-50 pl-2 py-1 shadow-depth_gray w-full rounded resize-none"
 				/>
 				<button
 					type="submit"
 					className="bg-blue-600 text-white font-semibold rounded shadow-depth_blue active:shadow-none w-24 py-1 hover:bg-blue-700"
 				>
-					Tilføj
+					{mode ? "Opdater" : "Tilføj"}
 				</button>
 			</form>
 		</div>
