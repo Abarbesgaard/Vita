@@ -14,6 +14,14 @@ public class Activity : BaseEntity
     [DataType(DataType.DateTime)]
     public DateTimeOffset End { get; set; }
     
+    [JsonPropertyName("Title")]
+    [StringLength(200, MinimumLength = 1, ErrorMessage = "Title must be between 1 and 200 characters")]
+    public string? Title { get; set; }
+    
+    [JsonPropertyName("Description")]
+    public string Description { get; set; }
+    [StringLength(3000, MinimumLength = 1, ErrorMessage = "Description must be between 1 and 3000 characters")]
+    
     [JsonPropertyName("HostId")]
     [Required(ErrorMessage = "HostId is required")]
     public Guid HostId { get; set; } // Den der har oprettet aktiviteten
@@ -24,12 +32,6 @@ public class Activity : BaseEntity
     [JsonPropertyName("VerifiedAttendees")]
     public ICollection<Users>? VerifiedAttendee { get; set; } // Dem der har accepteret invitationen
     
-    [JsonPropertyName("DeclinedAttendees")]
-    public ICollection<Users>? DeclinedAttendee { get; set; } // Dem der har afvist invitationen
-    
-    [JsonPropertyName("TentativeAttendees")]
-    public ICollection<Users>? TentativeAttendee { get; set; } // Dem der har svaret "måske" på invitationen
-
     [JsonPropertyName("Cancelled")] 
     public bool Cancelled { get; set; } = false;
    

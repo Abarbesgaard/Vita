@@ -160,9 +160,7 @@ public class ModelTests
             Start = startTime,
             End = endTime,
             Attendee = new List<Users>(), // Initialize with an empty list
-            VerifiedAttendee = new List<Users>(),
-            DeclinedAttendee = new List<Users>(),
-            TentativeAttendee = new List<Users>()
+            VerifiedAttendee = new List<Users>()
         };
 
         // Assert
@@ -175,7 +173,5 @@ public class ModelTests
         activity.End.Should().Be(endTime); // Assert End
         activity.Attendee.Should().NotBeNull().And.BeEmpty(); // Assert Attendees are initialized
         activity.VerifiedAttendee.Should().NotBeNull().And.BeEmpty(); // Assert Verified Attendees
-        activity.DeclinedAttendee.Should().NotBeNull().And.BeEmpty(); // Assert Declined Attendees
-        activity.TentativeAttendee.Should().NotBeNull().And.BeEmpty(); // Assert Tentative Attendees
     }
 }
