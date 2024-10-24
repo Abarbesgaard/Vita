@@ -1,9 +1,11 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Http.Headers;
 using AutoMapper;
 using JWT.Algorithms;
 using JWT.Builder;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Vita_WebApi_API.Dto;
 using Vita_WebAPI_Services;
 using Vita_WebApi_Shared;
@@ -129,61 +131,71 @@ public class ActivityController(
         // Return the CreatedAtAction response, pointing to the updated Activity by ID
         return CreatedAtAction(nameof(GetActivityByIdAsync), new { id = updatedActivityDto.Id }, updatedActivityDto);
     }
-    
-    
+
+
     private async Task<IActionResult?> ValidateToken()
     {
-        if (!Request.Headers.TryGetValue("Authorization", out var token))
+        // Check for Authorization header
+        if (!Request.Headers.ContainsKey("Authorization"))
         {
-            return Unauthorized("Unauthorized - no token");
+            logger.LogWarning("No Authorization header present");
+            return Unauthorized("No Authorization header present");
         }
 
-        var tokenString = token.ToString();
-        if (!tokenString.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+        var token = Request.Headers.Authorization;
+        if (!token.ToString().StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
         {
+            logger.LogWarning("Invalid token format");
             return Unauthorized("Invalid token format");
         }
 
-        tokenString = tokenString["Bearer ".Length..].Trim();
+        var tokenString = token.ToString()["Bearer ".Length..].Trim();
+        logger.LogInformation($"tokenString received: {tokenString}");
 
-        var decodedString = JwtBuilder
-            .Create()
-            .WithAlgorithm(new HMACSHA256Algorithm())
-            .WithSecret(Secret)
-            .MustVerifySignature()
-            .Decode<IDictionary<string, string>>(tokenString);
+        var tokenHandler = new JwtSecurityTokenHandler();
 
-        if (!decodedString.TryGetValue("sub", out var sub))
-        {
-            return Unauthorized("Invalid token");
-        }
-
-        // Call your external user validation service
         var client = new HttpClient();
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
+        var jwks = await client.GetStringAsync("https://vhomzkchzmeaxpjfjmvd.supabase.co/");
+        var keys = new JsonWebKeySet(jwks).GetSigningKeys();
+
+        var tokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = "https://vhomzkchzmeaxpjfjmvd.supabase.co",
+            IssuerSigningKeys = keys
+        };
 
         try
         {
-            var response = await client.GetAsync($"https://localhost:5226/auth/getuser/{sub}");
+            var claimsPrincipal = tokenHandler.ValidateToken(tokenString, tokenValidationParameters, out _);
 
-            if (response.StatusCode == HttpStatusCode.Unauthorized)
+            var subClaim = claimsPrincipal.FindFirst("sub")?.Value;
+
+            if (subClaim == null)
             {
-                return Unauthorized();
+                logger.LogWarning("Token missing 'sub' claim");
+                return Unauthorized("Invalid token - missing 'sub' claim");
             }
+
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
+
+            var response = await client.GetAsync($"https://localhost:5226/auth/getuser/{subClaim}");
 
             if (!response.IsSuccessStatusCode)
             {
-                var responseContent = await response.Content.ReadAsStringAsync();
-                logger.LogWarning($"User validation failed: {responseContent}");
+                logger.LogWarning("User validation failed");
                 return Unauthorized("User validation failed");
             }
 
-            return null; // Valid token and user
+            return null;
         }
-        catch (HttpRequestException ex)
+        catch (SecurityTokenException ex)
         {
-            logger.LogError($"Request error: {ex.Message}");
-            return StatusCode(500, $"{ex.Message}");
+            logger.LogError($"Token validation failed: {ex.Message}");
+            return Unauthorized("Invalid token");
         }
-    }  
+    }
 }
