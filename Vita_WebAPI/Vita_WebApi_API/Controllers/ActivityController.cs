@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http.Headers;
 using AutoMapper;
@@ -23,7 +22,6 @@ public class ActivityController(
     private static readonly string[] Secret = ["secret1"];
     
     [HttpGet("GetAll")]
-    [SuppressMessage("ReSharper.DPA", "DPA0011: High execution time of MVC action", MessageId = "time: 526ms")]
     public async Task<IActionResult?> GetAllAsync()
     {
         if (!env.IsDevelopment())
@@ -55,9 +53,17 @@ public class ActivityController(
     [HttpGet("Get/{id:guid}")]
     public async Task<ActionResult<ActivityDto>> GetActivityByIdAsync(Guid id)
     {
-        var activity = await service.GetByIdAsync(id);
-        var activityDto = mapper?.Map<ActivityDto>(activity);
-        return Ok(activityDto);
+        try
+        {
+            var activity = await service.GetByIdAsync(id);
+            var activityDto = mapper?.Map<ActivityDto>(activity);
+            return Ok(activityDto);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"Error: {ex.Message}");
+            return StatusCode(500, ex.Message);
+        }
     }
     
     [HttpPost("Create")]
@@ -91,7 +97,38 @@ public class ActivityController(
         // Return the CreatedAtAction response, pointing to the new Activity by ID
         return CreatedAtAction(nameof(GetActivityByIdAsync), new { id = createdActivityDto.Id }, createdActivityDto);
     }
-    
+   
+    [HttpPut("Update/{id:guid}")]
+    public async Task<ActionResult<ActivityDto>> UpdateActivityAsync(Guid id, [FromBody] ActivityDto? activityDto)
+    {
+        if (activityDto is null)
+        {
+            logger.LogWarning("ActivityDto is null");
+            return BadRequest();
+        }
+
+        // Map the ActivityDto to an Activity entity
+        var activity = mapper?.Map<Activity>(activityDto);
+        if (activity is null)
+        {
+            logger.LogWarning("Activity not created");
+            return BadRequest();
+        }
+
+        // Update the Activity entity using the service
+        await service.UpdateAsync(id, activity);
+
+        // Map the updated Activity entity back to ActivityDto
+        var updatedActivityDto = mapper?.Map<ActivityDto>(activity);
+        if (updatedActivityDto is null)
+        {
+            logger.LogWarning("ActivityDto could not be mapped from Activity");
+            return StatusCode(500, "Internal server error during mapping.");
+        }
+
+        // Return the CreatedAtAction response, pointing to the updated Activity by ID
+        return CreatedAtAction(nameof(GetActivityByIdAsync), new { id = updatedActivityDto.Id }, updatedActivityDto);
+    }
     
     
     private async Task<IActionResult?> ValidateToken()
