@@ -386,7 +386,7 @@ public class VideoController(
         return Unauthorized("No Authorization header present");
     }
 
-    var token = Request.Headers["Authorization"];
+    var token = Request.Headers.Authorization;
     if (!token.ToString().StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
     {
         logger.LogWarning("Invalid token format");
