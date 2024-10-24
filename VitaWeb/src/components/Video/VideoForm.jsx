@@ -3,12 +3,8 @@ import { PiSpinnerGap } from "react-icons/pi";
 
 export default function VideoForm({
 	handleVideoFormSubmit,
-	title,
-	setTitle,
-	url,
-	setUrl,
-	description,
-	setDescription,
+	video,
+	setVideo,
 	mode,
 }) {
 	const [isLoading, setIsLoading] = useState(false);
@@ -31,27 +27,27 @@ export default function VideoForm({
 				}}
 			>
 				<input
-					value={title}
+					value={video.title}
 					onChange={(e) => {
-						setTitle(e.target.value);
+						setVideo({ ...video, title: e.target.value });
 					}}
 					type="text"
 					placeholder="Indsæt titel"
 					className="bg-gray-50 pl-2 py-1 shadow-depth_gray w-2/3 rounded"
 				/>
 				<input
-					value={url}
+					value={video.url}
 					onChange={(e) => {
-						setUrl(e.target.value);
+						setVideo({ ...video, url: e.target.value });
 					}}
 					type="text"
 					placeholder="Indsæt link"
 					className="bg-gray-50 pl-2 py-1 shadow-depth_gray w-2/3 rounded"
 				/>
 				<textarea
-					value={description}
+					value={video.description}
 					onChange={(e) => {
-						setDescription(e.target.value);
+						setVideo({ ...video, description: e.target.value });
 					}}
 					rows={5}
 					placeholder="Indsæt beskrivelse"

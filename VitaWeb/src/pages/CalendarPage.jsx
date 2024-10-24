@@ -143,6 +143,7 @@ const CalendarPage = () => {
 					hostId: activity.hostId,
 					resourceId: activity.attendee.map((attendee) => attendee.id),
 					attendee: activity.attendee,
+					accepted: activity.verifiedAttendee,
 					allDay: activity.allDayEvent,
 					title: "APITest",
 					cancelled: activity.cancelled,

@@ -17,11 +17,12 @@ import VideoTableSkeleton from "../components/Video/VideoTableSkeleton";
 
 export default function VideoPage() {
 	const { user } = useAuth();
-	const [id, setId] = useState("");
-	const [title, setTitle] = useState("");
-	const [description, setDescription] = useState("");
-	const [linkUrl, setLinkUrl] = useState("");
-	const [video, setVideo] = useState(null);
+	const [video, setVideo] = useState({
+		id: "",
+		title: "",
+		url: "",
+		description: "",
+	});
 	const [videos, setVideos] = useState(null);
 	const [token, setToken] = useState("");
 	const [isLoading, setIsLoading] = useState(true);
@@ -43,22 +44,17 @@ export default function VideoPage() {
 
 	const handleVideoFormSubmit = async () => {
 		if (!editMode) {
-			await saveVideo(
-				{
-					title,
-					url: linkUrl,
-					description,
-				},
-				token
-			);
+			await saveVideo(video, token);
 		}
 		if (editMode) {
-			await updateVideo({ id, title, url: linkUrl, description }, token);
+			await updateVideo(video, token);
 		}
-		setId("");
-		setDescription("");
-		setTitle("");
-		setLinkUrl("");
+		setVideo({
+			id: "",
+			title: "",
+			url: "",
+			description: "",
+		});
 		await fetchVideos();
 		setShowAddVideoModal(false);
 		setEditMode(false);
@@ -66,10 +62,12 @@ export default function VideoPage() {
 
 	const handleEdit = async (id, title, url, description) => {
 		setEditMode(true);
-		setId(id);
-		setTitle(title);
-		setLinkUrl(url);
-		setDescription(description);
+		setVideo({
+			id,
+			title,
+			url,
+			description,
+		});
 		setShowAddVideoModal(true);
 	};
 
@@ -77,7 +75,7 @@ export default function VideoPage() {
 		const token = await getSessionToken();
 		setToken(token);
 		const videos = await getAllVideos(token);
-		setVideos([...videos]);
+		setVideos(videos);
 		setIsLoading(false);
 	};
 
@@ -96,12 +94,8 @@ export default function VideoPage() {
 				<AddVideoModal
 					setShowAddVideoModal={setShowAddVideoModal}
 					handleVideoFormSubmit={handleVideoFormSubmit}
-					title={title}
-					setTitle={setTitle}
-					url={linkUrl}
-					setUrl={setLinkUrl}
-					description={description}
-					setDescription={setDescription}
+					video={video}
+					setVideo={setVideo}
 					mode={editMode}
 				/>
 			)}

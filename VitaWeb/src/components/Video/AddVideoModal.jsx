@@ -5,12 +5,8 @@ import VideoForm from "./VideoForm";
 const AddVideoModal = ({
 	setShowAddVideoModal,
 	handleVideoFormSubmit,
-	title,
-	setTitle,
-	url,
-	setUrl,
-	description,
-	setDescription,
+	video,
+	setVideo,
 	mode,
 }) => {
 	return createPortal(
@@ -29,12 +25,8 @@ const AddVideoModal = ({
 			>
 				<VideoForm
 					handleVideoFormSubmit={handleVideoFormSubmit}
-					title={title}
-					setTitle={setTitle}
-					url={url}
-					setUrl={setUrl}
-					description={description}
-					setDescription={setDescription}
+					video={video}
+					setVideo={setVideo}
 					mode={mode}
 				/>
 			</div>

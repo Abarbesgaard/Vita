@@ -6,7 +6,7 @@ export const getAllActivities = async (token) => {
 				Authorization: "Bearer " + token,
 			},
 		}).then((response) => response.json());
-
+		console.log(response);
 		return response;
 	} catch (error) {
 		return error;
@@ -29,6 +29,7 @@ export const saveActivity = async (activity, token) => {
 				attendee: activity.attendee,
 				cancelled: activity.cancelled,
 				allDayEvent: activity.allDayEvent,
+				verifiedAttendee: [],
 			}),
 		}).then((response) => response.json());
 		console.log(response);
