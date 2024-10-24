@@ -6,8 +6,6 @@ public record ActivityDto
     
     public Guid UserId { get; init; }
     
-    public DateTimeOffset Start { get; init; }
-    
     public string Title { get; init; } = string.Empty;
     
     public string Description { get; init; } = string.Empty;
