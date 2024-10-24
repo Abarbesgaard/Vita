@@ -1,27 +1,27 @@
 namespace Vita_WebApi_API.Dto;
 
 public record ActivityDto
-{
-    public Guid Id { get; init; }
-    
-    public Guid UserId { get; init; }
-    
-    public string Title { get; init; } = string.Empty;
-    
-    public string Description { get; init; } = string.Empty;
+(
+	 Guid Id,
 
-	public DateTimeOffset Start { get; init; }
+	 Guid UserId,
 
-	public DateTimeOffset End { get; init; }
+	 string Title,
 
-	public Guid HostId { get; init; } // Den der har oprettet aktiviteten
+	 string Description,
 
-	public ICollection<UserDto>? Attendee { get; init; } // Dem der kan deltager i aktiviteten
+	 DateTimeOffset Start,
 
-	public ICollection<UserDto>? VerifiedAttendee { get; init; } // Dem der har accepteret invitationen
+	 DateTimeOffset End,
 
-	public bool Cancelled { get; init; } = false;
+	 Guid HostId, // Den der har oprettet aktiviteten
 
-	public bool AllDayEvent { get; init; } = false;
-}
+	 ICollection<UserDto>? Attendee, // Dem der kan deltager i aktiviteten
+
+	 ICollection<UserDto>? VerifiedAttendee, // Dem der har accepteret invitationen
+
+	 bool Cancelled,
+
+	 bool AllDayEvent
+);
 

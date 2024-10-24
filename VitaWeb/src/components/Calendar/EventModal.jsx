@@ -8,6 +8,8 @@ import { IoClose } from "react-icons/io5";
 const EventModal = ({ onClose, event, resources }) => {
 	const [color, setColor] = useState("bg-[#265985]");
 
+	console.log(event);
+
 	useEffect(() => {
 		if (event.type === "meeting") {
 			setColor("bg-red-500");

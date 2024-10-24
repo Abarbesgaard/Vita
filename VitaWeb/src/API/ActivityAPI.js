@@ -1,3 +1,5 @@
+import { desc } from "framer-motion/client";
+
 export const getAllActivities = async (token) => {
 	try {
 		const response = await fetch("https://localhost:8081/api/activity/getall", {
@@ -30,6 +32,8 @@ export const saveActivity = async (activity, token) => {
 				cancelled: activity.cancelled,
 				allDayEvent: activity.allDayEvent,
 				verifiedAttendee: [],
+				title: activity.title,
+				description: activity.description,
 			}),
 		}).then((response) => response.json());
 		console.log(response);
