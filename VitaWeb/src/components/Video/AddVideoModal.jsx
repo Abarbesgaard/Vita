@@ -5,12 +5,9 @@ import VideoForm from "./VideoForm";
 const AddVideoModal = ({
 	setShowAddVideoModal,
 	handleVideoFormSubmit,
-	title,
-	setTitle,
-	url,
-	setUrl,
-	description,
-	setDescription,
+	video,
+	setVideo,
+	mode,
 }) => {
 	return createPortal(
 		<motion.div
@@ -24,16 +21,13 @@ const AddVideoModal = ({
 		>
 			<div
 				onClick={(e) => e.stopPropagation()}
-				className="h-1/2 w-1/2 bg-white rounded-xl flex justify-center items-center shadow-lg"
+				className="h-1/2 w-1/2 bg-white rounded-xl flex justify-center items-center shadow-lg p-10"
 			>
 				<VideoForm
 					handleVideoFormSubmit={handleVideoFormSubmit}
-					title={title}
-					setTitle={setTitle}
-					url={url}
-					setUrl={setUrl}
-					description={description}
-					setDescription={setDescription}
+					video={video}
+					setVideo={setVideo}
+					mode={mode}
 				/>
 			</div>
 		</motion.div>,

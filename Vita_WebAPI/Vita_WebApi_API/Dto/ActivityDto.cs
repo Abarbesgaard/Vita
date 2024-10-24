@@ -12,16 +12,18 @@ public record ActivityDto
     
     public string Description { get; init; } = string.Empty;
 
-    public DateTimeOffset End { get; init; }
+	public DateTimeOffset Start { get; init; }
 
-    public Guid HostId { get; init; } // Den der har oprettet aktiviteten
+	public DateTimeOffset End { get; init; }
 
-    public ICollection<UserDto>? Attendee { get; init; } // Dem der kan deltager i aktiviteten
+	public Guid HostId { get; init; } // Den der har oprettet aktiviteten
 
-    public ICollection<UserDto>? VerifiedAttendee { get; init; } // Dem der har accepteret invitationen
+	public ICollection<UserDto>? Attendee { get; init; } // Dem der kan deltager i aktiviteten
 
-    public bool Cancelled { get; init; } = false;
+	public ICollection<UserDto>? VerifiedAttendee { get; init; } // Dem der har accepteret invitationen
 
-    public bool AllDayEvent { get; init; } = false;
+	public bool Cancelled { get; init; } = false;
+
+	public bool AllDayEvent { get; init; } = false;
 }
 

@@ -259,62 +259,65 @@ public class VideoController(
             return CreatedAtAction(nameof(GetVideoByIdAsync), new { id = videoTest.Id }, videoTest);
         }
 
-        return null!;
-    }
-    /// <summary>
-    /// Updates an existing video record in the system.
-    /// This operation replaces the current video record with the updated data provided in the request body.
-    /// </summary>
-    /// <param name="id">The unique identifier (GUID) of the video to be updated.</param>
-    /// <param name="videoDto">An object containing the updated video details. It must include the title, description, and URL of the video.</param>
-    /// <returns>
-    /// A <see cref="IActionResult"/> that represents the result of the update operation:
-    /// - <see cref="NoContent"/> (HTTP 204) if the video was successfully updated.
-    /// - <see cref="NotFound"/> (HTTP 404) if no video with the specified ID was found.
-    /// </returns>
-    /// <remarks>
-    /// If the video with the specified ID does not exist, the method returns a 404 Not Found status code.
-    /// The request body must be a JSON object with the following structure:
-    /// 
-    ///     {
-    ///         "title": "The new title of the video",
-    ///         "description": "The new description of the video",
-    ///         "url": "http://example.com/the-new-video-url"
-    ///     }
-    /// 
-    /// Example request:
-    /// 
-    ///     PUT /api/videos/123e4567-e89b-12d3-a456-426614174000
-    ///     Content-Type: application/json
-    ///     
-    ///     {
-    ///         "title": "Updated Video Title",
-    ///         "description": "Updated Video Description",
-    ///         "url": "http://example.com/updated-video-url"
-    ///     }
-    /// 
-    /// Example response (successful update):
-    /// 
-    ///     HTTP/1.1 204 No Content
-    /// 
-    /// Example response (video not found):
-    /// 
-    ///     HTTP/1.1 404 Not Found
-    /// </remarks>
-    [HttpPut("Put/{id:guid}")]
-    public async Task<IActionResult> PutAsync(Guid id, UpdateVideoDto? videoDto)
-    {
+		return null!;
+	}
+	/// <summary>
+	/// Updates an existing video record in the system.
+	/// This operation replaces the current video record with the updated data provided in the request body.
+	/// </summary>
+	/// <param name="id">The unique identifier (GUID) of the video to be updated.</param>
+	/// <param name="videoDto">An object containing the updated video details. It must include the title, description, and URL of the video.</param>
+	/// <returns>
+	/// A <see cref="IActionResult"/> that represents the result of the update operation:
+	/// - <see cref="NoContent"/> (HTTP 204) if the video was successfully updated.
+	/// - <see cref="NotFound"/> (HTTP 404) if no video with the specified ID was found.
+	/// </returns>
+	/// <remarks>
+	/// If the video with the specified ID does not exist, the method returns a 404 Not Found status code.
+	/// The request body must be a JSON object with the following structure:
+	/// 
+	///     {
+	///         "title": "The new title of the video",
+	///         "description": "The new description of the video",
+	///         "url": "http://example.com/the-new-video-url"
+	///     }
+	/// 
+	/// Example request:
+	/// 
+	///     PUT /api/videos/123e4567-e89b-12d3-a456-426614174000
+	///     Content-Type: application/json
+	///     
+	///     {
+	///         "title": "Updated Video Title",
+	///         "description": "Updated Video Description",
+	///         "url": "http://example.com/updated-video-url"
+	///     }
+	/// 
+	/// Example response (successful update):
+	/// 
+	///     HTTP/1.1 204 No Content
+	/// 
+	/// Example response (video not found):
+	/// 
+	///     HTTP/1.1 404 Not Found
+	/// </remarks>
+	[HttpPut("Put/{id:guid}")]
+	public async Task<IActionResult> PutAsync(Guid id, UpdateVideoDto videoDto)
+	{
         if (videoDto == null)
         {
             logger.LogWarning("UpdateVideoDto is null");
             return BadRequest("Invalid video data");
         }
-        
-        var tokenValidationResult = await ValidateToken();
-        if (tokenValidationResult != null)
-        {
-            return tokenValidationResult; // Return unauthorized response if any issue occurs
-        }
+
+		if (!env.IsDevelopment())
+		{
+			var tokenValidationResult = await ValidateToken();
+			if (tokenValidationResult != null)
+			{
+				return tokenValidationResult; // Return unauthorized response if any issue occurs
+			}
+		}
 
  
         var existingVideo = await service.GetByIdAsync(id);

@@ -1,6 +1,8 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "../../context/AuthContext";
+import { MdLogout, MdAccountCircle } from "react-icons/md";
+import LoginButton from "../Auth/LoginButton";
 
 const menuItems = [
 	{ title: "VIDEO", path: "/video" },
@@ -9,7 +11,7 @@ const menuItems = [
 
 export default function DesktopNavBar() {
 	const location = useLocation();
-	const { user } = useAuth();
+	const { user, signOut } = useAuth();
 
 	return (
 		<div className="flex gap-8">
@@ -28,6 +30,24 @@ export default function DesktopNavBar() {
 					)}
 				</NavLink>
 			))}
+			<div className="absolute right-5 ">
+				{user ? (
+					<div className="flex items-center">
+						<MdAccountCircle className="text-3xl" />
+						<p className="mx-2">-</p>
+						<p className="font-bold mr-10">{user.user_metadata.fullName}</p>
+						<div className="ml-2 w-10">
+							<MdLogout
+								title="Log ud"
+								onClick={async () => await signOut()}
+								className="hover:text-3xl transition-all text-red-600 text-2xl cursor-pointer"
+							/>
+						</div>
+					</div>
+				) : (
+					<LoginButton />
+				)}
+			</div>
 		</div>
 	);
 }
