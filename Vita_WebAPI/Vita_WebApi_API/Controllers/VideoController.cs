@@ -367,7 +367,6 @@ public class VideoController(
             return await tokenValidationResult; 
         }
 
-        // Check if the user has permission to delete the video
         var userId = User.FindFirst("sub")?.Value;
         if (userId == null)
         {
