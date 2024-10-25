@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* *,
+*::after,
+*::before {
+	outline: 2px solid lime;
+} */
+
 body {
 	font-family: "Barlow", sans-serif;
 }

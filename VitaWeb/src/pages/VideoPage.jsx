@@ -121,7 +121,7 @@ export default function VideoPage() {
 								handleEdit={handleEdit}
 							/>
 							<div
-								className="w-1/6 h-20 flex flex-col items-center justify-center border-2 border-dashed border-slate-400 hover:border-black cursor-pointer rounded-xl mx-auto mt-10"
+								className="w-4/6 md:w-2/6 xl:w-1/6 h-20 flex flex-col items-center justify-center border-2 border-dashed border-slate-400 hover:border-black cursor-pointer rounded-xl mx-auto mt-10 transition-all"
 								onClick={() => {
 									setEditMode(false);
 									setShowAddVideoModal(true);
