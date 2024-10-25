@@ -3,11 +3,9 @@ using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Net.Http.Headers;
+using System.Text;
 using Vita_WebApi_API.Dto;
 using AutoMapper;
-using Microsoft.IdentityModel.Tokens;
 using Vita_WebAPI_Services;
 using Vita_WebApi_Shared;
 
@@ -62,11 +60,6 @@ public class VideoController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult?> GetAllVideos()
     {
-        //--------------------------------------------------------------------------
-        // Development mode block:
-        // In development, log and return all videos available in the service.
-        // Proper error handling is included to log issues and return correct status codes.
-        //-------------------------------------------------------------------------- 
         if (env.IsDevelopment())
         {
             try
@@ -96,11 +89,13 @@ public class VideoController(
         if (!env.IsDevelopment())
         {
 
-            var tokenValidationResult = await ValidateToken();
-            if (tokenValidationResult != null)
+            var tokenValidationResult = ValidateToken();
+            if (tokenValidationResult.Result != null)
             {
-                return tokenValidationResult; // Return unauthorized response if any issue occurs
+                return await tokenValidationResult; 
             }
+
+
 
             try
             {
@@ -156,11 +151,23 @@ public class VideoController(
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IEnumerable<VideoDto>?> GetVideoByIdAsync(Guid id)
+    public async Task<IActionResult?> GetVideoByIdAsync(Guid id)
     {
+        var tokenValidationResult = ValidateToken();
+        if (tokenValidationResult.Result != null)
+        {
+            return await tokenValidationResult; 
+        }
+        
+        if (id == Guid.Empty)
+        {
+            logger.LogWarning("Invalid ID provided");
+            return BadRequest("Invalid ID provided");
+        }
+ 
         var video = await service.GetByIdAsync(id);
         var videoDto = mapper?.Map<IEnumerable<VideoDto>>(video);
-        return videoDto;
+        return Ok(videoDto ?? throw new InvalidOperationException("Videos not found"));
     }
     
 
@@ -201,7 +208,7 @@ public class VideoController(
     /// <response code="500">If an internal server error occurs during the creation process.</response>
     /// <returns>A confirmation message with the created video details.</returns>
     [HttpPost("Create")]
-    public async Task<IActionResult> PostVideoAsync([FromBody] CreateVideoDto? videoDto)
+    public async Task<IActionResult?> PostVideoAsync([FromBody] CreateVideoDto? videoDto)
     {
         if (videoDto == null)
         {
@@ -212,11 +219,11 @@ public class VideoController(
         if (!env.IsDevelopment())
         {
             // Reuse the ValidateToken method
-            var tokenValidationResult = await ValidateToken();
-            if (tokenValidationResult != null) // Token validation failed
+            var tokenValidationResult = ValidateToken();
+            if (tokenValidationResult.Result != null)
             {
-                return tokenValidationResult;
-            }   
+                return await tokenValidationResult; 
+            }
             var token = Request.Headers["Authorization"].ToString();
             var tokenString = token["Bearer ".Length..].Trim();
             var claimsPrincipal = new JwtSecurityTokenHandler().ReadJwtToken(tokenString);
@@ -302,7 +309,7 @@ public class VideoController(
 	///     HTTP/1.1 404 Not Found
 	/// </remarks>
 	[HttpPut("Put/{id:guid}")]
-	public async Task<IActionResult> PutAsync(Guid id, UpdateVideoDto videoDto)
+	public async Task<IActionResult?> PutAsync(Guid id, UpdateVideoDto? videoDto)
 	{
         if (videoDto == null)
         {
@@ -310,14 +317,11 @@ public class VideoController(
             return BadRequest("Invalid video data");
         }
 
-		if (!env.IsDevelopment())
-		{
-			var tokenValidationResult = await ValidateToken();
-			if (tokenValidationResult != null)
-			{
-				return tokenValidationResult; // Return unauthorized response if any issue occurs
-			}
-		}
+        var tokenValidationResult = ValidateToken();
+        if (tokenValidationResult.Result != null)
+        {
+            return await tokenValidationResult; 
+        }
 
  
         var existingVideo = await service.GetByIdAsync(id);
@@ -355,12 +359,12 @@ public class VideoController(
     ///     HTTP/1.1 404 Not Found
     /// </remarks> 
     [HttpDelete("delete/{id:guid}")]
-    public async Task<IActionResult> DeleteAsync(Guid id)
+    public async Task<IActionResult?> DeleteAsync(Guid id)
     {
-        var tokenValidationResult = await ValidateToken();
-        if (tokenValidationResult != null)
+        var tokenValidationResult = ValidateToken();
+        if (tokenValidationResult.Result != null)
         {
-            return tokenValidationResult; // Return unauthorized response if any issue occurs
+            return await tokenValidationResult; 
         }
 
         // Check if the user has permission to delete the video
@@ -384,67 +388,49 @@ public class VideoController(
     }
 
     private async Task<IActionResult?> ValidateToken()
-{
-    // Check for Authorization header
-    if (!Request.Headers.ContainsKey("Authorization"))
     {
-        logger.LogWarning("No Authorization header present");
-        return Unauthorized("No Authorization header present");
-    }
-
-    var token = Request.Headers.Authorization;
-    if (!token.ToString().StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
-    {
-        logger.LogWarning("Invalid token format");
-        return Unauthorized("Invalid token format");
-    }
-
-    var tokenString = token.ToString()["Bearer ".Length..].Trim();
-    logger.LogInformation($"tokenString received: {tokenString}");
-
-    var tokenHandler = new JwtSecurityTokenHandler();
-
-    var client = new HttpClient();
-    var jwks = await client.GetStringAsync("https://vhomzkchzmeaxpjfjmvd.supabase.co/");
-    var keys = new JsonWebKeySet(jwks).GetSigningKeys();
-
-    var tokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = "https://vhomzkchzmeaxpjfjmvd.supabase.co",
-        IssuerSigningKeys = keys
-    };
-
-    try
-    {
-        var claimsPrincipal = tokenHandler.ValidateToken(tokenString, tokenValidationParameters, out _);
-        
-        var subClaim = claimsPrincipal.FindFirst("sub")?.Value;
-
-        if (subClaim == null)
+		
+        // Check for Authorization header
+        if (!Request.Headers.ContainsKey("Authorization"))
         {
-            logger.LogWarning("Token missing 'sub' claim");
-            return Unauthorized("Invalid token - missing 'sub' claim");
+            logger.LogWarning("No Authorization header present");
+            return Unauthorized("No Authorization header present");
         }
 
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
-
-        var response = await client.GetAsync($"https://localhost:5226/auth/getuser/{subClaim}");
-
-        if (!response.IsSuccessStatusCode)
+        var token = Request.Headers.Authorization;
+        if (!token.ToString().StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
         {
-            logger.LogWarning("User validation failed");
-            return Unauthorized("User validation failed");
+            logger.LogWarning("Invalid token format");
+            return Unauthorized("Invalid token format");
         }
+        var tokenString = token.ToString()["Bearer ".Length..].Trim();
+        logger.LogInformation($"tokenString received: {tokenString}");
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var client = new HttpClient();
+		
+        var tokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidAudience = "authenticated",
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = "https://vhomzkchzmeaxpjfjmvd.supabase.co/auth/v1",
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Jc4ZvGS+REA18iW9pKsEDGEOXKTF5EGrttm7aTgKvQRGKL/EcI60b3PvdbMdNYnQWLDbxoqYy0uDkvh+/E4Gew=="))
+        };
 
-        return null;
+        try
+        {
+            var claimsPrincipal = tokenHandler.ValidateToken(tokenString, tokenValidationParameters, out _);
+
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
+
+            return null;
+        }
+        catch (SecurityTokenException ex)
+        {
+            logger.LogError($"Token validation failed: {ex.Message}");
+            return Unauthorized("Invalid token");
+        }
     }
-    catch (SecurityTokenException ex)
-    {
-        logger.LogError($"Token validation failed: {ex.Message}");
-        return Unauthorized("Invalid token");
-    }
-}}
+}
