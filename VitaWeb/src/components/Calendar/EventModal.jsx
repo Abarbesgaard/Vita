@@ -57,9 +57,7 @@ const EventModal = ({ onClose, event, resources }) => {
 							<textarea
 								rows={4}
 								disabled
-								value={`En hyggelig aftensmad med vennerne.
-Vi skal have noget lækkert mad og hygge os. 
-Måske en film bagefter?`}
+								value={event.description}
 								className={`py-1 px-2 w-full bg-gray-100 shadow-inner resize-none`}
 							/>
 							<p className="font-bold text-lg ml-1">Inviterede:</p>

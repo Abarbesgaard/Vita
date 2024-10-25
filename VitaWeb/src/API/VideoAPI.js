@@ -1,4 +1,6 @@
 export const getAllVideos = async (token) => {
+	const data = { videos: null, error: null };
+
 	try {
 		const response = await fetch("https://localhost:8081/api/video/getall", {
 			headers: {
@@ -6,11 +8,11 @@ export const getAllVideos = async (token) => {
 				Authorization: "Bearer " + token,
 			},
 		}).then((response) => response.json());
-		console.log(response);
-		return response;
+		data.videos = response;
 	} catch (error) {
-		return error;
+		data.error = error;
 	}
+	return data;
 };
 
 export const saveVideo = async (video, token) => {

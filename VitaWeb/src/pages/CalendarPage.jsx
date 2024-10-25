@@ -14,6 +14,7 @@ import { getSessionToken } from "../services/Supabase";
 import { BsCalendarWeek, BsCalendarEvent } from "react-icons/bs";
 import { getUsers } from "../services/Supabase";
 import AddEventModal from "../components/Calendar/AddEventModal";
+import { desc } from "framer-motion/client";
 
 const messages = {
 	date: "Dato",
@@ -132,24 +133,30 @@ const CalendarPage = () => {
 
 	const fetchActivities = async () => {
 		const token = await getSessionToken();
-		const activities = await getAllActivities(token);
-		activities.forEach((activity) => {
-			setEvents((events) => [
-				...events,
-				{
-					id: activity.id,
-					start: new Date(activity.start),
-					end: new Date(activity.end),
-					hostId: activity.hostId,
-					resourceId: activity.attendee.map((attendee) => attendee.id),
-					attendee: activity.attendee,
-					accepted: activity.verifiedAttendee,
-					allDay: activity.allDayEvent,
-					title: "APITest",
-					cancelled: activity.cancelled,
-				},
-			]);
-		});
+		const { activities, error } = await getAllActivities(token);
+		if (error) {
+			alert("Der skete en fejl da begivenhederne skulle hentes fra databasen");
+		}
+		if (!error) {
+			activities.forEach((activity) => {
+				setEvents((events) => [
+					...events,
+					{
+						id: activity.id,
+						start: new Date(activity.start),
+						end: new Date(activity.end),
+						hostId: activity.hostId,
+						resourceId: activity.attendee.map((attendee) => attendee.id),
+						attendee: activity.attendee,
+						accepted: activity.verifiedAttendee,
+						allDay: activity.allDayEvent,
+						title: activity.title,
+						cancelled: activity.cancelled,
+						description: activity.description,
+					},
+				]);
+			});
+		}
 		setIsLoading(false);
 		return activities;
 	};
@@ -165,9 +172,7 @@ const CalendarPage = () => {
 
 	useEffect(() => {
 		if (events.length === 0) {
-			fetchActivities().then((activities) => {
-				console.log(activities);
-			});
+			fetchActivities();
 		}
 		if (users.length === 0) {
 			fetchUsers();
@@ -193,7 +198,6 @@ const CalendarPage = () => {
 		);
 	}
 
-	console.log(events);
 	return (
 		<Layout>
 			<div className="bg-white h-full w-full p-10 pt-5 flex">
@@ -227,7 +231,7 @@ const CalendarPage = () => {
 							/>
 						</div>
 						<div className="flex flex-col space-y-2"></div>
-						<div>
+						<div className="flex flex-col items-center gap-5">
 							<button
 								className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 shadow-depth_blue flex items-center"
 								onClick={() => setShowAddEventModal(true)}

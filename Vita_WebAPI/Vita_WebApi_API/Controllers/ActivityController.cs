@@ -26,7 +26,7 @@ public class ActivityController(
 	{
 
 		var tokenValidationResult = ValidateToken();
-		if (tokenValidationResult != null)
+		if (tokenValidationResult.Result != null)
 		{
 			return await tokenValidationResult; // Return unauthorized response if any issue occurs
 		}
@@ -173,23 +173,7 @@ public class ActivityController(
 		{
 			var claimsPrincipal = tokenHandler.ValidateToken(tokenString, tokenValidationParameters, out _);
 
-			var subClaim = claimsPrincipal.FindFirst("sub")?.Value;
-
-			if (subClaim == null)
-			{
-				logger.LogWarning("Token missing 'sub' claim");
-				return Unauthorized("Invalid token - missing 'sub' claim");
-			}
-
 			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
-
-			var response = await client.GetAsync($"https://localhost:5226/auth/getuser/{subClaim}");
-
-			if (!response.IsSuccessStatusCode)
-			{
-				logger.LogWarning("User validation failed");
-				return Unauthorized("User validation failed");
-			}
 
 			return null;
 		}

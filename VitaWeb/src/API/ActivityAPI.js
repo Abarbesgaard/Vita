@@ -1,6 +1,7 @@
-import { desc } from "framer-motion/client";
-
 export const getAllActivities = async (token) => {
+	
+	const data = { activities: null, error: null };
+
 	try {
 		const response = await fetch("https://localhost:8081/api/activity/getall", {
 			headers: {
@@ -8,11 +9,12 @@ export const getAllActivities = async (token) => {
 				Authorization: "Bearer " + token,
 			},
 		}).then((response) => response.json());
-		console.log(response);
-		return response;
+
+		data.activities = response;
 	} catch (error) {
-		return error;
+		data.error = error;
 	}
+	return data;
 };
 
 export const saveActivity = async (activity, token) => {

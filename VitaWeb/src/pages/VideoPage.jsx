@@ -27,7 +27,7 @@ export default function VideoPage() {
 	const [token, setToken] = useState("");
 	const [isLoading, setIsLoading] = useState(true);
 	const [showAddVideoModal, setShowAddVideoModal] = useState(false);
-	const [editMode, setEditMode] = useState("false");
+	const [editMode, setEditMode] = useState(false);
 
 	const deleteVideo = async (id) => {
 		const isConfirmed = window.confirm(
@@ -74,8 +74,13 @@ export default function VideoPage() {
 	const fetchVideos = async () => {
 		const token = await getSessionToken();
 		setToken(token);
-		const videos = await getAllVideos(token);
-		setVideos(videos);
+		const { videos, error } = await getAllVideos(token);
+		if (error) {
+			alert("Der skete en fejl da videoer skulle hentes fra databasen");
+		}
+		if (!error) {
+			setVideos(videos);
+		}
 		setIsLoading(false);
 	};
 
@@ -106,7 +111,7 @@ export default function VideoPage() {
 							<VideoTableSkeleton />
 							<div className="w-1/6 h-20 flex flex-col items-center justify-center rounded-xl mx-auto mt-10 bg-gray-400 animate-pulse"></div>
 						</div>
-					) : videos.lenght === 0 ? (
+					) : videos === null ? (
 						<EmptyVideo handleClick={setShowAddVideoModal} />
 					) : (
 						<div className="w-full h-full flex flex-col justify-evenly">
