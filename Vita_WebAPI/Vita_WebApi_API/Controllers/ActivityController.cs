@@ -28,7 +28,7 @@ public class ActivityController(
 		var tokenValidationResult = ValidateToken();
 		if (tokenValidationResult.Result != null)
 		{
-			return await tokenValidationResult; // Return unauthorized response if any issue occurs
+			return await tokenValidationResult; 
 		}
 
 		try
@@ -53,8 +53,13 @@ public class ActivityController(
 	}
 
 	[HttpGet("Get/{id:guid}")]
-	public async Task<ActionResult<ActivityDto>> GetActivityByIdAsync(Guid id)
+	public async Task<IActionResult?> GetActivityByIdAsync(Guid id)
 	{
+		var tokenValidationResult = ValidateToken();
+		if (tokenValidationResult.Result != null)
+		{
+			return await tokenValidationResult; 
+		}	
 		try
 		{
 			var activity = await service.GetByIdAsync(id);
@@ -69,8 +74,13 @@ public class ActivityController(
 	}
 
 	[HttpPost("Create")]
-	public async Task<ActionResult<ActivityDto>> CreateActivityAsync([FromBody] ActivityDto? activityDto)
+	public async Task<IActionResult?> CreateActivityAsync([FromBody] ActivityDto? activityDto)
 	{
+		var tokenValidationResult = ValidateToken();
+		if (tokenValidationResult.Result != null)
+		{
+			return await tokenValidationResult; 
+		}	
 		if (activityDto is null)
 		{
 			logger.LogWarning("ActivityDto is null");
@@ -101,8 +111,13 @@ public class ActivityController(
 	}
 
 	[HttpPut("Update/{id:guid}")]
-	public async Task<ActionResult<ActivityDto>> UpdateActivityAsync(Guid id, [FromBody] ActivityDto? activityDto)
+	public async Task<IActionResult?> UpdateActivityAsync(Guid id, [FromBody] ActivityDto? activityDto)
 	{
+		var tokenValidationResult = ValidateToken();
+		if (tokenValidationResult.Result != null)
+		{
+			return await tokenValidationResult; 
+		}		
 		if (activityDto is null)
 		{
 			logger.LogWarning("ActivityDto is null");
@@ -135,6 +150,7 @@ public class ActivityController(
 
 	private async Task<IActionResult?> ValidateToken()
 	{
+		
 		// Check for Authorization header
 		if (!Request.Headers.ContainsKey("Authorization"))
 		{
@@ -148,16 +164,11 @@ public class ActivityController(
 			logger.LogWarning("Invalid token format");
 			return Unauthorized("Invalid token format");
 		}
-
 		var tokenString = token.ToString()["Bearer ".Length..].Trim();
 		logger.LogInformation($"tokenString received: {tokenString}");
-
 		var tokenHandler = new JwtSecurityTokenHandler();
-
 		var client = new HttpClient();
-		//var jwks = await client.GetStringAsync("https://vhomzkchzmeaxpjfjmvd.supabase.co/auth/v1");
-		//var keys = new JsonWebKeySet(jwks).GetSigningKeys();
-
+		
 		var tokenValidationParameters = new TokenValidationParameters
 		{
 			ValidateIssuer = true,
