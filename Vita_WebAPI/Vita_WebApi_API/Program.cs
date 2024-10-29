@@ -1,4 +1,5 @@
 using AutoMapper;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
@@ -10,9 +11,11 @@ using MongoDB.Driver;
 using Serilog;
 using Vita_WebApi_API.Mapping;
 using Vita_WebApi_API.MongoMapping;
+using Vita_WebApi_API.Validation;
 using Vita_WebAPI_Repository;
 using Vita_WebAPI_Services;
 using Vita_WebAPI_Services.HealthCheck;
+using Vita_WebApi_Shared;
 
 namespace Vita_WebApi_API;
 
@@ -73,6 +76,8 @@ public class Program
 		builder.Services.AddScoped(typeof(IGenericService<>), typeof(GenericService<>));
 		builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 		builder.Services.AddScoped<IAuditLogService, AuditLogService>();
+
+		builder.Services.AddScoped<IValidator<BaseEntity>, BaseEntityValidation>();
 		builder.Services.AddRazorPages();
 
 		// Swagger setup
