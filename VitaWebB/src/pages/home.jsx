@@ -1,12 +1,17 @@
-import React from 'react'
+import React, { useState } from 'react'
+import supabase from '../Services/supabase'
 
+export default function Home() {
 
-export default function Home()
-{
-    return(
+    useEffect(() => {
+        const session =supabase.auth.session(
+            console.log(session)
+        )
+    }, [])
 
-        <div>
-            <h1> Home Page what</h1>
-        </div>
-    );
+    return (
+        <button>
+			Sign in
+		</button>
+	);
 }

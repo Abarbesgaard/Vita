@@ -3,7 +3,6 @@ import Home from './home'
 import Videos from './Videos'
 import NavBar from "../Components/NavBar";
 import Calender from './Calender/Calender.jsx'
-import {Inject, ScheduleComponent, Day, Week, Month} from '@syncfusion/ej2-react-schedule';
 
 function App() {
 
