@@ -40,7 +40,7 @@ public class Program
         {
             var mongoDbSettingsSection = builder.Configuration.GetSection("MongoDbSettings");
             builder.Services.Configure<MongoDbSettings>(mongoDbSettingsSection);
-        }       
+        }
 
         builder.Services.AddSingleton<IMongoClient>(serviceProvider =>
         {
@@ -54,7 +54,7 @@ public class Program
             var client = serviceProvider.GetRequiredService<IMongoClient>();
             return client.GetDatabase(mongoDbSettings.DatabaseName);
         });
-        
+
         // CORS setup
         builder.Services.AddCors(options =>
         {
@@ -113,9 +113,9 @@ public class Program
                     { securityScheme, Array.Empty<string>() }
                 });
             }
-            
+
         });
-       
+
 
         // Build the app
         var app = builder.Build();
@@ -167,5 +167,5 @@ public class MongoDbSettings
     /// <summary>
     /// The connection string for the database.
     /// </summary>
-    public string ConnectionString => $"mongodb://{Host}:{Port}";
+    public string ConnectionString => "mongodb+srv://benjamintrue0549:ItIzIYLr7Q6JH6rd@vitahuscluster.db7b1.mongodb.net/";
 }
