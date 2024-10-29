@@ -20,7 +20,7 @@ public class VideoDatabaseSetting
    /// <summary>
    /// The connection string for the database.
    /// </summary>
-   public string ConnectionString => "mmongodb+srv://benjamintrue0549:ItIzIYLr7Q6JH6rd@vitahuscluster.db7b1.mongodb.net/";
+   public string ConnectionString => "mongodb+srv://benjamintrue0549:ItIzIYLr7Q6JH6rd@vitahuscluster.db7b1.mongodb.net/";
 }
 
 public class ActivityDatabaseSetting
