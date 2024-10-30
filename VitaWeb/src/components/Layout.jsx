@@ -4,6 +4,7 @@ import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import DesktopNavBar from "./NavBar/DesktopNavBar";
 import { useMediaQuery } from "react-responsive";
+import { Outlet } from "react-router-dom";
 
 export default function Layout({ children }) {
 	const [showNavBar, setShowNavBar] = useState(false);
@@ -38,7 +39,8 @@ export default function Layout({ children }) {
 						/>
 					)}
 				</AnimatePresence>
-				{children}
+				{/* {children} */}
+				<Outlet />
 			</div>
 		</div>
 	);

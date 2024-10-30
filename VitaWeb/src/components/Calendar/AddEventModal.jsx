@@ -4,6 +4,12 @@ import { useState } from "react";
 import { saveActivity } from "../../API/ActivityAPI";
 import { getSessionToken } from "../../services/Supabase";
 import { PiSpinnerGap } from "react-icons/pi";
+import moment from "moment";
+import { IoClose } from "react-icons/io5";
+
+moment.locale("da-DK", {
+	culture: "da-DK",
+});
 
 const AddEventModal = ({ onClose, users, user, setEvents }) => {
 	const [isLoading, setIsLoading] = useState(false);
@@ -11,9 +17,10 @@ const AddEventModal = ({ onClose, users, user, setEvents }) => {
 		attendee: [],
 		allDayEvent: false,
 		hostId: user.id,
-		title: "test",
-		start: new Date(),
-		end: new Date(),
+		title: "",
+		start: moment().toDate(),
+		end: new Date(new Date().getTime() + 60 * 60 * 1000),
+		description: "",
 	});
 
 	const saveActivitytoDb = async () => {
@@ -23,15 +30,20 @@ const AddEventModal = ({ onClose, users, user, setEvents }) => {
 		setEvents((prev) => [
 			...prev,
 			{
-				...event,
-				title: "test",
-				id: response.id,
-				allDay: event.allDayEvent,
-				resourceId: event.attendee.map((attendee) => attendee.id),
+				...response,
+				resourceId: response.attendee.map((attendee) => attendee.id),
+				allDay: response.allDayEvent,
+				accepted: response.verifiedAttendee,
+				start: new Date(response.start),
+				end: new Date(response.end),
 			},
 		]);
 		onClose();
 	};
+
+	console.log(event.start.toLocaleString({ format: "YYYY-MM_DDHH:mm" }));
+	console.log(event.start.toISOString());
+	console.log(moment(event.start).format("YYYY-MM-DDTHH:mm"));
 
 	return (
 		<>
@@ -57,10 +69,19 @@ const AddEventModal = ({ onClose, users, user, setEvents }) => {
 							<h2 className="text-xl text-white font-bold ml-2">
 								Ny begivenhed
 							</h2>
-							<button onClick={onClose}>X</button>
+							<button onClick={onClose}>
+								<IoClose className="text-3xl text-white" />
+							</button>
 						</div>
 						<div className="p-5">
+							<input
+								className="bg-gray-100 shadow-inner p-1 w-full mb-2"
+								placeholder="Indsæt titel"
+								value={event.title}
+								onChange={(e) => setEvent({ ...event, title: e.target.value })}
+							/>
 							<textarea
+								placeholder="Indsæt beskrivelse"
 								rows={4}
 								value={event.description}
 								onChange={(e) =>
@@ -84,7 +105,7 @@ const AddEventModal = ({ onClose, users, user, setEvents }) => {
 									<input
 										className="bg-gray-100 shadow-inner p-1"
 										type="datetime-local"
-										value={event.start.toISOString().slice(0, 16)}
+										value={moment(event.start).format("YYYY-MM-DDTHH:mm")}
 										onChange={(e) =>
 											setEvent({ ...event, start: new Date(e.target.value) })
 										}
@@ -95,7 +116,7 @@ const AddEventModal = ({ onClose, users, user, setEvents }) => {
 									<input
 										className="bg-gray-100 shadow-inner p-1"
 										type="datetime-local"
-										value={event.end.toISOString().slice(0, 16)}
+										value={moment(event.end).format("YYYY-MM-DDTHH:mm")}
 										onChange={(e) =>
 											setEvent({ ...event, end: new Date(e.target.value) })
 										}
@@ -105,6 +126,7 @@ const AddEventModal = ({ onClose, users, user, setEvents }) => {
 									{users.map((user) => (
 										<div className="space-x-2 flex" key={user.id}>
 											<input
+												className="scale-125"
 												type="checkbox"
 												checked={event.attendee.some((u) => u.id === user.id)}
 												onChange={() => {

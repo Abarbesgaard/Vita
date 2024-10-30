@@ -188,17 +188,17 @@ const CalendarPage = () => {
 
 	if (isLoading) {
 		return (
-			<Layout>
+			<>
 				<div className="w-full h-full flex flex-col items-center justify-center">
 					<BsCalendarWeek className="text-9xl text-gray-400 animate-bounce" />
 					<p className="animate-pulse">Åbner kalender...</p>
 				</div>
-			</Layout>
+			</>
 		);
 	}
 
 	return (
-		<Layout>
+		<>
 			<div className="bg-white h-full w-full p-10 pt-5 flex">
 				<AnimatePresence>
 					{showEventModal && (
@@ -293,8 +293,18 @@ const CalendarPage = () => {
 							setSelectedEvent(event);
 							setShowEventModal(true);
 						}}
-						min={new Date(1972, 8, 1, 6, 0)}
+						showMultiDayTimes={true}
+						scrollToTime={new Date(1970, 1, 1, 6)}
 						className="h-full bg-white bg-opacity-80 backdrop-blur"
+						dayPropGetter={(date) => {
+							if (date.getDay() === 0) {
+								return {
+									style: {
+										borderRight: "1px solid rgb(0, 0, 0)",
+									},
+								};
+							}
+						}}
 						eventPropGetter={(event) => {
 							if (event.type === "meeting") {
 								return {
@@ -316,7 +326,7 @@ const CalendarPage = () => {
 					/>
 				</div>
 			</div>
-		</Layout>
+		</>
 	);
 };
 

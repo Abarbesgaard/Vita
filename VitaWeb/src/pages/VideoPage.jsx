@@ -94,7 +94,7 @@ export default function VideoPage() {
 	}
 
 	return (
-		<Layout>
+		<>
 			{showAddVideoModal && (
 				<AddVideoModal
 					setShowAddVideoModal={setShowAddVideoModal}
@@ -134,6 +134,6 @@ export default function VideoPage() {
 					)}
 				</div>
 			</div>
-		</Layout>
+		</>
 	);
 }

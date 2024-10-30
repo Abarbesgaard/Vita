@@ -54,6 +54,14 @@ localizer.formats.eventTimeRangeFormat = ({ start, end }, culture, local) => {
 	const e = local.format(end, "HH:mm", culture);
 	return `${s} - ${e}`;
 };
+localizer.formats.eventTimeRangeStartFormat = ({ start }, culture, local) => {
+	const s = local.format(start, "HH:mm", culture);
+	return `${s} - `;
+};
+localizer.formats.eventTimeRangeEndFormat = ({ end }, culture, local) => {
+	const e = local.format(end, "HH:mm", culture);
+	return ` - ${e}`;
+};
 localizer.formats.agendaTimeRangeFormat = ({ start, end }, culture, local) => {
 	const s = local.format(start, "HH:mm", culture);
 	const e = local.format(end, "HH:mm", culture);
