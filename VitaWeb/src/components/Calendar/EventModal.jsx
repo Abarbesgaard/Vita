@@ -55,7 +55,7 @@ const EventModal = ({ onClose, event, resources }) => {
 							<p>{event.start.toString()}</p>
 							<p></p>
 							<textarea
-								rows={4}
+								rows={Math.min(event.description.split("\n").length + 1, 10)}
 								disabled
 								value={event.description}
 								className={`py-1 px-2 w-full bg-gray-100 shadow-inner resize-none`}
@@ -94,14 +94,6 @@ const EventModal = ({ onClose, event, resources }) => {
 										))}
 									</div>
 								</div>
-
-								{/* <div>
-									<p className="font-bold text-lg">Accepteret:</p>
-									{event.accepted &&
-										event.accepted.map((attendee) => (
-											<p key={attendee.id}>{attendee.name}</p>
-										))}
-								</div> */}
 							</div>
 						</div>
 					</motion.div>

@@ -14,7 +14,6 @@ import { getSessionToken } from "../services/Supabase";
 import { BsCalendarWeek, BsCalendarEvent } from "react-icons/bs";
 import { getUsers } from "../services/Supabase";
 import AddEventModal from "../components/Calendar/AddEventModal";
-import { desc } from "framer-motion/client";
 
 const messages = {
 	date: "Dato",
