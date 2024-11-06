@@ -35,9 +35,5 @@ export default [
 			],
 			"react/prop-types": [0],
 		},
-		extends: ["plugin:vitest-globals/recommended"],
-		env: {
-			"vitest-globals/env": true,
-		},
 	},
 ];
