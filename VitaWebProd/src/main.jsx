@@ -6,6 +6,7 @@ import "./index.css";
 import Placeholder from "./Placeholder.jsx";
 import Layout from "./pages/layout/Layout.jsx";
 import LoginPage from "./pages/auth/LoginPage.jsx";
+import CalendarPage from "./pages/calendar/CalendarPage.jsx";
 
 const router = createBrowserRouter([
 	{
@@ -17,8 +18,8 @@ const router = createBrowserRouter([
 				element: <Placeholder text={"Video Page"} />,
 			},
 			{
-				path: "/kalender",
-				element: <Placeholder text={"Kalender Page"} />,
+				path: "/calender",
+				element: <CalendarPage/>,
 			},
 			{
 				path: "/opslagstavle",
