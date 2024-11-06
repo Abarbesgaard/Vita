@@ -6,24 +6,24 @@ namespace Vita_Test;
 [TestClass]
 public class DataTests
 {
-     [TestMethod]
-        public void ConnectionString_ShouldReturnCorrectFormat()
+    [TestMethod]
+    public void ConnectionString_ShouldReturnCorrectFormat()
+    {
+        // Arrange
+        const string host = "localhost";
+        const int port = 27017;
+        var expectedConnectionString = "mongodb+srv://benjamintrue0549:ItIzIYLr7Q6JH6rd@vitahuscluster.db7b1.mongodb.net/";
+
+        var settings = new VideoDatabaseSetting
         {
-            // Arrange
-            const string host = "localhost";
-            const int port = 27017;
-            var expectedConnectionString = $"mongodb://{host}:{port}";
-    
-            var settings = new VideoDatabaseSetting
-            {
-                Host = host,
-                Port = port
-            };
-    
-            // Act
-            var connectionString = settings.ConnectionString;
-    
-            // Assert
-            connectionString.Should().BeEquivalentTo(expectedConnectionString);
-        }
+            Host = host,
+            Port = port
+        };
+
+        // Act
+        var connectionString = settings.ConnectionString;
+
+        // Assert
+        connectionString.Should().BeEquivalentTo(expectedConnectionString);
+    }
 }

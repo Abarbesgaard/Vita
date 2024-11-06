@@ -20,7 +20,7 @@ public class VideoDatabaseSetting
    /// <summary>
    /// The connection string for the database.
    /// </summary>
-   public string ConnectionString => $"mongodb://{Host}:{Port}";
+   public string ConnectionString => "mongodb+srv://benjamintrue0549:ItIzIYLr7Q6JH6rd@vitahuscluster.db7b1.mongodb.net/";
 }
 
 public class ActivityDatabaseSetting
@@ -28,5 +28,5 @@ public class ActivityDatabaseSetting
    public string? Host { get; set; }
    public int Port { get; set; }
    public string? DatabaseName { get; set; }
-   public string ConnectionString => $"mongodb://{Host}:{Port}";
+   public string ConnectionString => "mongodb+srv://benjamintrue0549:ItIzIYLr7Q6JH6rd@vitahuscluster.db7b1.mongodb.net/";
 }
