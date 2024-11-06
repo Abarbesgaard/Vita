@@ -3,6 +3,7 @@ import VideoPage from "./VideoPage";
 import Home from "./Home";
 import CalendarPage from "./CalendarPage";
 import Login from "./Login";
+import NoticeBoard from "./NoticeBoard";
 
 function App() {
 	return (
@@ -11,6 +12,7 @@ function App() {
 			<Route path="/login" element={<Login />} />
 			<Route path="/video" element={<VideoPage />} />
 			<Route path="/calendar" element={<CalendarPage />} />
+			<Route path="/opslagstavle" element={<NoticeBoard />} />
 		</Routes>
 	);
 }

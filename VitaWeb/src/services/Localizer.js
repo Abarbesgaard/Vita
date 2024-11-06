@@ -1,7 +1,7 @@
 import moment from "moment";
 import { momentLocalizer } from "react-big-calendar";
 
-moment.locale("da-DK", {
+moment.updateLocale("da-DK", {
 	months: [
 		"Januar",
 		"Februar",
