@@ -4,11 +4,13 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { AuthProvider } from "./contexts/authContext.jsx";
 import "./index.css";
 import Placeholder from "./Placeholder.jsx";
+import Layout from "./pages/layout/Layout.jsx";
+import LoginPage from "./pages/auth/LoginPage.jsx";
 
 const router = createBrowserRouter([
 	{
 		path: "/",
-		element: <Placeholder text={"Main Page"} />,
+		element: <Layout />,
 		children: [
 			{
 				path: "/video",
@@ -26,7 +28,7 @@ const router = createBrowserRouter([
 	},
 	{
 		path: "/login",
-		element: <Placeholder text={"Login Page"} />,
+		element: <LoginPage />,
 	},
 ]);
 
