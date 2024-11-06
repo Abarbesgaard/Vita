@@ -6,9 +6,9 @@ import localizer from "../../services/localizer.js";
 
 import { useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
-import { useAuth } from "../../contexts/authContext";
+import { useAuth } from "../../contexts/useAuth";
 import { Navigate } from "react-router-dom";
-import { getAllActivities } from "../../APIs/calendarAPI.js";
+import { getAllActivities, createActivity } from "../../APIs/calendarAPI.js";
 import { getSessionToken } from "../../services/supabase.js";
 import { BsCalendarWeek, BsCalendarEvent } from "react-icons/bs";
 import { getUsers } from "../../services/supabase";
@@ -132,6 +132,7 @@ const CalendarPage = () => {
 	const [users, setUsers] = useState([]);
 	const [selectedResources, setSelectedResources] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
+	const [selectedSlot, setSelectedSlot] = useState(null);
 
 	const fetchActivities = async () => {
 		const token = await getSessionToken();
@@ -176,18 +177,27 @@ const CalendarPage = () => {
 		if (events.length === 0) {
 			fetchActivities();
 		}
-		// if (users.length === 0) {
-		// 	fetchUsers();
-		// }
-        // console.log('Current Events:', events);
-        // console.log('Current Users:', users);
-        // console.log('Is Loading:', isLoading);
-        // console.log('User Auth:', user);
+		if (users.length === 0) {
+		 	fetchUsers();
+		}
+   
 
     }, []);
 
 	const handleChangeSelectedDay = (value) => {
 		setSelectedDay(value);
+	};
+	const handleSelectSlot = (slotInfo) => {
+        setSelectedSlot(slotInfo);
+        setShowAddEventModal(true);
+    };
+	const handleSelectEvent = (event) => {
+        setSelectedEvent(event);
+        setShowEventDetails(true);
+    };
+
+	const handleAddEvent = (newEvent) => {
+		setEvents((prevEvents) => [...prevEvents, newEvent]);
 	};
 
 	if (!user) {
@@ -196,24 +206,14 @@ const CalendarPage = () => {
 
 	if (isLoading) {
 		return (
-			<Layout>
 				<div className="w-full h-full flex flex-col items-center justify-center">
 					<BsCalendarWeek className="text-9xl text-gray-400 animate-bounce" />
 					<p className="animate-pulse">Åbner kalender...</p>
 				</div>
-			</Layout>
 		);
 	}
 
-	useEffect(() => {
-		console.log('Current Events:', events);
-		console.log('Current Users:', users);
-		console.log('Is Loading:', isLoading);
-		console.log('User Auth:', user);
-	}, [events, users, isLoading, user]);
-
 	return (
-		<Layout>
 			<div className="bg-white h-full w-full p-10 pt-5 flex">
 				<AnimatePresence>
 					{showEventModal && (
@@ -228,7 +228,8 @@ const CalendarPage = () => {
 							onClose={() => setShowAddEventModal(false)}
 							users={users}
 							user={user}
-							setEvents={setEvents}
+							setEvents={handleAddEvent}
+							selectedSlot={selectedSlot}
 						/>
 					)}
 				</AnimatePresence>
@@ -254,41 +255,6 @@ const CalendarPage = () => {
 								Ny begivenhed
 							</button>
 						</div>
-						{/* <div className="columns-2">
-							{users.map((resource) => (
-								<div key={resource.id} className="flex">
-									<label
-										className="mr-2 text-nowrap text-ellipsis"
-										htmlFor={resource.title}
-									>
-										{resource.title}
-									</label>
-									<input
-										className="ml-auto"
-										type="checkbox"
-										id={resource.title}
-										name={resource.title}
-										value={resource.title}
-										checked={selectedResources.includes(resource)}
-										onChange={(e) => {
-											if (e.target.checked) {
-												setSelectedResources(
-													[...selectedResources, resource].sort(
-														(a, b) => a.id - b.id
-													)
-												);
-											} else {
-												setSelectedResources(
-													users.filter(
-														(selectedResource) => selectedResource !== resource
-													)
-												);
-											}
-										}}
-									/>
-								</div>
-							))}
-						</div> */}
 					</div>
 				</div>
 				<div className="h-full w-full pr-5 bg-[url('https://www.vitahus.dk/wp-content/uploads/Vitahus-Logo-Web.png')] bg-no-repeat bg-center overflow-hidden">
@@ -303,6 +269,10 @@ const CalendarPage = () => {
 						resourceTitleAccessor="name"
 						date={selectedDay}
 						onNavigate={handleChangeSelectedDay}
+						onSelectEvent={handleSelectEvent}
+						onSelectSlot={handleSelectSlot}
+						selectable={true}
+
 						events={events}
 						onDoubleClickEvent={(event) => {
 							setSelectedEvent(event);
@@ -331,7 +301,6 @@ const CalendarPage = () => {
 					/>
 				</div>
 			</div>
-		</Layout>
 	);
 };
 

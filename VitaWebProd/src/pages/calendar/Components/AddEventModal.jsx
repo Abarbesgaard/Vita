@@ -1,33 +1,36 @@
 import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { saveActivity } from "../../../APIs/calendarAPI";
+import { createActivity } from "../../../APIs/calendarAPI";
 import { getSessionToken } from "../../../services/supabase";
 import { PiSpinnerGap } from "react-icons/pi";
 
-const AddEventModal = ({ onClose, users, user, setEvents }) => {
+const AddEventModal = ({ onClose, users, user, setEvents, selectedSlot }) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [event, setEvent] = useState({
-		attendee: [],
+		attendee: [{ id: user.id, name: user.name }],
 		allDayEvent: false,
 		hostId: user.id,
-		title: "test",
-		start: new Date(),
-		end: new Date(),
+		title: "Ny begivenhed",
+		start: selectedSlot ? new Date(selectedSlot.start.setHours(selectedSlot.start.getHours() + 1)) : new Date(),
+		end: selectedSlot ? new Date(selectedSlot.end.setHours(selectedSlot.end.getHours() + 1)) : new Date(),
 	});
 
 	const saveActivitytoDb = async () => {
 		setIsLoading(true);
 		const token = await getSessionToken();
-		const response = await saveActivity(event, token);
+		const response = await createActivity({
+			...event,
+			resourceId: event.attendee.map((attendee) => attendee.id),
+		}, token);
 		setEvents((prev) => [
 			...prev,
 			{
 				...event,
-				title: "test",
 				id: response.id,
 				allDay: event.allDayEvent,
 				resourceId: event.attendee.map((attendee) => attendee.id),
+				accepted: [],
 			},
 		]);
 		onClose();
@@ -52,11 +55,16 @@ const AddEventModal = ({ onClose, users, user, setEvents }) => {
 						exit={{ scale: 0.5 }}
 					>
 						<div
-							className={`flex justify-between p-5 bg-blue-500 rounded-t-lg`}
+							className={`flex justify-between p-5 bg-blue-500 rounded-t-lg` }
 						>
-							<h2 className="text-xl text-white font-bold ml-2">
-								Ny begivenhed
-							</h2>
+							<textarea
+								placeholder="Navn på begivenhed"
+								value={event.title}
+								onChange={(e) =>
+									setEvent({ ...event, title: e.target.value })
+								}
+								className="py-1 px-2 w-full bg-blue-500 shadow-inner resize-none color-black"
+							/>
 							<button onClick={onClose}>X</button>
 						</div>
 						<div className="p-5">
