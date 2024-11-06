@@ -4,7 +4,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { AuthProvider } from "./contexts/authContext.jsx";
 import "./index.css";
 import Placeholder from "./Placeholder.jsx";
-
+import CalendarPage from "./pages/calendar/CalendarPage.jsx";
 const router = createBrowserRouter([
 	{
 		path: "/",
@@ -15,8 +15,8 @@ const router = createBrowserRouter([
 				element: <Placeholder text={"Video Page"} />,
 			},
 			{
-				path: "/kalender",
-				element: <Placeholder text={"Kalender Page"} />,
+				path: "/calender",
+				element: <CalendarPage/>,
 			},
 			{
 				path: "/opslagstavle",
