@@ -8,6 +8,7 @@ import Layout from "./pages/layout/Layout.jsx";
 import LoginPage from "./pages/auth/LoginPage.jsx";
 import NoticeBoard from "./pages/noticeboard/NoticeBoardPage.jsx";
 import VideoPage from "./pages/video/VideoPage.jsx";
+import CalendarPage from "./pages/calendar/CalendarPage.jsx";
 
 const router = createBrowserRouter([
 	{
@@ -19,8 +20,8 @@ const router = createBrowserRouter([
 				element: <VideoPage />,
 			},
 			{
-				path: "/kalender",
-				element: <Placeholder text={"Kalender Page"} />,
+				path: "/calender",
+				element: <CalendarPage/>,
 			},
 			{
 				path: "/opslagstavle",
