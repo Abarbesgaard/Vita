@@ -2,9 +2,8 @@ import { Outlet } from "react-router-dom";
 
 const Placeholder = ({ text }) => {
 	return (
-		<div className="w-screen h-screen flex flex-col items-center justify-center">
+		<div className="h-full flex items-center justify-center border-4">
 			{text}
-			<Outlet />
 		</div>
 	);
 };

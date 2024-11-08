@@ -9,6 +9,9 @@ export default {
 				tertiary: "#3F72AF",
 				quaternary: "#112D4E",
 			},
+			fontFamily: {
+				lato: ["Lato"],
+			},
 		},
 	},
 	plugins: [],
