@@ -13,10 +13,8 @@ const VideoTable = ({ videos, deleteVideo, handleEdit }) => {
 
 	return (
 		<table className="w-full">
-			{showVideoModal && (
-				<VideoModal url={videoUrl} onClose={onClose} />
-			)}
-			<thead className="sticky top-0">
+			{showVideoModal && <VideoModal url={videoUrl} onClose={onClose} />}
+			<thead className="sticky top-0 bg-tertiary text-white">
 				<tr className="border-b border-black text-left">
 					<th className="p-2">TITEL</th>
 					<th className="p-2">BESKRIVELSE</th>
@@ -44,7 +42,12 @@ const VideoTable = ({ videos, deleteVideo, handleEdit }) => {
 							<MdEdit
 								className="cursor-pointer text-2xl hover:text-slate-500"
 								onClick={() => {
-									handleEdit(video.id, video.title, video.url, video.description);
+									handleEdit(
+										video.id,
+										video.title,
+										video.url,
+										video.description
+									);
 								}}
 								title="Rediger"
 							/>

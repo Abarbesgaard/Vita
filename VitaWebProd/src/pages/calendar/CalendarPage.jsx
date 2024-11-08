@@ -1,12 +1,10 @@
 import { Calendar } from "react-big-calendar";
-import 'react-big-calendar/lib/css/react-big-calendar.css'; 
+import "react-big-calendar/lib/css/react-big-calendar.css";
 import "./components/CalendarStyle.css";
 import localizer from "../../services/localizer.js";
-
-
 import { useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
-import { useAuth } from "../../contexts/authContext";
+import { useAuth } from "../../contexts/useAuth.jsx";
 import { Navigate } from "react-router-dom";
 import { getAllActivities } from "../../APIs/calendarAPI.js";
 import { getSessionToken } from "../../services/supabase.js";
@@ -15,8 +13,7 @@ import { getUsers } from "../../services/supabase";
 import EventModal from "./components/EventModal";
 import AddEventModal from "./components/AddEventModal";
 import "./components/CalendarStyle.css";
-import SmallCalendar from 'react-calendar';
-
+import SmallCalendar from "react-calendar";
 
 const messages = {
 	date: "Dato",
@@ -179,12 +176,11 @@ const CalendarPage = () => {
 		// if (users.length === 0) {
 		// 	fetchUsers();
 		// }
-        // console.log('Current Events:', events);
-        // console.log('Current Users:', users);
-        // console.log('Is Loading:', isLoading);
-        // console.log('User Auth:', user);
-
-    }, []);
+		// console.log('Current Events:', events);
+		// console.log('Current Users:', users);
+		// console.log('Is Loading:', isLoading);
+		// console.log('User Auth:', user);
+	}, []);
 
 	const handleChangeSelectedDay = (value) => {
 		setSelectedDay(value);
@@ -196,142 +192,96 @@ const CalendarPage = () => {
 
 	if (isLoading) {
 		return (
-			<Layout>
-				<div className="w-full h-full flex flex-col items-center justify-center">
-					<BsCalendarWeek className="text-9xl text-gray-400 animate-bounce" />
-					<p className="animate-pulse">Åbner kalender...</p>
-				</div>
-			</Layout>
+			<div className="w-full h-full flex flex-col items-center justify-center">
+				<BsCalendarWeek className="text-9xl text-gray-400 animate-bounce" />
+				<p className="animate-pulse">Åbner kalender...</p>
+			</div>
 		);
 	}
 
-	useEffect(() => {
-		console.log('Current Events:', events);
-		console.log('Current Users:', users);
-		console.log('Is Loading:', isLoading);
-		console.log('User Auth:', user);
-	}, [events, users, isLoading, user]);
-
 	return (
-		<Layout>
-			<div className="bg-white h-full w-full p-10 pt-5 flex">
-				<AnimatePresence>
-					{showEventModal && (
-						<EventModal
-							onClose={() => setShowEventModal(false)}
-							event={selectedEvent}
-							resources={resources}
+		<div className="bg-white h-full w-full p-10 pt-5 flex">
+			<AnimatePresence>
+				{showEventModal && (
+					<EventModal
+						onClose={() => setShowEventModal(false)}
+						event={selectedEvent}
+						resources={resources}
+					/>
+				)}
+				{showAddEventModal && (
+					<AddEventModal
+						onClose={() => setShowAddEventModal(false)}
+						users={users}
+						user={user}
+						setEvents={setEvents}
+					/>
+				)}
+			</AnimatePresence>
+			<div className="w-96 bg-white h-full">
+				<div className="flex flex-col space-y-2 items-center pr-10">
+					<div className="mb-20">
+						<SmallCalendar
+							className="shadow-md w-min rounded-md"
+							onChange={handleChangeSelectedDay}
+							value={selectedDay}
+							tileClassName="rounded-full"
+							prev2Label={null}
+							next2Label={null}
 						/>
-					)}
-					{showAddEventModal && (
-						<AddEventModal
-							onClose={() => setShowAddEventModal(false)}
-							users={users}
-							user={user}
-							setEvents={setEvents}
-						/>
-					)}
-				</AnimatePresence>
-				<div className="w-96 bg-white h-full">
-					<div className="flex flex-col space-y-2 items-center pr-10">
-						<div className="mb-20">
-							<SmallCalendar
-								className="shadow-md w-min rounded-md"
-								onChange={handleChangeSelectedDay}
-								value={selectedDay}
-								tileClassName="rounded-full"
-								prev2Label={null}
-								next2Label={null}
-							/>
-						</div>
-						<div className="flex flex-col space-y-2"></div>
-						<div className="flex flex-col items-center gap-5">
-							<button
-								className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 shadow-depth_blue flex items-center"
-								onClick={() => setShowAddEventModal(true)}
-							>
-								<BsCalendarEvent className="mr-2" />
-								Ny begivenhed
-							</button>
-						</div>
-						{/* <div className="columns-2">
-							{users.map((resource) => (
-								<div key={resource.id} className="flex">
-									<label
-										className="mr-2 text-nowrap text-ellipsis"
-										htmlFor={resource.title}
-									>
-										{resource.title}
-									</label>
-									<input
-										className="ml-auto"
-										type="checkbox"
-										id={resource.title}
-										name={resource.title}
-										value={resource.title}
-										checked={selectedResources.includes(resource)}
-										onChange={(e) => {
-											if (e.target.checked) {
-												setSelectedResources(
-													[...selectedResources, resource].sort(
-														(a, b) => a.id - b.id
-													)
-												);
-											} else {
-												setSelectedResources(
-													users.filter(
-														(selectedResource) => selectedResource !== resource
-													)
-												);
-											}
-										}}
-									/>
-								</div>
-							))}
-						</div> */}
+					</div>
+					<div className="flex flex-col space-y-2"></div>
+					<div className="flex flex-col items-center gap-5">
+						<button
+							className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 shadow-depth_blue flex items-center"
+							onClick={() => setShowAddEventModal(true)}
+						>
+							<BsCalendarEvent className="mr-2" />
+							Ny begivenhed
+						</button>
 					</div>
 				</div>
-				<div className="h-full w-full pr-5 bg-[url('https://www.vitahus.dk/wp-content/uploads/Vitahus-Logo-Web.png')] bg-no-repeat bg-center overflow-hidden">
-					<Calendar
-						localizer={localizer}
-						startAccessor="start"
-						endAccessor="end"
-						messages={messages}
-						defaultView="day"
-						views={["month", "day"]}
-						resources={users}
-						resourceTitleAccessor="name"
-						date={selectedDay}
-						onNavigate={handleChangeSelectedDay}
-						events={events}
-						onDoubleClickEvent={(event) => {
-							setSelectedEvent(event);
-							setShowEventModal(true);
-						}}
-						min={new Date(1972, 8, 1, 6, 0)}
-						className="h-full bg-white bg-opacity-80 backdrop-blur"
-						eventPropGetter={(event) => {
-							if (event.type === "meeting") {
-								return {
-									style: {
-										backgroundColor: "red",
-									},
-								};
-							}
-							if (event.cancelled === true) {
-								return {
-									style: {
-										backgroundColor: "gray",
-										textDecoration: "line-through",
-										opacity: 0.5,
-									},
-								};
-							}
-						}}
-					/>
-				</div>
 			</div>
-		</Layout>
+			<div className="h-full w-full pr-5 bg-[url('https://www.vitahus.dk/wp-content/uploads/Vitahus-Logo-Web.png')] bg-no-repeat bg-center overflow-hidden">
+				<Calendar
+					localizer={localizer}
+					startAccessor="start"
+					endAccessor="end"
+					messages={messages}
+					defaultView="day"
+					views={["month", "day"]}
+					resources={users}
+					resourceTitleAccessor="name"
+					date={selectedDay}
+					onNavigate={handleChangeSelectedDay}
+					events={events}
+					onDoubleClickEvent={(event) => {
+						setSelectedEvent(event);
+						setShowEventModal(true);
+					}}
+					min={new Date(1972, 8, 1, 6, 0)}
+					className="h-full bg-white bg-opacity-80 backdrop-blur"
+					eventPropGetter={(event) => {
+						if (event.type === "meeting") {
+							return {
+								style: {
+									backgroundColor: "red",
+								},
+							};
+						}
+						if (event.cancelled === true) {
+							return {
+								style: {
+									backgroundColor: "gray",
+									textDecoration: "line-through",
+									opacity: 0.5,
+								},
+							};
+						}
+					}}
+				/>
+			</div>
+		</div>
 	);
 };
 

@@ -9,7 +9,7 @@ const videoSkeletons = Array.from({ length: 8 }, (_, i) => ({
 
 const VideoTableSkeleton = () => {
 	return (
-		<table className="w-full">
+		<table className="w-full bg-tertiary text-white">
 			<thead className="sticky top-0">
 				<tr className="border-b border-black text-left">
 					<th className="p-2">TITEL</th>

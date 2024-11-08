@@ -102,7 +102,7 @@ export default function VideoPage() {
 					mode={editMode}
 				/>
 			)}
-			<div className="w-3/4 p-10 mx-auto h-full flex flex-col lg:flex-row overflow-auto justify-center">
+			<div className="w-3/4 mx-auto h-full flex flex-col lg:flex-row overflow-auto justify-center">
 				<div className="flex flex-col w-full px-10 items-center overflow-visible">
 					{isLoading ? (
 						<div className="w-full">
@@ -112,7 +112,7 @@ export default function VideoPage() {
 					) : videos === null ? (
 						<EmptyVideo handleClick={setShowAddVideoModal} />
 					) : (
-						<div className="w-full h-full flex flex-col justify-evenly">
+						<div className="w-full">
 							<VideoTable
 								videos={videos}
 								deleteVideo={deleteVideo}
