@@ -44,3 +44,4 @@ export const saveActivity = async (activity, token) => {
 		return error;
 	}
 };
+

@@ -16,8 +16,7 @@ export const getAllActivities = async (token) => {
 	}
 	return data;
 };
-
-export const saveActivity = async (activity, token) => {
+export const createActivity = async (activity, token) => {
 	try {
 		const response = await fetch("https://localhost:8081/api/activity/create", {
 			method: "POST",
@@ -44,3 +43,62 @@ export const saveActivity = async (activity, token) => {
 		return error;
 	}
 };
+
+export const updateActivity = async (id, activity, token) => {
+    try {
+        const API_URL = 'http://localhost:5000';
+        
+        const response = await fetch(`${API_URL}/api/Activity/Update/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                id: activity.id,
+                title: activity.title,
+                description: activity.description,
+                start: activity.start.toISOString(),
+                end: activity.end.toISOString(),
+                allDayEvent: activity.allDay,
+                hostId: activity.hostId,
+                attendee: activity.attendee,
+                verifiedAttendee: activity.accepted,
+                cancelled: activity.cancelled
+            })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.text();
+            console.error('Server response:', errorData);
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return { activity: data, error: null };
+    } catch (error) {
+        console.error('Error updating activity:', error);
+        return { activity: null, error: error.message };
+    }
+};
+
+export const deleteActivity = async (id, token) => {
+    try {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/Activity/Delete/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        return { error: null };
+    } catch (error) {
+        console.error('Error deleting activity:', error);
+        return { error: error.message };
+    }
+};
+
