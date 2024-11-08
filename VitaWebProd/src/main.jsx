@@ -6,6 +6,8 @@ import "./index.css";
 import Placeholder from "./Placeholder.jsx";
 import Layout from "./pages/layout/Layout.jsx";
 import LoginPage from "./pages/auth/LoginPage.jsx";
+import NoticeBoard from "./pages/noticeboard/NoticeBoardPage.jsx";
+import VideoPage from "./pages/video/VideoPage.jsx";
 
 const router = createBrowserRouter([
 	{
@@ -14,7 +16,7 @@ const router = createBrowserRouter([
 		children: [
 			{
 				path: "/video",
-				element: <Placeholder text={"Video Page"} />,
+				element: <VideoPage />,
 			},
 			{
 				path: "/kalender",
@@ -22,7 +24,7 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "/opslagstavle",
-				element: <Placeholder text={"Opslagstavle Page"} />,
+				element: <NoticeBoard   />,
 			},
 		],
 	},
