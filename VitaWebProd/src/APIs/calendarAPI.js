@@ -16,7 +16,6 @@ export const getAllActivities = async (token) => {
 	}
 	return data;
 };
-
 export const createActivity = async (activity, token) => {
 	try {
 		const response = await fetch("https://localhost:8081/api/activity/create", {
@@ -102,5 +101,4 @@ export const deleteActivity = async (id, token) => {
         return { error: error.message };
     }
 };
-
 

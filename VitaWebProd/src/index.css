@@ -2,6 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+	.active-link {
+		@apply py-2 px-3 lg:rounded flex items-center gap-2;
+	}
+
+	.pending-link {
+		@apply py-2 px-3 lg:rounded flex items-center gap-2 *:opacity-65 *:hover:opacity-100;
+	}
+}
+
+body {
+	background-color: #f9f7f7;
+}
+
 .lato-regular {
 	font-family: "Lato", sans-serif;
 	font-weight: 400;

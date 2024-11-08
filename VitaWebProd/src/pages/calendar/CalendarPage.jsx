@@ -1,12 +1,10 @@
 import { Calendar } from "react-big-calendar";
-import 'react-big-calendar/lib/css/react-big-calendar.css'; 
+import "react-big-calendar/lib/css/react-big-calendar.css";
 import "./components/CalendarStyle.css";
 import localizer from "../../services/localizer.js";
-
-
 import { useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
-import { useAuth } from "../../contexts/useAuth";
+import { useAuth } from "../../contexts/useAuth.jsx";
 import { Navigate } from "react-router-dom";
 import { getAllActivities, createActivity } from "../../APIs/calendarAPI.js";
 import { getSessionToken } from "../../services/supabase.js";
@@ -15,8 +13,7 @@ import { getUsers } from "../../services/supabase";
 import EventModal from "./components/EventModal";
 import AddEventModal from "./components/AddEventModal";
 import "./components/CalendarStyle.css";
-import SmallCalendar from 'react-calendar';
-
+import SmallCalendar from "react-calendar";
 
 const messages = {
 	date: "Dato",
@@ -180,13 +177,12 @@ const CalendarPage = () => {
 		if (users.length === 0) {
 		 	fetchUsers();
 		}
-   
-
     }, []);
 
 	const handleChangeSelectedDay = (value) => {
 		setSelectedDay(value);
 	};
+  
 	const handleSelectSlot = (slotInfo) => {
         setSelectedSlot(slotInfo);
         setShowAddEventModal(true);
