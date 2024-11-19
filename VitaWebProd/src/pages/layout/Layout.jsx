@@ -1,6 +1,6 @@
 import { Outlet, Navigate } from "react-router-dom";
 import NavBar from "./components/NavBar";
-import { useAuth } from "../../contexts/useAuth";
+import { useAuth } from "../../hooks/useAuth";
 import { useMediaQuery } from "react-responsive";
 import MobileNavBar from "./components/MobileNavBar";
 

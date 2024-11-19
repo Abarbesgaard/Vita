@@ -5,7 +5,7 @@ import { LuMessagesSquare } from "react-icons/lu";
 import { useState } from "react";
 import { FaUserCircle } from "react-icons/fa";
 import { motion } from "framer-motion";
-import { useAuth } from "../../../contexts/useAuth";
+import { useAuth } from "../../../hooks/useAuth";
 
 const links = [
 	{ text: "Hjem", to: "/", icon: <IoHomeSharp className="text-xl" /> },

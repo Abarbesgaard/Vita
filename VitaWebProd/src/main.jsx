@@ -2,6 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { AuthProvider } from "./contexts/authContext.jsx";
+import { VideoProvider } from "./contexts/videoContext.jsx";
 import "./index.css";
 import Layout from "./pages/layout/Layout.jsx";
 import LoginPage from "./pages/auth/LoginPage.jsx";
@@ -37,7 +38,9 @@ const router = createBrowserRouter([
 createRoot(document.getElementById("root")).render(
 	<StrictMode>
 		<AuthProvider>
-			<RouterProvider router={router} />
+			<VideoProvider>
+				<RouterProvider router={router} />
+			</VideoProvider>
 		</AuthProvider>
 	</StrictMode>
 );

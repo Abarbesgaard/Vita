@@ -5,7 +5,8 @@ import {
 	deleteVideoFromDbFake as deleteVideoFromDb,
 	updateVideoFake as updateVideo,
 } from "../../APIs/VideoAPI";
-import { useAuth } from "../../contexts/useAuth";
+import { useAuth } from "../../hooks/useAuth";
+import { useVideo } from "../../hooks/useVideo";
 import { Navigate } from "react-router-dom";
 import { AiOutlineVideoCameraAdd } from "react-icons/ai";
 import { getSessionToken } from "../../services/supabase";
@@ -15,17 +16,20 @@ import VideoTable from "./components/VideoTable";
 import VideoTableSkeleton from "./components/VideoTableSkeleton";
 
 export default function VideoPage() {
+	const { videos } = useVideo();
 	const { user } = useAuth();
 	const [video, setVideo] = useState({
 		title: "",
 		url: "",
 		description: "",
 	});
-	const [videos, setVideos] = useState(null);
+	const [videosOLD, setVideos] = useState(null);
 	const [token, setToken] = useState("");
 	const [isLoading, setIsLoading] = useState(true);
 	const [showAddVideoModal, setShowAddVideoModal] = useState(false);
 	const [editMode, setEditMode] = useState(false);
+
+	console.log("VideoPage rendered with videos:", videos);
 
 	const deleteVideo = async (id) => {
 		const isConfirmed = window.confirm(
@@ -83,8 +87,8 @@ export default function VideoPage() {
 	};
 
 	useEffect(() => {
-		setIsLoading(true);
-		fetchVideos();
+		setIsLoading(false);
+		// fetchVideos();
 	}, []);
 
 	if (!user) {

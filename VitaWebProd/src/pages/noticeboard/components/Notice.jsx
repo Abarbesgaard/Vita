@@ -1,7 +1,7 @@
 import { FaUserEdit } from "react-icons/fa";
 import moment from "moment";
 
-import { useAuth } from "../../../contexts/useAuth";
+import { useAuth } from "../../../hooks/useAuth";
 
 const Notice = ({ notice }) => {
 	const { user } = useAuth();
