@@ -6,7 +6,7 @@ import { LuMessagesSquare } from "react-icons/lu";
 import { NavLink, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { useAuth } from "../../../contexts/useAuth";
+import { useAuth } from "../../../hooks/useAuth";
 
 const links = [
 	{ text: "Hjem", to: "/", icon: <IoHomeSharp /> },

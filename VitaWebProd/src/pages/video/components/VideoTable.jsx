@@ -2,18 +2,18 @@ import { MdDelete, MdEdit } from "react-icons/md";
 import { FaPlay } from "react-icons/fa";
 import { useState } from "react";
 import VideoModal from "./VideoModal";
+import { useVideo } from "../../../hooks/useVideo";
 
-const VideoTable = ({ videos, deleteVideo, handleEdit }) => {
+const VideoTable = ({ videos, handleEdit }) => {
 	const [showVideoModal, setShowVideoModal] = useState(false);
 	const [videoUrl, setVideoUrl] = useState("");
-
-	const onClose = () => {
-		setShowVideoModal(false);
-	};
+	const { deleteVideo } = useVideo();
 
 	return (
 		<table className="w-full">
-			{showVideoModal && <VideoModal url={videoUrl} onClose={onClose} />}
+			{showVideoModal && (
+				<VideoModal url={videoUrl} onClose={() => setShowVideoModal(false)} />
+			)}
 			<thead className="sticky top-0 bg-tertiary text-white">
 				<tr className="border-b border-black text-left">
 					<th className="p-2">TITEL</th>
@@ -53,9 +53,7 @@ const VideoTable = ({ videos, deleteVideo, handleEdit }) => {
 							/>
 							<MdDelete
 								className="cursor-pointer text-2xl hover:text-red-700"
-								onClick={async () => {
-									await deleteVideo(video.id);
-								}}
+								onClick={() => deleteVideo(video.id)}
 								title="Slet"
 							/>
 						</td>

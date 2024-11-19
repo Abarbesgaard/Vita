@@ -14,16 +14,13 @@ export const getAllVideos = async (token) => {
 	}
 	return data;
 };
-export const getAllVideosFake = async (token) => {
+export const getAllVideosFake = async () => {
 	const data = { videos: null, error: null };
 
 	try {
-		const response = await fetch("/api/videos", {
-			headers: {
-				noCors: true,
-				Authorization: "Bearer " + token,
-			},
-		}).then((response) => response.json());
+		const response = await fetch("/api/videos", {}).then((response) =>
+			response.json()
+		);
 		data.videos = response.videos;
 	} catch (error) {
 		data.error = error;
@@ -48,22 +45,24 @@ export const saveVideo = async (video, token) => {
 		return error;
 	}
 };
-export const saveVideoFake = async (video, token) => {
+export const saveVideoFake = async (video) => {
+	const data = { video: null, error: null };
+
 	try {
 		const response = await fetch("/api/videos", {
 			method: "POST",
 			headers: {
-				Authorization: "Bearer " + token,
 				"Content-Type": "application/json",
 				charset: "utf-8",
 			},
 			body: JSON.stringify(video),
 		}).then((response) => response.json());
 
-		return response.video;
+		data.video = response.video;
 	} catch (error) {
-		return error;
+		data.error = error;
 	}
+	return data;
 };
 
 export const updateVideo = async (video, token) => {
@@ -90,29 +89,27 @@ export const updateVideo = async (video, token) => {
 		return error;
 	}
 };
-export const updateVideoFake = async (video, token) => {
+export const updateVideoFake = async (video) => {
+	const data = { video: null, error: null };
+
 	try {
-		console.log(video);
-		const response = await fetch(
-			`/api/videos/${video.id}`,
-			{
-				method: "PUT",
-				headers: {
-					Authorization: "Bearer " + token,
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					title: video.title,
-					description: video.description,
-					url: video.url,
-				}),
-			}
-		).then((response) => response.json());
-		console.log(response);
-		return response;
+		const response = await fetch(`/api/videos/${video.id}`, {
+			method: "PUT",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				title: video.title,
+				description: video.description,
+				url: video.url,
+			}),
+		}).then((response) => response.json());
+
+		data.video = response.video;
 	} catch (error) {
-		return error;
+		data.error = error;
 	}
+	return data;
 };
 
 export const deleteVideoFromDb = async (id, token) => {
@@ -132,17 +129,16 @@ export const deleteVideoFromDb = async (id, token) => {
 		return error;
 	}
 };
-export const deleteVideoFromDbFake = async (id, token) => {
+export const deleteVideoFromDbFake = async (id) => {
+	const data = { video: null, error: null };
 	try {
 		const response = await fetch(`/api/videos/${id}`, {
 			method: "DELETE",
-			headers: {
-				Authorization: "Bearer " + token,
-			},
-		}).then((response) => response.json());
+		});
 
-		return response.video;
+		data.video = response.video;
 	} catch (error) {
-		return error;
+		data.error = error;
 	}
+	return data;
 };

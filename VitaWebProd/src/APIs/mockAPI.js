@@ -77,7 +77,6 @@ export function makeServer() {
 
 			this.delete("/api/videos/:id", (schema, request) => {
 				const id = request.params.id;
-				console.log(id);
 				schema.videos.find(id).destroy();
 			});
 		},

@@ -4,7 +4,7 @@ import "./components/CalendarStyle.css";
 import localizer from "../../services/localizer.js";
 import { useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
-import { useAuth } from "../../contexts/useAuth.jsx";
+import { useAuth } from "../../hooks/useAuth.jsx";
 import { Navigate } from "react-router-dom";
 import { getAllActivities, createActivity } from "../../APIs/calendarAPI.js";
 import { getSessionToken } from "../../services/supabase.js";

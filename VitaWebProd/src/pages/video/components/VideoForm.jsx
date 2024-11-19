@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { PiSpinnerGap } from "react-icons/pi";
+import { useVideo } from "../../../hooks/useVideo";
 
 export default function VideoForm({
 	handleVideoFormSubmit,
@@ -8,6 +9,7 @@ export default function VideoForm({
 	mode,
 }) {
 	const [isLoading, setIsLoading] = useState(false);
+	const { saveVideo, updateVideo } = useVideo();
 
 	if (isLoading) {
 		return (
@@ -23,7 +25,7 @@ export default function VideoForm({
 				className="flex flex-col space-y-4"
 				onSubmit={() => {
 					setIsLoading(true);
-					handleVideoFormSubmit();
+					mode ? updateVideo(video) : saveVideo(video);
 				}}
 			>
 				<input
