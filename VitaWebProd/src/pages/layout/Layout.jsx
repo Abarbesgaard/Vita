@@ -15,7 +15,7 @@ const Layout = () => {
 	return (
 		<div className="h-dvh flex flex-col">
 			{isMobile ? <MobileNavBar /> : <NavBar />}
-			<div className="flex-1 p-5 px-6 lg:px-12">
+			<div className="flex-1 p-5 px-6 overflow-hidden">
 				<Outlet />
 			</div>
 		</div>

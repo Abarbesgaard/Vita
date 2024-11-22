@@ -4,7 +4,7 @@ import { IoIosAddCircleOutline } from "react-icons/io";
 import moment from "moment";
 import { makeServer } from "../../APIs/mockAPI";
 
-makeServer();
+// makeServer();
 
 moment.updateLocale("da-DK", {
 	culture: "da-DK",
@@ -44,14 +44,16 @@ const NoticeBoard = () => {
 	}
 
 	return (
-		<div className="flex flex-col items-center">
-			<div className="w-full grid grid-cols-2 grid-flow-row gap-3 mb-5 justify-center">
-				<NoticeList notices={notices} />
+		<div className="w-full h-full overflow-auto">
+			<div className="flex flex-col items-center">
+				<div className="w-full grid grid-cols-2 grid-flow-row gap-3 mb-5 justify-center">
+					<NoticeList notices={notices} />
+				</div>
+				<IoIosAddCircleOutline
+					onClick={handleAddNotice}
+					className="text-4xl cursor-pointer active:scale-100 hover:rotate-90 hover:scale-125 transition-all"
+				/>
 			</div>
-			<IoIosAddCircleOutline
-				onClick={handleAddNotice}
-				className="text-4xl cursor-pointer active:scale-100 hover:rotate-90 hover:scale-125 transition-all"
-			/>
 		</div>
 	);
 };

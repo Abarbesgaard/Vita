@@ -2,13 +2,7 @@ import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
 import VideoForm from "./VideoForm";
 
-const AddVideoModal = ({
-	setShowAddVideoModal,
-	handleVideoFormSubmit,
-	video,
-	setVideo,
-	mode,
-}) => {
+const AddVideoModal = ({ setShowAddVideoModal, video, setVideo, mode }) => {
 	return createPortal(
 		<motion.div
 			className="w-screen h-screen top-0 absolute bg-black bg-opacity-50 backdrop-blur-sm z-10 flex items-center justify-center"
@@ -21,10 +15,10 @@ const AddVideoModal = ({
 		>
 			<div
 				onClick={(e) => e.stopPropagation()}
-				className="h-1/2 w-1/2 bg-white rounded-xl flex justify-center items-center shadow-lg p-10"
+				className="w-1/2 bg-white rounded-xl flex justify-center items-center shadow-lg p-10"
 			>
 				<VideoForm
-					handleVideoFormSubmit={handleVideoFormSubmit}
+					setShowAddVideoModal={setShowAddVideoModal}
 					video={video}
 					setVideo={setVideo}
 					mode={mode}
