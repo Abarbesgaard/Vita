@@ -1,10 +1,10 @@
 import { createContext, useReducer, useEffect, useState } from "react";
 import { VideoReducer } from "../reducers/VideoReducer";
 import {
-	getAllVideos as getAll,
-	saveVideo as save,
-	updateVideo as update,
-	deleteVideoFromDb as destroy,
+	getAllVideosFake as getAll,
+	saveVideoFake as save,
+	updateVideoFake as update,
+	deleteVideoFromDbFake as destroy,
 } from "../APIs/VideoAPI";
 import { getSessionToken } from "../services/supabase";
 
@@ -13,8 +13,7 @@ const VideoContext = createContext(null);
 const VideoProvider = ({ children }) => {
 	const [videos, dispatch] = useReducer(VideoReducer, []);
 
-	useEffect(() => {
-	}, []);
+	useEffect(() => {}, []);
 
 	const fetchVideos = async () => {
 		const token = await getSessionToken();
@@ -37,14 +36,13 @@ const VideoProvider = ({ children }) => {
 		const token = await getSessionToken();
 		const data = await update(video, token);
 		if (!data.error) {
-			dispatch({ type: "updateVideo", payload: data.video });
+			dispatch({ type: "updateVideo", payload: video });
 		}
 	};
 
 	const deleteVideo = async (id) => {
 		const token = await getSessionToken();
 		const data = await destroy(id, token);
-		console.log("deleteVideo", data);
 		if (!data.error) {
 			dispatch({ type: "deleteVideo", payload: id });
 		}

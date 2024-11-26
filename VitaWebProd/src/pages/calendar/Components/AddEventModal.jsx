@@ -56,10 +56,6 @@ const AddEventModal = ({ onClose, users, user, setEvents, selectedSlot }) => {
 					<motion.div
 						className="bg-white w-1/2 rounded-lg shadow-2xl"
 						onClick={(e) => e.stopPropagation()}
-						initial={{ scale: 0.5 }}
-						animate={{ scale: 1 }}
-						transition={{ type: "spring", stiffness: 260, damping: 20 }}
-						exit={{ scale: 0.5 }}
 					>
 						<div
 							className={`flex justify-between p-5 bg-blue-500 rounded-t-lg`}

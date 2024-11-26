@@ -217,8 +217,8 @@ const CalendarPage = () => {
 						/>
 					)}
 				</AnimatePresence>
-				<div className="w-96 bg-white h-full">
-					<div className="flex flex-col space-y-2 items-center pr-10">
+				<div className="bg-white h-full">
+					<div className="flex flex-col space-y-2 items-center">
 						<div className="mb-20">
 							<SmallCalendar
 								className="shadow-md w-min rounded-md"
@@ -293,7 +293,7 @@ const CalendarPage = () => {
 							setSelectedEvent(event);
 							setShowEventModal(true);
 						}}
-						min={new Date(1972, 8, 1, 6, 0)}
+						scrollToTime={new Date(1972, 8, 1, 6, 0)}
 						className="h-full bg-white bg-opacity-80 backdrop-blur"
 						eventPropGetter={(event) => {
 							if (event.type === "meeting") {

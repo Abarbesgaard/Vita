@@ -4,7 +4,7 @@ import { IoIosAddCircleOutline } from "react-icons/io";
 import moment from "moment";
 import { makeServer } from "../../APIs/mockAPI";
 
-// makeServer();
+makeServer();
 
 moment.updateLocale("da-DK", {
 	culture: "da-DK",

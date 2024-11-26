@@ -29,6 +29,8 @@ export const getAllVideosFake = async () => {
 };
 
 export const saveVideo = async (video, token) => {
+	const data = { video: null, error: null };
+
 	try {
 		const response = await fetch("https://localhost:8081/api/video/create", {
 			method: "POST",
@@ -40,10 +42,11 @@ export const saveVideo = async (video, token) => {
 			body: JSON.stringify(video),
 		}).then((response) => response.json());
 
-		return response;
+		data.video = response;
 	} catch (error) {
-		return error;
+		data.error = error;
 	}
+	return data;
 };
 export const saveVideoFake = async (video) => {
 	const data = { video: null, error: null };
@@ -66,28 +69,26 @@ export const saveVideoFake = async (video) => {
 };
 
 export const updateVideo = async (video, token) => {
+	const data = { error: null };
+
 	try {
-		console.log(video);
-		const response = await fetch(
-			`https://localhost:8081/api/video/put/${video.id}`,
-			{
-				method: "PUT",
-				headers: {
-					Authorization: "Bearer " + token,
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					title: video.title,
-					description: video.description,
-					url: video.url,
-				}),
-			}
-		).then((response) => response.json());
-		console.log(response);
-		return response;
+		await fetch(`https://localhost:8081/api/video/put/${video.id}`, {
+			method: "PUT",
+			headers: {
+				Authorization: "Bearer " + token,
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				title: video.title,
+				description: video.description,
+				url: video.url,
+			}),
+		});
 	} catch (error) {
-		return error;
+		data.error = error;
 	}
+
+	return data;
 };
 export const updateVideoFake = async (video) => {
 	const data = { video: null, error: null };
@@ -113,21 +114,20 @@ export const updateVideoFake = async (video) => {
 };
 
 export const deleteVideoFromDb = async (id, token) => {
-	try {
-		const response = await fetch(
-			`https://localhost:8081/api/video/delete/${id}`,
-			{
-				method: "DELETE",
-				headers: {
-					Authorization: "Bearer " + token,
-				},
-			}
-		).then((response) => response.json());
+	const data = { error: null };
 
-		return response;
+	try {
+		await fetch(`https://localhost:8081/api/video/delete/${id}`, {
+			method: "DELETE",
+			headers: {
+				Authorization: "Bearer " + token,
+			},
+		});
 	} catch (error) {
-		return error;
+		data.error = error;
 	}
+
+	return data;
 };
 export const deleteVideoFromDbFake = async (id) => {
 	const data = { video: null, error: null };

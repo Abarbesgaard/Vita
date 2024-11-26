@@ -164,7 +164,7 @@ const CalendarPage = () => {
 	}
 
 	return (
-		<div id="calendar" className="h-full w-full flex bg-primary">
+		<div className="h-full w-full flex bg-primary overflow-hidden">
 			<AnimatePresence>
 				{showEventModal && (
 					<EventModal
@@ -207,7 +207,7 @@ const CalendarPage = () => {
 					</div>
 				</div>
 			</div>
-			<div className="h-full w-full">
+			<div className="h-full w-full overflow-hidden">
 				<Calendar
 					localizer={localizer}
 					startAccessor="start"
@@ -227,8 +227,8 @@ const CalendarPage = () => {
 						setSelectedEvent(event);
 						setShowEventModal(true);
 					}}
-					min={new Date(1972, 8, 1, 6, 0)}
-					className="h-full p-2 "
+					scrollToTime={new Date(1972, 8, 1, 8, 0)}
+					className="h-full w-full p-2"
 					eventPropGetter={(event) => {
 						if (event.type === "meeting") {
 							return {

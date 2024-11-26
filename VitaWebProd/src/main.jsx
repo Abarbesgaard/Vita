@@ -10,6 +10,7 @@ import NoticeBoard from "./pages/noticeboard/NoticeBoardPage.jsx";
 import VideoPage from "./pages/video/VideoPage.jsx";
 import CalendarPage from "./pages/calendar/CalendarPage.jsx";
 import HomePage from "./pages/home/HomePage.jsx";
+import StaffPage from "./pages/staff/StaffPage.jsx";
 
 const router = createBrowserRouter([
 	{
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
 			{
 				path: "/opslagstavle",
 				element: <NoticeBoard />,
+			},
+			{
+				path: "/medarbejdere",
+				element: <StaffPage />,
 			},
 		],
 	},

@@ -11,23 +11,15 @@ import VideoTableSkeleton from "./components/VideoTableSkeleton";
 export default function VideoPage() {
 	const { videos, fetchVideos } = useVideo();
 	const { user } = useAuth();
-	const [video, setVideo] = useState({
-		title: "",
-		url: "",
-		description: "",
-	});
 	const [isLoading, setIsLoading] = useState(true);
 	const [showAddVideoModal, setShowAddVideoModal] = useState(false);
 	const [editMode, setEditMode] = useState(false);
+	const [editVideo, setEditVideo] = useState(null);
 
-	const handleEdit = async (id, title, url, description) => {
+	const handleEdit = async (video) => {
 		setEditMode(true);
-		setVideo({
-			id,
-			title,
-			url,
-			description,
-		});
+		console.log("edit", video);
+		setEditVideo(video);
 		setShowAddVideoModal(true);
 	};
 
@@ -48,13 +40,12 @@ export default function VideoPage() {
 			{showAddVideoModal && (
 				<AddVideoModal
 					setShowAddVideoModal={setShowAddVideoModal}
-					video={video}
-					setVideo={setVideo}
 					mode={editMode}
+					editVideo={editVideo}
 				/>
 			)}
 			<div className="w-3/4 mx-auto h-full flex flex-col lg:flex-row overflow-auto justify-center lg:items-center">
-				<div className="flex flex-col w-full px-10 items-center overflow-visible">
+				<div className="flex flex-col w-full md:px-10 items-center overflow-visible">
 					{isLoading ? (
 						<div className="w-full">
 							<VideoTableSkeleton />
@@ -66,14 +57,10 @@ export default function VideoPage() {
 						<div className="w-full">
 							<VideoTable videos={videos} handleEdit={handleEdit} />
 							<div
-								className="w-4/6 md:w-2/6 xl:w-1/6 h-20 flex flex-col items-center justify-center border-2 border-dashed border-slate-400 hover:border-black cursor-pointer rounded-xl mx-auto mt-10 transition-all"
+								className="w-4/6 md:w-2/6 xl:w-2/6 h-20 flex flex-col items-center justify-center border-2 border-dashed border-slate-400 hover:border-black cursor-pointer rounded-xl mx-auto mt-10 transition-all"
 								onClick={() => {
 									setEditMode(false);
-									setVideo({
-										title: "",
-										url: "",
-										description: "",
-									});
+									setEditVideo(null);
 									setShowAddVideoModal(true);
 								}}
 							>
