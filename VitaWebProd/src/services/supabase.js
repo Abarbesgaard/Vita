@@ -17,7 +17,9 @@ export const findUserEmail = async (username) => {
 };
 
 export const getUsers = async () => {
-	return await supabase.from("profiles").select("id, full_name");
+	const { data, error } = await supabase.from("profiles").select("*");
+
+	return { data, error };
 };
 
 export const getSessionToken = async () => {

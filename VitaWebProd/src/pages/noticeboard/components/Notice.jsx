@@ -8,7 +8,7 @@ const Notice = ({ notice }) => {
 	console.log(notice);
 
 	return (
-		<div className="p-3 shadow border relative">
+		<div className="p-3 shadow border relative bg-white">
 			<p className="font-bold text-lg px-2">{notice.title}</p>
 			<hr />
 			<textarea

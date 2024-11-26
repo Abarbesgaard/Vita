@@ -11,18 +11,25 @@ const AddEventModal = ({ onClose, users, user, setEvents, selectedSlot }) => {
 		attendee: [{ id: user.id, name: user.name }],
 		allDayEvent: false,
 		hostId: user.id,
-		title: "Ny begivenhed",
-		start: selectedSlot ? new Date(selectedSlot.start.setHours(selectedSlot.start.getHours() + 1)) : new Date(),
-		end: selectedSlot ? new Date(selectedSlot.end.setHours(selectedSlot.end.getHours() + 1)) : new Date(),
+		title: "",
+		start: selectedSlot
+			? new Date(selectedSlot.start.setHours(selectedSlot.start.getHours() + 1))
+			: new Date(),
+		end: selectedSlot
+			? new Date(selectedSlot.end.setHours(selectedSlot.end.getHours() + 1))
+			: new Date(),
 	});
 
 	const saveActivitytoDb = async () => {
 		setIsLoading(true);
 		const token = await getSessionToken();
-		const response = await createActivity({
-			...event,
-			resourceId: event.attendee.map((attendee) => attendee.id),
-		}, token);
+		const response = await createActivity(
+			{
+				...event,
+				resourceId: event.attendee.map((attendee) => attendee.id),
+			},
+			token
+		);
 		setEvents((prev) => [
 			...prev,
 			{
@@ -49,25 +56,22 @@ const AddEventModal = ({ onClose, users, user, setEvents, selectedSlot }) => {
 					<motion.div
 						className="bg-white w-1/2 rounded-lg shadow-2xl"
 						onClick={(e) => e.stopPropagation()}
-						initial={{ scale: 0.5 }}
-						animate={{ scale: 1 }}
-						transition={{ type: "spring", stiffness: 260, damping: 20 }}
-						exit={{ scale: 0.5 }}
 					>
 						<div
-							className={`flex justify-between p-5 bg-blue-500 rounded-t-lg` }
+							className={`flex justify-between p-5 bg-blue-500 rounded-t-lg`}
 						>
+							<p className="text-white text-xl font-bold">Ny Begivenhed</p>
+							<button onClick={onClose} className="ml-auto">
+								X
+							</button>
+						</div>
+						<div className="p-5">
 							<textarea
 								placeholder="Navn på begivenhed"
 								value={event.title}
-								onChange={(e) =>
-									setEvent({ ...event, title: e.target.value })
-								}
-								className="py-1 px-2 w-full bg-blue-500 shadow-inner resize-none color-black"
+								onChange={(e) => setEvent({ ...event, title: e.target.value })}
+								className="py-1 px-2 w-full bg-gray-100 shadow-inner resize-none"
 							/>
-							<button onClick={onClose}>X</button>
-						</div>
-						<div className="p-5">
 							<textarea
 								rows={4}
 								value={event.description}
